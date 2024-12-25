@@ -4,7 +4,7 @@ import pygame
 class ScreenSettings:
     screenWidth = 800
     screenHeight = 400
-    caption = "The Binding of Isaac"
+    caption = "The Binding of Issac"
     fps = 60
 
 
@@ -15,5 +15,5 @@ class PlayerSettings:
 
 
 class ImportedImages:
-    playerImage = "assets/images/isaac.png"
-    icon = "assets/icons/64x64.ico"
+    playerImage = "Src/Textures/Play/Issac_Loot.png"
+    icon = "Src/icons/64x64.ico"
