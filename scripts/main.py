@@ -9,7 +9,7 @@ isaac.add(
 )
 
 
-def run():
+def main():
 
     pygame.init()
 
@@ -44,4 +44,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    main()
