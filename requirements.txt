@@ -1,2 +1,2 @@
 pygame==2.6.1
-numpy
+openai==1.58.1
