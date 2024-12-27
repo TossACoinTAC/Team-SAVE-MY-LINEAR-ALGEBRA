@@ -1,11 +1,18 @@
 from pygame import *
 from Statics import *
 from Player import Player
+from Rooms import *
 
 isaac = pygame.sprite.GroupSingle()
 isaac.add(
-    Player(0.5 * Vector2(ScreenSettings.screenWidth, ScreenSettings.screenHeight))
+    Player(
+        spawn_pos=0.5 * Vector2(ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+    )
 )
+
+rooms = pygame.sprite.Group()
+start_room = StartRoom()  # final:rooms=Rooms.gen_rooms()
+rooms.add(start_room)  # final:rooms.add(rooms)
 
 
 def get_keys():
@@ -32,18 +39,16 @@ class ScreenRenderer:
     # Update()
     def update(self):
         self.update_clock()
+        self.update_sprite(rooms)
         self.update_sprite(isaac, get_keys())
-        self.draw_sprite(isaac)
         pygame.display.flip()
 
     def update_clock(self):
         self.clock = pygame.time.Clock()
         self.clock.tick(ScreenSettings.fps)
 
-    def update_sprite(self, sprite, keys):
+    def update_sprite(self, sprite: sprite.Group, keys=None):
         sprite.update(keys)
-
-    def draw_sprite(self, sprite):
         sprite.draw(self.screen)
 
 
