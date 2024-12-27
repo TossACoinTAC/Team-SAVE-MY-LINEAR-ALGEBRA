@@ -2,6 +2,7 @@ from pygame import *
 from Statics import *
 from Player import Player
 from Rooms import *
+from BGMPlayer import *
 
 isaac = pygame.sprite.GroupSingle()
 isaac.add(
@@ -25,6 +26,8 @@ class ScreenRenderer:
     def __init__(self):
         self.set_screen()
         self.set_icon()
+        self.bgm = BgmPlayer()
+        self.playbgm = True
 
     def set_screen(self):
         self.screen = pygame.display.set_mode(
@@ -39,6 +42,9 @@ class ScreenRenderer:
     # Update()
     def update(self):
         self.update_clock()
+        if self.playbgm:
+            self.bgm.update("MAIN_THEME", -1)
+            self.playbgm = False
         self.update_sprite(rooms)
         self.update_sprite(isaac, get_keys())
         pygame.display.flip()

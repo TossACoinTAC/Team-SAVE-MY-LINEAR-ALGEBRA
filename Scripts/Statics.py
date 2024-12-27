@@ -34,6 +34,5 @@ class ImportedImages:
     class DoorImages(Enum):
         OPEN_DOOR = "Src/Textures/Play/OpenDoor.png"
 
-
-class Doorlocation:
-    locations = [(380, 10), (60, 180), (380, 340), (680, 180)]
+class ImportedBGM:
+    bgmpath = ["Src/sounds/main_theme.mp3","Src/sounds/isaac_hurt1.mp3"]
