@@ -28,16 +28,18 @@ class SingleRoom(pygame.sprite.Sprite):
         self.doors = pygame.sprite.Group()
         door_locations = [
             (self.rect.width / 2, ScreenSettings.marginHeight),  # top
+            (ScreenSettings.marginWidth-20, self.rect.height / 2),  # left
             (self.rect.width / 2, ScreenSettings.roomHeight),  # bottom
             (ScreenSettings.roomWidth, self.rect.height / 2),  # right
-            (ScreenSettings.marginWidth, self.rect.height / 2),  # left
         ]
         for i in range(4):
             door = Door()
+            door.image = pygame.transform.rotate(door.image,90*i)
             door.rect.center = door_locations[i]
             # need to add rotations here
             self.doors.add(door)
         self.doors.draw(self.image)  # draw on the Room's frame
+        
 
     # randomly select a room image if not specified
     random_image = random.choice(list(ImportedImages.RoomImages)).value
