@@ -14,8 +14,10 @@ isaac.add(
 
 tears = pygame.sprite.Group()
 def tears_add(player: Player):
+    if not get_keys()[pygame.K_UP] and not get_keys()[pygame.K_DOWN] and not get_keys()[pygame.K_LEFT] and not get_keys()[pygame.K_RIGHT]:
+        return
     new_tear = Bullet(
-        spawn_pos=Vector2(player.rect.x, player.rect.y)
+        spawn_pos=Vector2(player.rect.x+PlayerSettings.playerWidth * 0.5, player.rect.y+PlayerSettings.playerHeight * 0.5)
     )
     new_tear.first_update(get_keys())
     tears.add(
