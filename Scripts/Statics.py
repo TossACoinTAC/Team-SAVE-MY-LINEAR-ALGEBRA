@@ -22,6 +22,10 @@ class PlayerSettings:
     playerHeight = 90
     playerSpeed = 3
 
+class TearSettings:
+    tearWidth = 30
+    tearHeight = 30
+    tearSpeed = 5
 
 class MainMenuSettings:
     class StartButton:
@@ -63,11 +67,15 @@ class MainMenuSettings:
         y = 100
         frames_duration = 125
         frame_rects = [(0, 0, 165, 156), (160, 0, 154, 156)]
+    
+    class Fly:
+        pass
 
 
 class ImportedImages:
     playerImage = "Src/Textures/Play/Issac_Loot.png"
     icon = "Src/icons/64x64.ico"
+    tearImage = "Src/Textures/Play/Tear.png"
 
     class RoomImages(Enum):
         START_ROOM = "Src/Textures/Play/start_000.png"
@@ -83,6 +91,9 @@ class ImportedImages:
         Continues = "Src/Textures/Title/Continue.png"
         Bomb = "Src/Textures/Play/pickup_016_bomb.png"
         Draw = "Src/Textures/Title/Draw1.png"
+    
+    class Enemies:
+        Fly = "Src/Textures/Play/fly_ok.png"
 
 
 class ImportedBGM:

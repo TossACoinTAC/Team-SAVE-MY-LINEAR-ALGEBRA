@@ -4,9 +4,7 @@ from Player import Player
 from Rooms import *
 from Attack import Bullet
 from BGMPlayer import *
-
 from main_menu import *
-
 
 isaac = pygame.sprite.GroupSingle()
 isaac.add(
@@ -16,24 +14,16 @@ isaac.add(
 )
 
 tears = pygame.sprite.Group()
-
-
 def tears_add(player: Player):
-    if (
-        not get_keys()[pygame.K_UP]
-        and not get_keys()[pygame.K_DOWN]
-        and not get_keys()[pygame.K_LEFT]
-        and not get_keys()[pygame.K_RIGHT]
-    ):
+    if not get_keys()[pygame.K_UP] and not get_keys()[pygame.K_DOWN] and not get_keys()[pygame.K_LEFT] and not get_keys()[pygame.K_RIGHT]:
         return
     new_tear = Bullet(
-        spawn_pos=Vector2(
-            player.rect.x + PlayerSettings.playerWidth * 0.5,
-            player.rect.y + PlayerSettings.playerHeight * 0.5,
-        )
+        spawn_pos=Vector2(player.rect.x+PlayerSettings.playerWidth * 0.5, player.rect.y+PlayerSettings.playerHeight * 0.5)
     )
     new_tear.first_update(get_keys())
-    tears.add(new_tear)
+    tears.add(
+        new_tear
+    )
 
 
 rooms = pygame.sprite.Group()
@@ -76,8 +66,7 @@ class ScreenRenderer:
         tears.update()
         tears.draw(self.screen)
 
-        # szd : update main_menu
-
+         # szd : update main_menu
         main_menu_all.update()
         main_menu_all.draw(self.screen)
 
