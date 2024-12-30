@@ -22,7 +22,18 @@ class Door(pygame.sprite.Sprite):
 
 
 class SingleRoom(pygame.sprite.Sprite):
+    # randomly select a room image if not specified
+    random_image = random.choice(list(ImportedImages.RoomImages)).value
 
+    def __init__(self, roomImage=random_image):
+        super().__init__()
+        self.image = pygame.image.load(roomImage)
+        self.image = pygame.transform.scale(
+            self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+        )
+        self.rect = self.image.get_rect()
+        self.gen_doors()
+        self.gen_walls()
     def gen_doors(self):
         # generate four random doors
         self.doors = pygame.sprite.Group()
@@ -39,21 +50,39 @@ class SingleRoom(pygame.sprite.Sprite):
             # need to add rotations here
             self.doors.add(door)
         self.doors.draw(self.image)  # draw on the Room's frame
+    
+    def gen_walls(self):
+        self.walls = pygame.sprite.Group()
+        wall_number = random.randint(1,8)
+        for _ in range(wall_number):
+            wall = Shit(1)    # can be changed to other types of walls
+            randx = random.randint(ScreenSettings.marginWidth,ScreenSettings.roomWidth)
+            randy = random.randint(ScreenSettings.marginHeight,ScreenSettings.roomHeight)
+            wall_location = (randx,randy)
+            wall.rect.center = wall_location
+            self.walls.add(wall)
+        self.walls.draw(self.image)  # draw on the Room's frame
         
-
-    # randomly select a room image if not specified
-    random_image = random.choice(list(ImportedImages.RoomImages)).value
-
-    def __init__(self, roomImage=random_image):
-        super().__init__()
-        self.image = pygame.image.load(roomImage)
-        self.image = pygame.transform.scale(
-            self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
-        )
-        self.rect = self.image.get_rect()
-        self.gen_doors()
+        
 
 
 class StartRoom(SingleRoom):
     def __init__(self):
         super().__init__(ImportedImages.RoomImages.START_ROOM.value)
+
+
+class Wall(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+    
+
+
+class Shit(Wall):
+    def __init__(self, type):
+        super().__init__()
+        self.image = pygame.image.load(ImportedImages.ShitImages.shit[0])
+        self.image = pygame.transform.scale(
+            self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
+        )
+        self.rect = self.image.get_rect()
+
