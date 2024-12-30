@@ -61,14 +61,14 @@ class ScreenRenderer:
             self.bgm.update("MAIN_THEME", -1)
             self.playbgm = False
         self.update_sprite(rooms)
-        self.update_sprite(isaac, get_keys())
+        self.update_sprite(isaac, get_keys(), rooms)
         tears_add(isaac.sprite)
         tears.update()
         tears.draw(self.screen)
 
          # szd : update main_menu
-        main_menu_all.update()
-        main_menu_all.draw(self.screen)
+        #main_menu_all.update()
+        #main_menu_all.draw(self.screen)
 
         pygame.display.flip()
 
@@ -76,8 +76,8 @@ class ScreenRenderer:
         self.clock = pygame.time.Clock()
         self.clock.tick(ScreenSettings.fps)
 
-    def update_sprite(self, sprite: sprite.Group, keys=None):
-        sprite.update(keys)
+    def update_sprite(self, sprite: sprite.Group, keys=None, rooms=None):
+        sprite.update(keys, rooms)
         sprite.draw(self.screen)
 
 
