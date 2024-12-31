@@ -72,16 +72,16 @@ class ScreenRenderer:
             self.bgm.update("MAIN_THEME", -1)
             self.playbgm = False
         self.update_sprite(rooms)
-        self.update_sprite(isaac, get_keys())
+        self.update_sprite(isaac, get_keys(), rooms)
         tears_add(isaac.sprite)
         tears.update()
         tears.draw(self.screen)
 
         # szd : update main_menu
 
-        # main_menu_all.update()
-        # main_menu_all.draw(self.screen)
-        enemies.update()
+        #main_menu_all.update()
+        #main_menu_all.draw(self.screen)
+        enemies.update(tears)
         enemies.draw(self.screen)
 
         pygame.display.flip()
@@ -90,8 +90,8 @@ class ScreenRenderer:
         self.clock = pygame.time.Clock()
         self.clock.tick(ScreenSettings.fps)
 
-    def update_sprite(self, sprite: sprite.Group, keys=None):
-        sprite.update(keys)
+    def update_sprite(self, sprite: sprite.Group, keys=None, rooms = None):
+        sprite.update(keys,rooms)
         sprite.draw(self.screen)
 
 
@@ -153,16 +153,5 @@ main_menu_all.add(
 # szd : enemies
 enemies = pygame.sprite.Group()
 for i in range(5):
-    Fly = Monster(
-    ImportedImages.Enemies.Fly,
-    ImportedImages.Enemies.Fly_die,
-    EnemiesSettings.Fly.frame_rects,
-    EnemiesSettings.Fly.frame_rects_die,
-    EnemiesSettings.Fly.x,
-    EnemiesSettings.Fly.y,
-    EnemiesSettings.Fly.MULTI,
-    EnemiesSettings.Fly.frames_duration,
-    EnemiesSettings.Fly.HP,
-    EnemiesSettings.Fly.speed
-)
-    enemies.add(Fly)
+    fly = Fly()
+    enemies.add(fly)

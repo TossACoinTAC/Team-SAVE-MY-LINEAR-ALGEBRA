@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
 
         self.walls = pygame.sprite.Group()
         for room in rooms:    # get all walls
-            self.walls += room.walls
+            self.walls = room.walls
         # Check collision with walls
         for wall in self.walls:
             if self.rect.colliderect(wall.rect):

@@ -1,6 +1,5 @@
 import pygame
 from tools import *
-import GameManager
 import random
 from Statics import *
 
@@ -44,10 +43,10 @@ class Monster(pygame.sprite.Sprite):
         for frame_rect in frame_rects:
             frame.append(get_images(sheet, *frame_rect, (0, 0, 0), MULTI))
 
-    def update(self):
+    def update(self, tears):
         
         self.update_animation()
-        self.check_collision_kill()
+        self.check_collision_kill(tears)
         self.update_position()
 
     def update_position(self):
@@ -101,10 +100,23 @@ class Monster(pygame.sprite.Sprite):
 
 
 
-    def check_collision_kill(self):
-        if pygame.sprite.spritecollide(self, GameManager.tears, False):
+    def check_collision_kill(self, tears):
+        if pygame.sprite.spritecollide(self, tears, False):
             self.HP -= 1
         if self.HP <= 0:
             self.state = 'die'
 
-
+class Fly(Monster):
+    def __init__(self):
+        super().__init__(
+            ImportedImages.Enemies.Fly,
+            ImportedImages.Enemies.Fly_die,
+            EnemiesSettings.Fly.frame_rects,
+            EnemiesSettings.Fly.frame_rects_die,
+            EnemiesSettings.Fly.x,
+            EnemiesSettings.Fly.y,
+            EnemiesSettings.Fly.MULTI,
+            EnemiesSettings.Fly.frames_duration,
+            EnemiesSettings.Fly.HP,
+            EnemiesSettings.Fly.speed
+        )

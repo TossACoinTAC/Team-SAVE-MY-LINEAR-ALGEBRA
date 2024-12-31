@@ -125,7 +125,7 @@ class ImportedImages:
         Draw = "Src/Textures/Title/Draw1.png"
 
     class Enemies:
-        Fly = "Src/Textures/Play/fly_ok.png"
+        Fly = "data/textures/enemies/fly_ok.png"
         Fly_die = "data/textures/enemies/fly_rip.png"
 
 
