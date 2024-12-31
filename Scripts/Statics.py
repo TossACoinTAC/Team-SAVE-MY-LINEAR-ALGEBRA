@@ -22,10 +22,12 @@ class PlayerSettings:
     playerHeight = 90
     playerSpeed = 3
 
+
 class TearSettings:
     tearWidth = 30
     tearHeight = 30
     tearSpeed = 5
+
 
 class MainMenuSettings:
     class StartButton:
@@ -67,9 +69,32 @@ class MainMenuSettings:
         y = 100
         frames_duration = 125
         frame_rects = [(0, 0, 165, 156), (160, 0, 154, 156)]
-    
+
+
+class EnemiesSettings:
     class Fly:
-        pass
+        MULTI = 1.0
+        ALPHA = 256
+        x = 400
+        y = 400
+        frames_duration = 125
+        frame_rects = [(7, 8, 42, 33),
+                       (71, 8, 42, 33),
+                       (134, 8, 42, 33),
+                       (197, 8, 42, 33)]
+        HP = 1
+        speed = [1, 1, 5, -1, -1, -5]
+        frame_rects_die = [(0, 0, 64, 63),
+                           (64, 0, 64, 63),
+                           (128, 0, 64, 63),
+                           (192, 0, 64, 63),
+                           (0, 63, 64, 63),
+                           (64, 63, 64, 63),
+                           (128, 63, 64, 63),
+                           (192, 63, 64, 63),
+                           (0, 126, 64, 63),
+                           (64, 126, 64, 63),
+                           (128, 126, 64, 63)]
 
 
 class ImportedImages:
@@ -91,9 +116,10 @@ class ImportedImages:
         Continues = "Src/Textures/Title/Continue.png"
         Bomb = "Src/Textures/Play/pickup_016_bomb.png"
         Draw = "Src/Textures/Title/Draw1.png"
-    
+
     class Enemies:
         Fly = "Src/Textures/Play/fly_ok.png"
+        Fly_die = "data/textures/enemies/fly_rip.png"
 
 
 class ImportedBGM:
