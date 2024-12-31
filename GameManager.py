@@ -5,6 +5,7 @@ from Rooms import *
 from Attack import Bullet
 from BGMPlayer import *
 
+from enemies import *
 from main_menu import *
 
 
@@ -78,8 +79,10 @@ class ScreenRenderer:
 
         # szd : update main_menu
 
-        main_menu_all.update()
-        main_menu_all.draw(self.screen)
+        # main_menu_all.update()
+        # main_menu_all.draw(self.screen)
+        enemies.update()
+        enemies.draw(self.screen)
 
         pygame.display.flip()
 
@@ -146,3 +149,20 @@ main_menu_all.add(
         MainMenuSettings.Bomb.frames_duration,
     ),
 )
+
+# szd : enemies
+enemies = pygame.sprite.Group()
+for i in range(5):
+    Fly = Monster(
+    ImportedImages.Enemies.Fly,
+    ImportedImages.Enemies.Fly_die,
+    EnemiesSettings.Fly.frame_rects,
+    EnemiesSettings.Fly.frame_rects_die,
+    EnemiesSettings.Fly.x,
+    EnemiesSettings.Fly.y,
+    EnemiesSettings.Fly.MULTI,
+    EnemiesSettings.Fly.frames_duration,
+    EnemiesSettings.Fly.HP,
+    EnemiesSettings.Fly.speed
+)
+    enemies.add(Fly)
