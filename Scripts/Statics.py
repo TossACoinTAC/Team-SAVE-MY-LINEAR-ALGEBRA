@@ -121,19 +121,19 @@ class ImportedImages:
         TYPE_1 = "Src/Textures/Play/poops/poops (2).png"
         TYPE_2 = "Src/Textures/Play/poops/poops (3).png"
         TYPE_3 = "Src/Textures/Play/poops/poops (4).png"
-        TYPE_4 = "Src/Textures/Play/poops/poops (5).png"  # images not found
+        TYPE_4 = "Src/Textures/Play/poops/poops (5).png"
 
     # MainMenu
     BackGround = "Src/Textures/Title/Title1.png"
-    StartButton = "Src/Textures/Title/Draw2.png"  # Not found
+    StartButton = "Src/Textures/Title/Draw2.png"
     Options = "Src/Textures/Title/Options.png"
     Continues = "Src/Textures/Title/Continue.png"
     Bomb = "Src/Textures/Play/pickup_016_bomb.png"
     Draw = "Src/Textures/Title/Draw1.png"
 
     # Enemies
-    # Fly = "data/textures/enemies/fly_ok.png"
-    # Fly_die = "data/textures/enemies/fly_rip.png"
+    Fly = "data/textures/enemies/fly_ok.png"
+    Fly_die = "data/textures/enemies/fly_rip.png"
 
     # Friendly_NPCs
     NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test

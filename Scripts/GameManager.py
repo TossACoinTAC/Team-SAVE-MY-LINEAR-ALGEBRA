@@ -5,7 +5,7 @@ from Rooms import *
 from Attack import Bullet
 from BGMPlayer import *
 
-# from enemies import *
+from enemies import *
 from main_menu import *
 from NPC import *
 
@@ -84,10 +84,10 @@ class ScreenRenderer:
 
         # szd : update main_menu
 
-        # main_menu_all.update()
-        # main_menu_all.draw(self.screen)
-        # enemies.update(tears)
-        # enemies.draw(self.screen)
+        main_menu_all.update()
+        main_menu_all.draw(self.screen)
+        enemies.update(tears)
+        enemies.draw(self.screen)
         NPCs.draw(self.screen)
         for npc in NPCs:
             if npc.hit_player(isaac.sprite):
@@ -169,8 +169,8 @@ main_menu_all.add(
     ),
 )
 
-# szd : enemies
-# enemies = pygame.sprite.Group()
-# for i in range(5):
-#     fly = Fly()
-#     enemies.add(fly)
+# szd: enemies
+enemies = pygame.sprite.Group()
+for i in range(5):
+    fly = Fly()
+    enemies.add(fly)
