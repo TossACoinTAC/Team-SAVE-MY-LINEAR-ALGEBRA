@@ -58,7 +58,7 @@ class Dynamic_state(pygame.sprite.Sprite):
 class BackGround(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(ImportedImages.MainMenuImages.BackGround)
+        self.image = pygame.image.load(ImportedImages.BackGround)
         self.image = pygame.transform.scale(
             self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
         )
@@ -72,7 +72,7 @@ class StartButton(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(ImportedImages.MainMenuImages.StartButton)
+        self.image = pygame.image.load(ImportedImages.StartButton)
         self.image.set_alpha(MainMenuSettings.StartButton.ALPHA)
         self.rect = self.image.get_rect()
         self.rect.x = MainMenuSettings.StartButton.x

@@ -78,30 +78,37 @@ class EnemiesSettings:
         x = 400
         y = 400
         frames_duration = 125
-        frame_rects = [(7, 8, 42, 33),
-                       (71, 8, 42, 33),
-                       (134, 8, 42, 33),
-                       (197, 8, 42, 33)]
+        frame_rects = [
+            (7, 8, 42, 33),
+            (71, 8, 42, 33),
+            (134, 8, 42, 33),
+            (197, 8, 42, 33),
+        ]
         HP = 1
         speed = [1, 1, 5, -1, -1, -5]
-        frame_rects_die = [(0, 0, 64, 63),
-                           (64, 0, 64, 63),
-                           (128, 0, 64, 63),
-                           (192, 0, 64, 63),
-                           (0, 63, 64, 63),
-                           (64, 63, 64, 63),
-                           (128, 63, 64, 63),
-                           (192, 63, 64, 63),
-                           (0, 126, 64, 63),
-                           (64, 126, 64, 63),
-                           (128, 126, 64, 63)]
+        frame_rects_die = [
+            (0, 0, 64, 63),
+            (64, 0, 64, 63),
+            (128, 0, 64, 63),
+            (192, 0, 64, 63),
+            (0, 63, 64, 63),
+            (64, 63, 64, 63),
+            (128, 63, 64, 63),
+            (192, 63, 64, 63),
+            (0, 126, 64, 63),
+            (64, 126, 64, 63),
+            (128, 126, 64, 63),
+        ]
 
 
 class ImportedImages:
-    playerImage = "Src/Textures/Play/Issac_Loot.png"
     icon = "Src/icons/64x64.ico"
+
+    # Player
+    playerImage = "Src/Textures/Play/Issac_Loot.png"
     tearImage = "Src/Textures/Play/Tear.png"
 
+    # Rooms
     class RoomImages(Enum):
         START_ROOM = "Src/Textures/Play/start_000.png"
         COMMON_ROOM = "Src/Textures/Play/room_001.png"
@@ -109,24 +116,28 @@ class ImportedImages:
     class DoorImages(Enum):
         OPEN_DOOR = "Src/Textures/Play/OpenDoor.png"
 
-    class ShitImages():
-        shit = ["Src/Textures/Play/poops/poops (1).png",
-                "Src/Textures/Play/poops/poops (2).png",
-                "Src/Textures/Play/poops/poops (3).png",
-                "Src/Textures/Play/poops/poops (4).png",
-                "Src/Textures/Play/poops/poops (5).png",]
+    class ShitImages(Enum):
+        TYPE_0 = "Src/Textures/Play/poops/poops (1).png"
+        TYPE_1 = "Src/Textures/Play/poops/poops (2).png"
+        TYPE_2 = "Src/Textures/Play/poops/poops (3).png"
+        TYPE_3 = "Src/Textures/Play/poops/poops (4).png"
+        TYPE_4 = "Src/Textures/Play/poops/poops (5).png"  # images not found
 
-    class MainMenuImages:
-        BackGround = "Src/Textures/Title/Title1.png"
-        StartButton = "Src/Textures/Title/Draw2.png"
-        Options = "Src/Textures/Title/Options.png"
-        Continues = "Src/Textures/Title/Continue.png"
-        Bomb = "Src/Textures/Play/pickup_016_bomb.png"
-        Draw = "Src/Textures/Title/Draw1.png"
+    # MainMenu
+    BackGround = "Src/Textures/Title/Title1.png"
+    StartButton = "Src/Textures/Title/Draw2.png"  # Not found
+    Options = "Src/Textures/Title/Options.png"
+    Continues = "Src/Textures/Title/Continue.png"
+    Bomb = "Src/Textures/Play/pickup_016_bomb.png"
+    Draw = "Src/Textures/Title/Draw1.png"
 
-    class Enemies:
-        Fly = "data/textures/enemies/fly_ok.png"
-        Fly_die = "data/textures/enemies/fly_rip.png"
+    # Enemies
+    # Fly = "data/textures/enemies/fly_ok.png"
+    # Fly_die = "data/textures/enemies/fly_rip.png"
+
+    # Friendly_NPCs
+    NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
+    chatboxImage = "Src/Textures/Play/Issac_Loot.png"
 
 
 class ImportedBGM:

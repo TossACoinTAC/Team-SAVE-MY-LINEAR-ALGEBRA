@@ -2,33 +2,39 @@ from pygame import *
 from Statics import *
 from Player import Player
 
+
 class NPC(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(ImportedImages.NPCImage)      #随便选的图片，可以换成其它的
+        self.image = pygame.image.load(
+            ImportedImages.NPCImage
+        )  # 随便选的图片，可以换成其它的
         self.image = pygame.transform.scale(
             self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
         )
         self.rect = self.image.get_rect()
-        self.rect.center = (500,500)                                  #随便设的地方，有商店了可以让他再商店里生成
+        self.rect.center = (500, 500)  # 随便设的地方，有商店了可以让他再商店里生成
 
     def gen_chatbox(self, Chatboxes, chatbox):
         Chatboxes.empty()
         Chatboxes.add(chatbox)
         Chatboxes.update()
-        Chatboxes.draw(pygame.display.set_mode(
-            (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
-        ))
- 
+        Chatboxes.draw(
+            pygame.display.set_mode(
+                (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+            )
+        )
 
-    def hit_player(self, player:Player):
-        if abs(self.rect.x - player.rect.x) <= 10 and abs(self.rect.x - player.rect.y) <= 10:
+    def hit_player(self, player: Player):
+        if (
+            abs(self.rect.x - player.rect.x) <= 10
+            and abs(self.rect.x - player.rect.y) <= 10
+        ):
             return True
         return False
 
     def update(self):
         pass
-
 
 
 # 创建 ChatBox
@@ -38,7 +44,9 @@ class ChatBox(pygame.sprite.Sprite):
 
         # 加载并调整图像大小
         self.image = pygame.image.load(ImportedImages.chatboxImage)
-        self.image = pygame.transform.scale(self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight))
+        self.image = pygame.transform.scale(
+            self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+        )
         self.rect = self.image.get_rect()
 
         # 初始化变量
@@ -56,9 +64,9 @@ class ChatBox(pygame.sprite.Sprite):
         self.GAME_TEXTS = [
             "Welcome, adventurer! You find yourself in a dark forest. What will you do?",
             "You hear a rustling noise behind you. It's getting closer. What is your next move?",
-            "A mysterious figure steps out of the shadows. They speak to you: 'Who are you?'"
+            "A mysterious figure steps out of the shadows. They speak to you: 'Who are you?'",
         ]
-        
+
     def render_text(self, text, x, y, color=(255, 255, 255)):
         text_surface = self.FONT.render(text, True, color)
         self.image.blit(text_surface, (x, y))
@@ -74,7 +82,11 @@ class ChatBox(pygame.sprite.Sprite):
             y_offset += 40
 
         # 显示输入框
-        pygame.draw.rect(self.image, self.INPUT_COLOR, (20, ScreenSettings.screenHeight - 60, ScreenSettings.screenWidth - 40, 40))
+        pygame.draw.rect(
+            self.image,
+            self.INPUT_COLOR,
+            (20, ScreenSettings.screenHeight - 60, ScreenSettings.screenWidth - 40, 40),
+        )
         self.render_text(self.input_text, 30, ScreenSettings.screenHeight - 50)
 
     def handle_input(self, event):
@@ -89,7 +101,9 @@ class ChatBox(pygame.sprite.Sprite):
                         self.chat_log.append(self.GAME_TEXTS[self.current_step])
                         self.current_step += 1
                     else:
-                        self.chat_log.append("The game has ended. Thank you for playing!")
+                        self.chat_log.append(
+                            "The game has ended. Thank you for playing!"
+                        )
 
                     self.input_text = ""
 
@@ -97,7 +111,9 @@ class ChatBox(pygame.sprite.Sprite):
                 self.input_text = self.input_text[:-1]
             else:
                 self.input_text += event.unicode
-'''
+
+
+"""
 pygame.init()
 screen = pygame.display.set_mode((ScreenSettings.screenWidth, ScreenSettings.screenHeight))
 pygame.display.set_caption("ChatBox Game")
@@ -202,4 +218,4 @@ while run_game:
 
 # 退出游戏
 pygame.quit()
-'''
+"""

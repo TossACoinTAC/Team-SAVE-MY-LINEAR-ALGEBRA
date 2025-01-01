@@ -5,7 +5,7 @@ from Rooms import *
 from Attack import Bullet
 from BGMPlayer import *
 
-from enemies import *
+# from enemies import *
 from main_menu import *
 from NPC import *
 
@@ -85,8 +85,8 @@ class ScreenRenderer:
 
         # main_menu_all.update()
         # main_menu_all.draw(self.screen)
-        enemies.update(tears)
-        enemies.draw(self.screen)
+        # enemies.update(tears)
+        # enemies.draw(self.screen)
         NPCs.draw(self.screen)
         for npc in NPCs:
             if npc.hit_player(isaac.sprite):
@@ -137,21 +137,21 @@ main_menu_all.add(
     BackGround(),
     StartButton(),
     Static_state(
-        ImportedImages.MainMenuImages.Options,
+        ImportedImages.Options,
         MainMenuSettings.Options.x,
         MainMenuSettings.Options.y,
         MainMenuSettings.Options.MULTI,
         MainMenuSettings.Options.ALPHA,
     ),
     Static_state(
-        ImportedImages.MainMenuImages.Continues,
+        ImportedImages.Continues,
         MainMenuSettings.Continue.x,
         MainMenuSettings.Continue.y,
         MainMenuSettings.Continue.MULTI,
         MainMenuSettings.Continue.ALPHA,
     ),
     Dynamic_state(
-        ImportedImages.MainMenuImages.Draw,
+        ImportedImages.Draw,
         MainMenuSettings.Draw.frame_rects,
         MainMenuSettings.Draw.x,
         MainMenuSettings.Draw.y,
@@ -159,7 +159,7 @@ main_menu_all.add(
         MainMenuSettings.Draw.frames_duration,
     ),
     Dynamic_state(
-        ImportedImages.MainMenuImages.Bomb,
+        ImportedImages.Bomb,
         MainMenuSettings.Bomb.frame_rects,
         MainMenuSettings.Bomb.x,
         MainMenuSettings.Bomb.y,
@@ -169,7 +169,7 @@ main_menu_all.add(
 )
 
 # szd : enemies
-enemies = pygame.sprite.Group()
-for i in range(5):
-    fly = Fly()
-    enemies.add(fly)
+# enemies = pygame.sprite.Group()
+# for i in range(5):
+#     fly = Fly()
+#     enemies.add(fly)
