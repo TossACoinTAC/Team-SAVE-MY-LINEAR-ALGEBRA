@@ -3,6 +3,7 @@ from Statics import *
 from BGMPlayer import BgmPlayer
 from Rooms import *
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, spawn_pos: Vector2):  # spawn_pos: for transportation
         super().__init__()
@@ -27,19 +28,31 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = ScreenSettings.roomWidth
 
         self.walls = pygame.sprite.Group()
-        for room in rooms:    # get all walls
+        for room in rooms:  # get all walls
             self.walls = room.walls
         # Check collision with walls
         for wall in self.walls:
             if self.rect.colliderect(wall.rect):
                 # Determine the direction of collision and adjust position
-                if self.rect.right > wall.rect.left and self.rect.centerx < wall.rect.centerx:
+                if (
+                    self.rect.right > wall.rect.left
+                    and self.rect.centerx < wall.rect.centerx
+                ):
                     self.rect.right = wall.rect.left  # Hit wall on the left
-                elif self.rect.left < wall.rect.right and self.rect.centerx > wall.rect.centerx:
+                elif (
+                    self.rect.left < wall.rect.right
+                    and self.rect.centerx > wall.rect.centerx
+                ):
                     self.rect.left = wall.rect.right  # Hit wall on the right
-                if self.rect.bottom > wall.rect.top and self.rect.centery < wall.rect.centery:
+                if (
+                    self.rect.bottom > wall.rect.top
+                    and self.rect.centery < wall.rect.centery
+                ):
                     self.rect.bottom = wall.rect.top  # Hit wall on top
-                elif self.rect.top < wall.rect.bottom and self.rect.centery > wall.rect.centery:
+                elif (
+                    self.rect.top < wall.rect.bottom
+                    and self.rect.centery > wall.rect.centery
+                ):
                     self.rect.top = wall.rect.bottom  # Hit wall on bottom
 
     def move(self, keys):

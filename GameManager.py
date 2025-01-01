@@ -5,9 +5,8 @@ from Rooms import *
 from Attack import Bullet
 from BGMPlayer import *
 
-# from enemies import *
+from enemies import *
 from main_menu import *
-from NPC import *
 
 
 isaac = pygame.sprite.GroupSingle()
@@ -38,13 +37,6 @@ def tears_add(player: Player):
     tears.add(new_tear)
 
 
-NPCs = pygame.sprite.Group()
-npc = NPC()
-NPCs.add(npc)
-
-ChatBoxes = pygame.sprite.Group()
-chatbox = ChatBox()
-
 rooms = pygame.sprite.Group()
 start_room = StartRoom()  # final:rooms=Rooms.gen_rooms()
 rooms.add(start_room)  # final:rooms.add(rooms)
@@ -55,6 +47,7 @@ def get_keys():
 
 
 class ScreenRenderer:
+
     # Awake()
     def __init__(self):
         self.set_screen()
@@ -75,9 +68,11 @@ class ScreenRenderer:
     # Update()
     def update(self):
         self.update_clock()
-        self.update_bgm()
+        if self.playbgm:
+            self.bgm.update("MAIN_THEME", -1)
+            self.playbgm = False
         self.update_sprite(rooms)
-        self.update_sprite(isaac, get_keys(), rooms)
+        self.update_sprite(isaac, get_keys())
         tears_add(isaac.sprite)
         tears.update()
         tears.draw(self.screen)
@@ -86,17 +81,8 @@ class ScreenRenderer:
 
         # main_menu_all.update()
         # main_menu_all.draw(self.screen)
-        # enemies.update(tears)
-        # enemies.draw(self.screen)
-        NPCs.draw(self.screen)
-        for npc in NPCs:
-            if npc.hit_player(isaac.sprite):
-                npc.gen_chatbox(ChatBoxes, chatbox)
-                # 获取当前键盘状态
-                for event in pygame.event.get():
-                    if event.type == QUIT:
-                        chatbox.kill()
-                    chatbox.handle_input(event)
+        enemies.update()
+        enemies.draw(self.screen)
 
         pygame.display.flip()
 
@@ -104,14 +90,9 @@ class ScreenRenderer:
         self.clock = pygame.time.Clock()
         self.clock.tick(ScreenSettings.fps)
 
-    def update_sprite(self, sprite: sprite.Group, keys=None, rooms=None):
-        sprite.update(keys, rooms)
+    def update_sprite(self, sprite: sprite.Group, keys=None):
+        sprite.update(keys)
         sprite.draw(self.screen)
-
-    def update_bgm(self):
-        if self.playbgm:
-            self.bgm.update("MAIN_THEME", -1)
-            self.playbgm = False
 
 
 class EventListener:
@@ -138,21 +119,21 @@ main_menu_all.add(
     BackGround(),
     StartButton(),
     Static_state(
-        ImportedImages.Options,
+        ImportedImages.MainMenuImages.Options,
         MainMenuSettings.Options.x,
         MainMenuSettings.Options.y,
         MainMenuSettings.Options.MULTI,
         MainMenuSettings.Options.ALPHA,
     ),
     Static_state(
-        ImportedImages.Continues,
+        ImportedImages.MainMenuImages.Continues,
         MainMenuSettings.Continue.x,
         MainMenuSettings.Continue.y,
         MainMenuSettings.Continue.MULTI,
         MainMenuSettings.Continue.ALPHA,
     ),
     Dynamic_state(
-        ImportedImages.Draw,
+        ImportedImages.MainMenuImages.Draw,
         MainMenuSettings.Draw.frame_rects,
         MainMenuSettings.Draw.x,
         MainMenuSettings.Draw.y,
@@ -160,7 +141,7 @@ main_menu_all.add(
         MainMenuSettings.Draw.frames_duration,
     ),
     Dynamic_state(
-        ImportedImages.Bomb,
+        ImportedImages.MainMenuImages.Bomb,
         MainMenuSettings.Bomb.frame_rects,
         MainMenuSettings.Bomb.x,
         MainMenuSettings.Bomb.y,
@@ -170,7 +151,18 @@ main_menu_all.add(
 )
 
 # szd : enemies
-# enemies = pygame.sprite.Group()
-# for i in range(5):
-#     fly = Fly()
-#     enemies.add(fly)
+enemies = pygame.sprite.Group()
+for i in range(5):
+    Fly = Monster(
+    ImportedImages.Enemies.Fly,
+    ImportedImages.Enemies.Fly_die,
+    EnemiesSettings.Fly.frame_rects,
+    EnemiesSettings.Fly.frame_rects_die,
+    EnemiesSettings.Fly.x,
+    EnemiesSettings.Fly.y,
+    EnemiesSettings.Fly.MULTI,
+    EnemiesSettings.Fly.frames_duration,
+    EnemiesSettings.Fly.HP,
+    EnemiesSettings.Fly.speed
+)
+    enemies.add(Fly)
