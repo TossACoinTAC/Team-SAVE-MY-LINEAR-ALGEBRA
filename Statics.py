@@ -109,13 +109,6 @@ class ImportedImages:
     class DoorImages(Enum):
         OPEN_DOOR = "Src/Textures/Play/OpenDoor.png"
 
-    class ShitImages():
-        shit = ["Src/Textures/Play/poops/poops (1).png",
-                "Src/Textures/Play/poops/poops (2).png",
-                "Src/Textures/Play/poops/poops (3).png",
-                "Src/Textures/Play/poops/poops (4).png",
-                "Src/Textures/Play/poops/poops (5).png",]
-
     class MainMenuImages:
         BackGround = "Src/Textures/Title/Title1.png"
         StartButton = "Src/Textures/Title/Draw2.png"
@@ -125,7 +118,7 @@ class ImportedImages:
         Draw = "Src/Textures/Title/Draw1.png"
 
     class Enemies:
-        Fly = "data/textures/enemies/fly_ok.png"
+        Fly = "Src/Textures/Play/fly_ok.png"
         Fly_die = "data/textures/enemies/fly_rip.png"
 
 
