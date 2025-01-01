@@ -1,4 +1,5 @@
 import pygame
+import pygame.event as ev
 from Statics import *
 from tools import *
 
@@ -87,6 +88,8 @@ class StartButton(pygame.sprite.Sprite):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
             self.multi = 1.2 * MainMenuSettings.StartButton.MULTI
+            if pygame.mouse.get_pressed()[0]:
+                pygame.event.post(ev.Event(Events.MAIN_TO_STARTROOM))
         else:
             self.multi = MainMenuSettings.StartButton.MULTI
         # if MainMenuSettings.StartButton.x <= mouse_x and mouse_x <= MainMenuSettings.StartButton.x + 150 and MainMenuSettings.StartButton.y <= mouse_y and mouse_y <= MainMenuSettings.StartButton.y + 150:

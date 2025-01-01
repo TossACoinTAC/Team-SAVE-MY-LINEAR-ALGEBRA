@@ -9,7 +9,6 @@ def main():
 
     while True:
         game_manager.update()
-        pygame.display.flip()
 
 
 if __name__ == "__main__":

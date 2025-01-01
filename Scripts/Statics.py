@@ -2,6 +2,60 @@ import pygame
 from enum import Enum
 
 
+class Events:
+    MAIN_TO_STARTROOM = pygame.USEREVENT + 1
+
+
+class Scenes(Enum):
+    MAIN_MENU = 0
+    START_ROOM = 1
+
+
+# Files
+class ImportedImages:
+    icon = "Src/icons/64x64.ico"
+
+    # Player
+    playerImage = "Src/Textures/Play/Issac_Loot.png"
+    tearImage = "Src/Textures/Play/Tear.png"
+
+    # Rooms
+    class RoomImages(Enum):
+        START_ROOM = "Src/Textures/Play/start_000.png"
+        COMMON_ROOM = "Src/Textures/Play/room_001.png"
+
+    class DoorImages(Enum):
+        OPEN_DOOR = "Src/Textures/Play/OpenDoor.png"
+
+    class ShitImages(Enum):
+        TYPE_0 = "Src/Textures/Play/poops/poops (1).png"
+        TYPE_1 = "Src/Textures/Play/poops/poops (2).png"
+        TYPE_2 = "Src/Textures/Play/poops/poops (3).png"
+        TYPE_3 = "Src/Textures/Play/poops/poops (4).png"
+        TYPE_4 = "Src/Textures/Play/poops/poops (5).png"
+
+    # MainMenu
+    BackGround = "Src/Textures/Title/Title1.png"
+    StartButton = "Src/Textures/Title/Draw2.png"
+    Options = "Src/Textures/Title/Options.png"
+    Continues = "Src/Textures/Title/Continue.png"
+    Bomb = "Src/Textures/Play/pickup_016_bomb.png"
+    Draw = "Src/Textures/Title/Draw1.png"
+
+    # Enemies
+    Fly = "data/textures/enemies/fly_ok.png"
+    Fly_die = "data/textures/enemies/fly_rip.png"
+
+    # Friendly_NPCs
+    NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
+    chatboxImage = "Src/Textures/Play/Issac_Loot.png"
+
+
+class ImportedBGM:
+    bgmpath = ["Src/sounds/main_theme.mp3", "Src/sounds/isaac_hurt1.mp3"]
+
+
+# Settings
 class ScreenSettings:
     screenWidth = 1280
     screenHeight = 720
@@ -99,46 +153,3 @@ class EnemiesSettings:
             (64, 126, 64, 63),
             (128, 126, 64, 63),
         ]
-
-
-class ImportedImages:
-    icon = "Src/icons/64x64.ico"
-
-    # Player
-    playerImage = "Src/Textures/Play/Issac_Loot.png"
-    tearImage = "Src/Textures/Play/Tear.png"
-
-    # Rooms
-    class RoomImages(Enum):
-        START_ROOM = "Src/Textures/Play/start_000.png"
-        COMMON_ROOM = "Src/Textures/Play/room_001.png"
-
-    class DoorImages(Enum):
-        OPEN_DOOR = "Src/Textures/Play/OpenDoor.png"
-
-    class ShitImages(Enum):
-        TYPE_0 = "Src/Textures/Play/poops/poops (1).png"
-        TYPE_1 = "Src/Textures/Play/poops/poops (2).png"
-        TYPE_2 = "Src/Textures/Play/poops/poops (3).png"
-        TYPE_3 = "Src/Textures/Play/poops/poops (4).png"
-        TYPE_4 = "Src/Textures/Play/poops/poops (5).png"
-
-    # MainMenu
-    BackGround = "Src/Textures/Title/Title1.png"
-    StartButton = "Src/Textures/Title/Draw2.png"
-    Options = "Src/Textures/Title/Options.png"
-    Continues = "Src/Textures/Title/Continue.png"
-    Bomb = "Src/Textures/Play/pickup_016_bomb.png"
-    Draw = "Src/Textures/Title/Draw1.png"
-
-    # Enemies
-    Fly = "data/textures/enemies/fly_ok.png"
-    Fly_die = "data/textures/enemies/fly_rip.png"
-
-    # Friendly_NPCs
-    NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
-    chatboxImage = "Src/Textures/Play/Issac_Loot.png"
-
-
-class ImportedBGM:
-    bgmpath = ["Src/sounds/main_theme.mp3", "Src/sounds/isaac_hurt1.mp3"]
