@@ -7,6 +7,7 @@ from BGMPlayer import *
 
 from enemies import *
 from main_menu import *
+from NPC import *
 
 
 isaac = pygame.sprite.GroupSingle()
@@ -36,6 +37,12 @@ def tears_add(player: Player):
     new_tear.first_update(get_keys())
     tears.add(new_tear)
 
+NPCs = pygame.sprite.Group()
+npc = NPC()
+NPCs.add(npc)
+
+ChatBoxes = pygame.sprite.Group()
+chatbox = ChatBox()
 
 rooms = pygame.sprite.Group()
 start_room = StartRoom()  # final:rooms=Rooms.gen_rooms()
@@ -83,6 +90,17 @@ class ScreenRenderer:
         #main_menu_all.draw(self.screen)
         enemies.update(tears)
         enemies.draw(self.screen)
+        NPCs.draw(self.screen)
+        for npc in NPCs:
+            if npc.hit_player(isaac.sprite):
+                npc.gen_chatbox(ChatBoxes, chatbox)
+                # 获取当前键盘状态
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        chatbox.kill()
+                    chatbox.handle_input(event)
+
+
 
         pygame.display.flip()
 
