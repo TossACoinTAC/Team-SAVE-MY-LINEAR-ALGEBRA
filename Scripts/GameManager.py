@@ -21,7 +21,6 @@ def get_keys():
 
 
 class ScreenRenderer:
-
     # Awake()
     def __init__(self):
         self.set_screen()
@@ -42,11 +41,9 @@ class ScreenRenderer:
     # Update()
     def update(self):
         self.update_clock()
-        if self.playbgm:
-            self.bgm.update("MAIN_THEME", -1)
-            self.playbgm = False
         self.update_sprite(rooms)
         self.update_sprite(isaac, get_keys())
+        self.update_bgm()
         pygame.display.flip()
 
     def update_clock(self):
@@ -56,6 +53,11 @@ class ScreenRenderer:
     def update_sprite(self, sprite: sprite.Group, keys=None):
         sprite.update(keys)
         sprite.draw(self.screen)
+
+    def update_bgm(self):
+        if self.playbgm:
+            self.bgm.update("MAIN_THEME", -1)
+            self.playbgm = False
 
 
 class EventListener:
