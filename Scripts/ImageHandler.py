@@ -2,15 +2,16 @@ import pygame
 
 pygame.init()
 
-room_name = "catacombs"
-
-image = pygame.image.load(f"data/textures/room/{room_name}.png")
-
-# Get the dimensions of the full image
-image_width, image_height = image.get_size()
-
 
 def HandleRoomImage():
+
+    room_name = "catacombs"
+
+    image = pygame.image.load(f"data/textures/room/{room_name}.png")
+
+    # Get the dimensions of the full image
+    image_width, image_height = image.get_size()
+
     # Calculate the size of each tile
     tile_width = image_width // 2
     tile_height = image_height // 2
@@ -50,7 +51,33 @@ def HandleRoomImage():
     pygame.image.save(room, f"Src/Textures/Map/{room_name}.png")
 
 
-HandleRoomImage()
+def HandleDoorImage():
 
-# Quit Pygame
+    door_image = pygame.image.load("data/textures/room/doors.png")
+
+    door_width, door_height = door_image.get_size()
+
+    for i in range(10):
+        pass
+
+    door_closed_0 = door_image.subsurface((0, 0, door_width // 4, door_height))
+    door_closed_1 = door_image.subsurface(
+        (door_width // 4, 0, door_width // 4, door_height)
+    )
+    door_closed_2 = door_image.subsurface(
+        (door_width // 2, 0, door_width // 4, door_height)
+    )
+    door_open = door_image.subsurface(
+        (3 * door_width // 4, 0, door_width // 4, door_height)
+    )
+
+    pygame.image.save(door_open, "Src/Textures/Map/OpenDoor.png")
+    pygame.image.save(door_closed_0, "Src/Textures/Map/ClosedDoor0.png")
+    pygame.image.save(door_closed_1, "Src/Textures/Map/ClosedDoor1.png")
+    pygame.image.save(door_closed_2, "Src/Textures/Map/ClosedDoor2.png")
+
+
+# HandleRoomImage()
+# HandleDoorImage()
+
 pygame.quit()

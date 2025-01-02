@@ -88,10 +88,13 @@ class SingleRoom(pygame.sprite.Sprite):
             for i in range(4):
                 for j in range(4):
                     wall = Shit()
-                    wall.rect.center = (start_x + i * wall_width, start_y + j * wall_height)
+                    wall.rect.center = (
+                        start_x + i * wall_width,
+                        start_y + j * wall_height,
+                    )
                     self.walls.add(wall)
         self.walls.draw(self.image)  # draw on the Room's frame
-    
+
     def update_walls(self, bullet):
         for wall in self.walls:
             if isinstance(wall, Shit):
@@ -137,17 +140,19 @@ class Shit(Wall):
                 self.kill()
             else:
                 new_image_key = f"TYPE_{int((50 - self.HP)/10)}"
-                #pygame.draw.rect(img, (0, 0, 0, 0), self.rect)  # 用黑色覆盖旧位置
-                self.image = pygame.image.load(ImportedImages.ShitImages[new_image_key].value)
+                # pygame.draw.rect(img, (0, 0, 0, 0), self.rect)  # 用黑色覆盖旧位置
+                self.image = pygame.image.load(
+                    ImportedImages.ShitImages[new_image_key].value
+                )
                 self.image = pygame.transform.scale(
-                self.image,
-                (PlayerSettings.playerWidth * 0.8, PlayerSettings.playerHeight * 0.8),
+                    self.image,
+                    (
+                        PlayerSettings.playerWidth * 0.8,
+                        PlayerSettings.playerHeight * 0.8,
+                    ),
                 )
                 self.rect = self.image.get_rect(center=self.rect.center)
-       
-        
 
-        
 
 class StartRoom(SingleRoom):
     def __init__(self):
