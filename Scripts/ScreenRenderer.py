@@ -95,15 +95,40 @@ class ScreenRenderer:
                 tears.draw(self.screen)
                 enemies.update(tears)
                 enemies.draw(self.screen)
+                for room in rooms:
+                    room.update_walls(tears)
                 NPCs.draw(self.screen)
                 for npc in NPCs:
                     if npc.hit_player(isaac.sprite):
                         npc.gen_chatbox(ChatBoxes, chatbox)
+                '''
+                current_keys = get_keys()
+                last_keys = [0] * 323  # 初始化 last_keys 为全 0 列表
+
+                # 检测按键变化，模拟 KEYDOWN 和 KEYUP 事件
+                for key in range(pygame.K_ESCAPE, pygame.K_z + 1):  # 检查从 ESC 到 Z 的键
+                    if current_keys[key] and not last_keys[key]:  # 检测按下事件
+                        pygame.event.post(pygame.event.Event(KEYDOWN, {'key': key}))
+                    elif not current_keys[key] and last_keys[key]:  # 检测松开事件
+                        pygame.event.post(pygame.event.Event(KEYUP, {'key': key}))
+
+                # 更新 last_keys 为当前键盘状态
+                last_keys = current_keys
+
+                #print(pygame.event.get())
+                ''' 
                 # 获取当前键盘状态
                 for event in pygame.event.get():
-                    if event.type == QUIT:
-                        chatbox.kill()
+                    #print("AAA")
+                    if ChatBoxes.empty() == False:
+                        #print("BBB")
+                        if event.type == QUIT:
+                            chatbox.kill()
                         chatbox.handle_input(event)
+                    else:
+                        if event.type == QUIT:
+                            pygame.quit()
+                            exit()
 
 
 # szd: enemies
@@ -117,8 +142,34 @@ main_menu_all = pygame.sprite.Group()
 main_menu_all.add(
     BackGround(),
     StartButton(),
-    Bomb(),
-    Draw(),
-    Continue(),
-    Options()
+    Static_state(
+        ImportedImages.Options,
+        MainMenuSettings.Options.x,
+        MainMenuSettings.Options.y,
+        MainMenuSettings.Options.MULTI,
+        MainMenuSettings.Options.ALPHA,
+    ),
+    Static_state(
+        ImportedImages.Continues,
+        MainMenuSettings.Continue.x,
+        MainMenuSettings.Continue.y,
+        MainMenuSettings.Continue.MULTI,
+        MainMenuSettings.Continue.ALPHA,
+    ),
+    Dynamic_state(
+        ImportedImages.Draw,
+        MainMenuSettings.Draw.frame_rects,
+        MainMenuSettings.Draw.x,
+        MainMenuSettings.Draw.y,
+        MainMenuSettings.Draw.MULTI,
+        MainMenuSettings.Draw.frames_duration,
+    ),
+    Dynamic_state(
+        ImportedImages.Bomb,
+        MainMenuSettings.Bomb.frame_rects,
+        MainMenuSettings.Bomb.x,
+        MainMenuSettings.Bomb.y,
+        MainMenuSettings.Bomb.MULTI,
+        MainMenuSettings.Bomb.frames_duration,
+    ),
 )
