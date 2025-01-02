@@ -30,30 +30,23 @@ class Player(pygame.sprite.Sprite):
         self.walls = pygame.sprite.Group()
         for room in rooms:  # get all walls
             self.walls = room.walls
+
         # Check collision with walls
         for wall in self.walls:
             if self.rect.colliderect(wall.rect):
-                # Determine the direction of collision and adjust position
-                if (
-                    self.rect.right > wall.rect.left
-                    and self.rect.centerx < wall.rect.centerx
-                ):
-                    self.rect.right = wall.rect.left  # Hit wall on the left
-                elif (
-                    self.rect.left < wall.rect.right
-                    and self.rect.centerx > wall.rect.centerx
-                ):
-                    self.rect.left = wall.rect.right  # Hit wall on the right
-                if (
-                    self.rect.bottom > wall.rect.top
-                    and self.rect.centery < wall.rect.centery
-                ):
-                    self.rect.bottom = wall.rect.top  # Hit wall on top
-                elif (
-                    self.rect.top < wall.rect.bottom
-                    and self.rect.centery > wall.rect.centery
-                ):
-                    self.rect.top = wall.rect.bottom  # Hit wall on bottom
+                dx = self.rect.centerx - wall.rect.centerx
+                dy = self.rect.centery - wall.rect.centery
+                if abs(dx) > abs(dy):  # Horizontal collision
+                    if dx > 0:
+                        self.rect.left = wall.rect.right  # Hit wall on the right
+                    else:
+                        self.rect.right = wall.rect.left  # Hit wall on the left
+                else:  # Vertical collision
+                    if dy > 0:
+                        self.rect.top = wall.rect.bottom  # Hit wall on the bottom
+                    else:
+                        self.rect.bottom = wall.rect.top  # Hit wall on the top
+                break
 
     def move(self, keys):
         if keys[pygame.K_w] or keys[pygame.K_a] or keys[pygame.K_s] or keys[pygame.K_d]:
