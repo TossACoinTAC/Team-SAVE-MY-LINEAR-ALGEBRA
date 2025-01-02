@@ -100,10 +100,10 @@ class ScreenRenderer:
                     if npc.hit_player(isaac.sprite):
                         npc.gen_chatbox(ChatBoxes, chatbox)
                 # 获取当前键盘状态
-                for event in pygame.event.get():
-                    if event.type == QUIT:
-                        chatbox.kill()
-                        chatbox.handle_input(event)
+                # for event in pygame.event.get():
+                #     if event.type == QUIT:
+                #         chatbox.kill()
+                #         chatbox.handle_input(event)
 
 
 # szd: enemies
