@@ -1,41 +1,61 @@
 import pygame
+import time
 
 
-class MySprite(pygame.sprite.Sprite):
-    def __init__(self, image_path):
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
         super().__init__()
-        self.original_image = pygame.image.load(image_path).convert_alpha()
-        self.image = self.original_image
+        self.image = pygame.Surface((50, 50))
+        self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
-        # 用于缓存不同放大比例下的图像
-        self.scaled_images = {}
-        self.scale_factor = 1
+        self.rect.center = (400, 300)
+        self.bullets = pygame.sprite.Group()
+        self.last_shot_time = 0
+        self.attack_speed = 0.5  # 每秒发射2发子弹（攻击间隔为0.5秒）
 
-    def scale(self, new_scale_factor):
-        if new_scale_factor == self.scale_factor:
-            return
-        self.scale_factor = new_scale_factor
-        if new_scale_factor in self.scaled_images:
-            self.image = self.scaled_images[new_scale_factor]
-        else:
-            new_width = int(self.original_image.get_width() * new_scale_factor)
-            new_height = int(self.original_image.get_height() * new_scale_factor)
-            new_image = pygame.transform.scale(self.original_image, (new_width, new_height))
-            self.scaled_images[new_scale_factor] = new_image
-            self.image = new_image
-        # 调整位置，以中心坐标放大
-        original_center = self.rect.center
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            self.shoot()
+
+    def shoot(self):
+        current_time = time.time()
+        if current_time - self.last_shot_time >= self.attack_speed:
+            bullet = Bullet(self.rect.centerx, self.rect.top)
+            self.bullets.add(bullet)
+            self.last_shot_time = current_time
+
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface((10, 10))
+        self.image.fill((0, 0, 255))
         self.rect = self.image.get_rect()
-        self.rect.center = original_center
+        self.rect.centerx = x
+        self.rect.centery = y
+        self.speed = 5
+
+    def update(self):
+        self.rect.y -= self.speed
+        if self.rect.bottom < 0:
+            self.kill()
 
 
-# Get the center of the image
-center_x, center_y = self.image.get_rect().center
-# Scale the image
-scaled_image = pygame.transform.scale(self.image, (new_width, new_height))
-
-# Get the new rect of the scaled image
-scaled_rect = scaled_image.get_rect()
-
-# Set the center of the new rect to the original image's center
-scaled_rect.center = (center_x, center_y)
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+player = Player()
+clock = pygame.time.Clock()
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    player.update()
+    player.bullets.update()
+    screen.fill((0, 0, 0))
+    screen.blit(player.image, player.rect)
+    player.bullets.draw(screen)
+    pygame.display.flip()
+    clock.tick(60)
+pygame.quit()

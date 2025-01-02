@@ -5,7 +5,7 @@ import pygame
 from pygame.math import Vector2
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, spawn_pos: Vector2):
+    def __init__(self,  spawn_pos: Vector2):
         super().__init__()
         self.image = pygame.image.load(ImportedImages.tearImage)
         self.image = pygame.transform.scale(

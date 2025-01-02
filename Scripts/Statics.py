@@ -75,6 +75,7 @@ class PlayerSettings:
     playerWidth = 65
     playerHeight = 90
     playerSpeed = 3
+    PlayerAttackSpeed = 0.5
 
 
 class TearSettings:
