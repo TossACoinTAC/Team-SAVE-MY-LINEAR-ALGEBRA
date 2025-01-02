@@ -76,29 +76,27 @@ class SingleRoom(pygame.sprite.Sprite):
                 self.walls.add(wall)
 
         elif mode == 3:
-            # 模式三：在房间的中心生成 5% 的墙体
+            # 模式三：在房间的中心生成 4x4 的墙体
             center_x = (ScreenSettings.marginWidth + ScreenSettings.roomWidth) // 2
             center_y = (ScreenSettings.marginHeight + ScreenSettings.roomHeight) // 2
-            area_width = (ScreenSettings.roomWidth - ScreenSettings.marginWidth) * 0.1
-            area_height = (
-                ScreenSettings.roomHeight - ScreenSettings.marginHeight
-            ) * 0.1
+            wall_width = Shit().image.get_width()
+            wall_height = Shit().image.get_height()
 
-            num_walls = max(
-                1, int(area_width * area_height * 0.05)
-            )  # 至少生成 1 个墙体
-            for _ in range(num_walls):
-                randx = random.randint(
-                    center_x - int(area_width // 2), center_x + int(area_width // 2)
-                )
-                randy = random.randint(
-                    center_y - int(area_height // 2), center_y + int(area_height // 2)
-                )
-                wall = Shit()
-                wall.rect.center = (randx, randy)
-                self.walls.add(wall)
+            start_x = center_x - (wall_width * 2.5)
+            start_y = center_y - (wall_height * 2.5)
 
+            for i in range(4):
+                for j in range(4):
+                    wall = Shit()
+                    wall.rect.center = (start_x + i * wall_width, start_y + j * wall_height)
+                    self.walls.add(wall)
         self.walls.draw(self.image)  # draw on the Room's frame
+    
+    def update_walls(self, bullet):
+        for wall in self.walls:
+            if isinstance(wall, Shit):
+                wall.destroyed(bullet, self.image)
+        self.walls.draw(self.image)
 
 
 class Door(pygame.sprite.Sprite):
@@ -128,9 +126,28 @@ class Wall(pygame.sprite.Sprite):
 
 class Shit(Wall):
     def __init__(self):
-        shit_image = random.choice(list(ImportedImages.ShitImages)).value
+        shit_image = ImportedImages.ShitImages["TYPE_0"].value
+        self.HP = 25
         super().__init__(shit_image)
 
+    def destroyed(self, bullet, img):
+        if pygame.sprite.spritecollide(self, bullet, True):
+            self.HP -= 1
+            if self.HP <= 0:
+                self.kill()
+            else:
+                new_image_key = f"TYPE_{int((50 - self.HP)/10)}"
+                #pygame.draw.rect(img, (0, 0, 0, 0), self.rect)  # 用黑色覆盖旧位置
+                self.image = pygame.image.load(ImportedImages.ShitImages[new_image_key].value)
+                self.image = pygame.transform.scale(
+                self.image,
+                (PlayerSettings.playerWidth * 0.8, PlayerSettings.playerHeight * 0.8),
+                )
+                self.rect = self.image.get_rect(center=self.rect.center)
+       
+        
+
+        
 
 class StartRoom(SingleRoom):
     def __init__(self):
