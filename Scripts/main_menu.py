@@ -74,28 +74,35 @@ class StartButton(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load(ImportedImages.StartButton)
+        self.rect = self.image.get_rect()
         self.image.set_alpha(MainMenuSettings.StartButton.ALPHA)
         self.rect = self.image.get_rect()
         self.rect.x = MainMenuSettings.StartButton.x
         self.rect.y = MainMenuSettings.StartButton.y
         self.multi = MainMenuSettings.StartButton.MULTI
+        self.image = pygame.transform.smoothscale(self.image, (self.rect.width * self.multi,
+                                                         self.rect.height * self.multi))
+        self.scaled_images = {1 : self.image,
+        1.2 : pygame.transform.smoothscale(self.image, (self.rect.width * 3.6, self.rect.height * 3.6))}
+
+       
+
 
     def update(self):
-        self.image = pygame.transform.scale(
-            self.image,
-            (int(self.rect.width * self.multi), int(self.rect.height * self.multi)),
-        )
-        mouse_pos = pygame.mouse.get_pos()
-        if self.rect.collidepoint(mouse_pos):
-            self.multi = 1.2 * MainMenuSettings.StartButton.MULTI
+        
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if self.rect.left <= mouse_x <= self.rect.right*1.5 and self.rect.top <= mouse_y <= self.rect.bottom*1.2:
+            self.image = self.scaled_images[1.2]
+            center_x, center_y = self.scaled_images[1].get_rect().center
+            # Get the new rect of the scaled image
+            scaled_rect = self.image.get_rect()
+            # Set the center of the new rect to the original image's center
+            scaled_rect.center = (center_x, center_y)
+            
             if pygame.mouse.get_pressed()[0]:
                 pygame.event.post(ev.Event(Events.MAIN_TO_STARTROOM))
         else:
-            self.multi = MainMenuSettings.StartButton.MULTI
-        # if MainMenuSettings.StartButton.x <= mouse_x and mouse_x <= MainMenuSettings.StartButton.x + 150 and MainMenuSettings.StartButton.y <= mouse_y and mouse_y <= MainMenuSettings.StartButton.y + 150:
-        #     self.multi = 1.2 * MainMenuSettings.StartButton.MULTI
-        # else:
-        #     self.multi = MainMenuSettings.StartButton.MULTI
+            self.image = self.scaled_images[1]
 
 class Options(Static_state):
     def __init__(self):
