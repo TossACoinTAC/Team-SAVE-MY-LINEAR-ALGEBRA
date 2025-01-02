@@ -96,3 +96,45 @@ class StartButton(pygame.sprite.Sprite):
         #     self.multi = 1.2 * MainMenuSettings.StartButton.MULTI
         # else:
         #     self.multi = MainMenuSettings.StartButton.MULTI
+
+class Options(Static_state):
+    def __init__(self):
+        super().__init__(
+            ImportedImages.Options,
+            MainMenuSettings.Options.x,
+            MainMenuSettings.Options.y,
+            MainMenuSettings.Options.MULTI,
+            MainMenuSettings.Options.ALPHA
+        )
+
+class Continue(Static_state):
+    def __init__(self):
+        super().__init__(
+            ImportedImages.Continues,
+            MainMenuSettings.Continue.x,
+            MainMenuSettings.Continue.y,
+            MainMenuSettings.Continue.MULTI,
+            MainMenuSettings.Continue.ALPHA
+        )
+
+class Draw(Dynamic_state):
+    def __init__(self):
+        super().__init__(
+            ImportedImages.Draw,
+            MainMenuSettings.Draw.frame_rects,
+            MainMenuSettings.Draw.x,
+            MainMenuSettings.Draw.y,
+            MainMenuSettings.Draw.MULTI,
+            MainMenuSettings.Draw.frames_duration
+        )
+
+class Bomb(Dynamic_state):
+    def __init__(self):
+        super().__init__(
+            ImportedImages.Bomb,
+            MainMenuSettings.Bomb.frame_rects,
+            MainMenuSettings.Bomb.x,
+            MainMenuSettings.Bomb.y,
+            MainMenuSettings.Bomb.MULTI,
+            MainMenuSettings.Bomb.frames_duration
+        )

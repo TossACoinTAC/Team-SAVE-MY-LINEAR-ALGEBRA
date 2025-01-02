@@ -117,34 +117,8 @@ main_menu_all = pygame.sprite.Group()
 main_menu_all.add(
     BackGround(),
     StartButton(),
-    Static_state(
-        ImportedImages.Options,
-        MainMenuSettings.Options.x,
-        MainMenuSettings.Options.y,
-        MainMenuSettings.Options.MULTI,
-        MainMenuSettings.Options.ALPHA,
-    ),
-    Static_state(
-        ImportedImages.Continues,
-        MainMenuSettings.Continue.x,
-        MainMenuSettings.Continue.y,
-        MainMenuSettings.Continue.MULTI,
-        MainMenuSettings.Continue.ALPHA,
-    ),
-    Dynamic_state(
-        ImportedImages.Draw,
-        MainMenuSettings.Draw.frame_rects,
-        MainMenuSettings.Draw.x,
-        MainMenuSettings.Draw.y,
-        MainMenuSettings.Draw.MULTI,
-        MainMenuSettings.Draw.frames_duration,
-    ),
-    Dynamic_state(
-        ImportedImages.Bomb,
-        MainMenuSettings.Bomb.frame_rects,
-        MainMenuSettings.Bomb.x,
-        MainMenuSettings.Bomb.y,
-        MainMenuSettings.Bomb.MULTI,
-        MainMenuSettings.Bomb.frames_duration,
-    ),
+    Bomb(),
+    Draw(),
+    Continue(),
+    Options()
 )
