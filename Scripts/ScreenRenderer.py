@@ -6,6 +6,7 @@ from Attack import Bullet
 from enemies import *
 from NPC import *
 from main_menu import *
+import time
 
 
 isaac = pygame.sprite.GroupSingle()
@@ -22,22 +23,28 @@ def get_keys():
     return pygame.key.get_pressed()
 
 
+last_shoot_time = 0
 def tears_add(player: Player):
-    if (
-        not get_keys()[pygame.K_UP]
-        and not get_keys()[pygame.K_DOWN]
-        and not get_keys()[pygame.K_LEFT]
-        and not get_keys()[pygame.K_RIGHT]
-    ):
-        return
-    new_tear = Bullet(
-        spawn_pos=Vector2(
-            player.rect.x + PlayerSettings.playerWidth * 0.5,
-            player.rect.y + PlayerSettings.playerHeight * 0.5,
+    global last_shoot_time 
+    current_time = pygame.time.get_ticks()
+    if current_time - last_shoot_time >= PlayerSettings.PlayerAttackSpeed * 1000:
+        if (
+            not get_keys()[pygame.K_UP]
+            and not get_keys()[pygame.K_DOWN]
+            and not get_keys()[pygame.K_LEFT]
+            and not get_keys()[pygame.K_RIGHT]
+        ):
+            return
+        new_tear = Bullet(
+            spawn_pos=Vector2(
+                player.rect.x + PlayerSettings.playerWidth * 0.5,
+                player.rect.y + PlayerSettings.playerHeight * 0.5,
+            )
         )
-    )
-    new_tear.first_update(get_keys())
-    tears.add(new_tear)
+        new_tear.first_update(get_keys())
+        tears.add(new_tear)
+        last_shoot_time = current_time
+
 
 
 NPCs = pygame.sprite.Group()
@@ -82,6 +89,7 @@ class ScreenRenderer:
         sprite.update(keys, rooms)
         sprite.draw(self.screen)
 
+
     def update_scene(self, active_scene: Scenes):
         match active_scene:
             case Scenes.MAIN_MENU:
@@ -101,11 +109,29 @@ class ScreenRenderer:
                 for npc in NPCs:
                     if npc.hit_player(isaac.sprite):
                         npc.gen_chatbox(ChatBoxes, chatbox)
+                    else:
+                        ChatBoxes.empty()
+                '''
+                current_keys = get_keys()
+                last_keys = [0] * 323  # 初始化 last_keys 为全 0 列表
 
+                # 检测按键变化，模拟 KEYDOWN 和 KEYUP 事件
+                for key in range(pygame.K_ESCAPE, pygame.K_z + 1):  # 检查从 ESC 到 Z 的键
+                    if current_keys[key] and not last_keys[key]:  # 检测按下事件
+                        pygame.event.post(pygame.event.Event(KEYDOWN, {'key': key}))
+                    elif not current_keys[key] and last_keys[key]:  # 检测松开事件
+                        pygame.event.post(pygame.event.Event(KEYUP, {'key': key}))
+
+                # 更新 last_keys 为当前键盘状态
+                last_keys = current_keys
+
+                #print(pygame.event.get())
+                ''' 
                 # 获取当前键盘状态
                 for event in pygame.event.get():
                     #print("AAA")
-                    if ChatBoxes.has_internal(chatbox) == True:
+                    if ChatBoxes.has_internal(chatbox):
+                        #print("BBB")
                         if event.type == QUIT:
                             chatbox.kill()
                         chatbox.handle_input(event)
