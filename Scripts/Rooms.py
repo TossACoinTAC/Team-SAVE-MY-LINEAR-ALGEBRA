@@ -26,7 +26,7 @@ class SingleRoom(pygame.sprite.Sprite):
         self.doors = pygame.sprite.Group()
         door_locations = [
             (self.rect.width / 2, ScreenSettings.marginHeight),  # top
-            (ScreenSettings.marginWidth - 20, self.rect.height / 2),  # left
+            (ScreenSettings.marginWidth - 40, self.rect.height / 2),  # left
             (self.rect.width / 2, ScreenSettings.roomHeight),  # bottom
             (ScreenSettings.roomWidth, self.rect.height / 2),  # right
         ]
@@ -152,3 +152,8 @@ class Shit(Wall):
 class StartRoom(SingleRoom):
     def __init__(self):
         super().__init__(ImportedImages.RoomImages.START_ROOM.value)
+
+
+class Shop(SingleRoom):
+    def __init__(self):
+        super().__init__(ImportedImages.RoomImages.SHOP.value)

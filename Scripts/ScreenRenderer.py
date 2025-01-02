@@ -109,7 +109,7 @@ class ScreenRenderer:
                 for npc in NPCs:
                     if npc.hit_player(isaac.sprite):
                         npc.gen_chatbox(ChatBoxes, chatbox)
-                '''
+                """
                 current_keys = get_keys()
                 last_keys = [0] * 323  # 初始化 last_keys 为全 0 列表
 
@@ -124,12 +124,12 @@ class ScreenRenderer:
                 last_keys = current_keys
 
                 #print(pygame.event.get())
-                ''' 
+                """
                 # 获取当前键盘状态
                 for event in pygame.event.get():
-                    #print("AAA")
+                    # print("AAA")
                     if ChatBoxes.empty() == False:
-                        #print("BBB")
+                        # print("BBB")
                         if event.type == QUIT:
                             chatbox.kill()
                         chatbox.handle_input(event)

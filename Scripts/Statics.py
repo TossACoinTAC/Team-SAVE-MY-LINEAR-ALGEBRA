@@ -21,11 +21,17 @@ class ImportedImages:
 
     # Rooms
     class RoomImages(Enum):
-        START_ROOM = "Src/Textures/Play/start_000.png"
-        COMMON_ROOM = "Src/Textures/Play/room_001.png"
+        START_ROOM = "Src/Textures/Map/start_000.png"
+        COMMON_ROOM = "Src/Textures/Map/room_000.png"
+        SHOP = "Src/Textures/Map/shop.png"
+        SECRET = "Src/Textures/Map/secret.png"
+        TREASURE = "Src/Textures/Map/treasure.png"
+        DEPTH = "Src/Textures/Map/depth.png"
+        CATACOMB = "Src/Textures/Map/catacomb.png"
+        BLUEWOMB = "Src/Textures/Map/bluewomb.png"
 
     class DoorImages(Enum):
-        OPEN_DOOR = "Src/Textures/Play/OpenDoor.png"
+        OPEN_DOOR = "Src/Textures/Map/OpenDoor.png"
 
     class ShitImages(Enum):
         TYPE_0 = "Src/Textures/Play/poops/poops (1).png"
