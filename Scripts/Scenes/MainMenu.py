@@ -1,10 +1,49 @@
 import pygame
 import pygame.event as ev
 from Statics import *
-from tools import *
+from TmpTools.tools import *
 
 
-class Static_state(pygame.sprite.Sprite):
+class MainMenu(pygame.sprite.Group):
+    def __init__(self):
+        super().__init__()
+        self.add(
+            BackGround(),
+            StartButton(),
+            StaticState(
+                ImportedImages.Options,
+                MainMenuSettings.Options.x,
+                MainMenuSettings.Options.y,
+                MainMenuSettings.Options.MULTI,
+                MainMenuSettings.Options.ALPHA,
+            ),
+            StaticState(
+                ImportedImages.Continues,
+                MainMenuSettings.Continue.x,
+                MainMenuSettings.Continue.y,
+                MainMenuSettings.Continue.MULTI,
+                MainMenuSettings.Continue.ALPHA,
+            ),
+            DynamicState(
+                ImportedImages.Draw,
+                MainMenuSettings.Draw.frame_rects,
+                MainMenuSettings.Draw.x,
+                MainMenuSettings.Draw.y,
+                MainMenuSettings.Draw.MULTI,
+                MainMenuSettings.Draw.frames_duration,
+            ),
+            DynamicState(
+                ImportedImages.Bomb,
+                MainMenuSettings.Bomb.frame_rects,
+                MainMenuSettings.Bomb.x,
+                MainMenuSettings.Bomb.y,
+                MainMenuSettings.Bomb.MULTI,
+                MainMenuSettings.Bomb.frames_duration,
+            ),
+        )
+
+
+class StaticState(pygame.sprite.Sprite):
     def __init__(self, importImage, x, y, MULTI, ALPHA):
         super().__init__()
         self.image = pygame.image.load(importImage)
@@ -20,7 +59,7 @@ class Static_state(pygame.sprite.Sprite):
         pass
 
 
-class Dynamic_state(pygame.sprite.Sprite):
+class DynamicState(pygame.sprite.Sprite):
     def __init__(self, importImage, frame_rects, x, y, MULTI, frame_duration):
         super().__init__()
 
@@ -40,9 +79,6 @@ class Dynamic_state(pygame.sprite.Sprite):
         sheet = pygame.image.load(importImage)
         for frame_rect in frame_rects:
             self.frames.append(get_images(sheet, *frame_rect, (0, 0, 0), MULTI))
-
-    def update(self):
-        pass
 
     def update(self):
         self.current_time = pygame.time.get_ticks()
@@ -110,7 +146,7 @@ class StartButton(pygame.sprite.Sprite):
             self.image = self.scaled_images[1]
 
 
-class Options(Static_state):
+class Options(StaticState):
     def __init__(self):
         super().__init__(
             ImportedImages.Options,
@@ -121,7 +157,7 @@ class Options(Static_state):
         )
 
 
-class Continue(Static_state):
+class Continue(StaticState):
     def __init__(self):
         super().__init__(
             ImportedImages.Continues,
@@ -132,7 +168,7 @@ class Continue(Static_state):
         )
 
 
-class Draw(Dynamic_state):
+class Draw(DynamicState):
     def __init__(self):
         super().__init__(
             ImportedImages.Draw,
@@ -144,7 +180,7 @@ class Draw(Dynamic_state):
         )
 
 
-class Bomb(Dynamic_state):
+class Bomb(DynamicState):
     def __init__(self):
         super().__init__(
             ImportedImages.Bomb,

@@ -1,6 +1,6 @@
 import pygame
-from EventListener import EventListener
-from ScreenRenderer import ScreenRenderer
+from GameManagers.EventListener import EventListener
+from GameManagers.ScreenRenderer import ScreenRenderer
 
 
 def main():

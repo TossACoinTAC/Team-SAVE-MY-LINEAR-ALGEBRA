@@ -1,7 +1,7 @@
 from pygame import *
 from Statics import *
-from Player import Player
-from LLM import *
+from Characters.Player import Player
+from Characters.LLM import *
 
 
 class NPC(pygame.sprite.Sprite):
@@ -67,7 +67,7 @@ class ChatBox(pygame.sprite.Sprite):
         ]
         self.chat_log.append(self.GAME_TEXTS[0])
 
-        self.linenumber = 1 
+        self.linenumber = 1
 
     def render_text(self, text, x, y, color=(255, 255, 255)):
         text_surface = self.FONT.render(text, True, color)
@@ -78,7 +78,7 @@ class ChatBox(pygame.sprite.Sprite):
         y_offset = 20
         for line in self.chat_log[-5:]:  # 显示最后 10 条记录
             self.render_wrapped_text(line, 20, y_offset)
-            y_offset += 40* self.linenumber
+            y_offset += 40 * self.linenumber
 
         # 显示输入框
         pygame.draw.rect(
@@ -107,8 +107,8 @@ class ChatBox(pygame.sprite.Sprite):
                 self.input_text += event.unicode
 
     def render_wrapped_text(self, text, x, y, color=(255, 255, 255)):
-        words = text.split(' ')
-        space_width, _ = self.FONT.size(' ')
+        words = text.split(" ")
+        space_width, _ = self.FONT.size(" ")
         max_width = ScreenSettings.screenWidth - 40
         current_line = []
         current_width = 0
@@ -116,7 +116,7 @@ class ChatBox(pygame.sprite.Sprite):
         for word in words:
             word_width, word_height = self.FONT.size(word)
             if current_width + word_width + space_width > max_width:
-                self.render_text(' '.join(current_line), x, y, color)
+                self.render_text(" ".join(current_line), x, y, color)
                 y += word_height
                 current_line = [word]
                 current_width = word_width
@@ -126,7 +126,7 @@ class ChatBox(pygame.sprite.Sprite):
                 current_width += word_width + space_width
 
         if current_line:
-            self.render_text(' '.join(current_line), x, y, color)
+            self.render_text(" ".join(current_line), x, y, color)
 
 
 """

@@ -1,5 +1,5 @@
 import pygame
-from tools import *
+from TmpTools.tools import *
 import random
 from Statics import *
 

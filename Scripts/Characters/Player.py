@@ -1,7 +1,6 @@
 from pygame import *
 from Statics import *
-from BGMPlayer import BGMPlayer
-from Rooms import *
+from GameManagers.BGMPlayer import BGMPlayer
 
 
 class CanHitWalls(pygame.sprite.Sprite):
@@ -26,7 +25,7 @@ class Player(CanHitWalls):
             self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
         )
         self.rect = self.image.get_rect(center=spawn_pos)
-        self.speed = PlayerSettings.playerSpeed
+        self._speed = PlayerSettings.playerSpeed
         self.tear_ready = pygame.sprite.GroupSingle()
         self._tears = pygame.sprite.Group()
         self.shoot_timer = 0
@@ -34,6 +33,14 @@ class Player(CanHitWalls):
         self.move_sound_played = False
         self.delay = 200
         self.bgm = BGMPlayer()
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, value: int):
+        self._speed = value
 
     @property
     def tears(self):
@@ -44,14 +51,15 @@ class Player(CanHitWalls):
         pass  # don't need a setter
 
     def move(self, keys):
+
         # hit_wall detection
-        self.speed = 0 if self._hit_wall else PlayerSettings.playerSpeed
+        self._speed = 0 if self._hit_wall else PlayerSettings.playerSpeed
 
         # move
         if keys[pygame.K_w] or keys[pygame.K_a] or keys[pygame.K_s] or keys[pygame.K_d]:
             try:
                 movement = (
-                    self.speed
+                    self._speed
                     * (keys[pygame.K_LSHIFT] + 1)  # press left shift to dash
                     * Vector2(
                         keys[pygame.K_d] - keys[pygame.K_a],
