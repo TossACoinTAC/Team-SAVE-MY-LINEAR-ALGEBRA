@@ -4,6 +4,7 @@ from enum import Enum
 
 class Events:
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
+    WALL_COLLIDE = pygame.USEREVENT + 2
 
 
 class Scenes(Enum):
@@ -58,7 +59,9 @@ class ImportedImages:
 
 
 class ImportedBGM:
-    bgmpath = ["Src/sounds/main_theme.mp3", "Src/sounds/isaac_hurt1.mp3"]
+    main_theme = "Src/sounds/main_theme.mp3"
+    walk = "Src/sounds/isaac_hurt1.mp3"
+    shoot = "Src/sounds/pop1.wav"
 
 
 # Settings
@@ -87,7 +90,7 @@ class PlayerSettings:
 class TearSettings:
     tearWidth = 30
     tearHeight = 30
-    tearSpeed = 5
+    tearSpeed = 6
 
 
 class MainMenuSettings:

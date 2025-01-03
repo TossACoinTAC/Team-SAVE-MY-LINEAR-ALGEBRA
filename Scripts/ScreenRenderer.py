@@ -1,51 +1,13 @@
 from pygame import *
 from Statics import *
-from Player import Player
-from Rooms import *
-from Attack import Bullet
+from GameManager import GameManager
 from enemies import *
 from NPC import *
 from main_menu import *
-import time
-
-
-isaac = pygame.sprite.GroupSingle()
-isaac.add(
-    Player(
-        spawn_pos=0.5 * Vector2(ScreenSettings.screenWidth, ScreenSettings.screenHeight)
-    )
-)
-
-tears = pygame.sprite.Group()
 
 
 def get_keys():
     return pygame.key.get_pressed()
-
-
-last_shoot_time = 0
-
-
-def tears_add(player: Player):
-    global last_shoot_time
-    current_time = pygame.time.get_ticks()
-    if current_time - last_shoot_time >= PlayerSettings.PlayerAttackSpeed * 1000:
-        if (
-            not get_keys()[pygame.K_UP]
-            and not get_keys()[pygame.K_DOWN]
-            and not get_keys()[pygame.K_LEFT]
-            and not get_keys()[pygame.K_RIGHT]
-        ):
-            return
-        new_tear = Bullet(
-            spawn_pos=Vector2(
-                player.rect.x + PlayerSettings.playerWidth * 0.5,
-                player.rect.y + PlayerSettings.playerHeight * 0.5,
-            )
-        )
-        new_tear.first_update(get_keys())
-        tears.add(new_tear)
-        last_shoot_time = current_time
 
 
 NPCs = pygame.sprite.Group()
@@ -55,14 +17,11 @@ NPCs.add(npc)
 ChatBoxes = pygame.sprite.Group()
 chatbox = ChatBox()
 
-rooms = pygame.sprite.Group()
-start_room = StartRoom()  # final:rooms=Rooms.gen_rooms()
-rooms.add(start_room)  # final:rooms.add(rooms)
 
-
-class ScreenRenderer:
+class ScreenRenderer(GameManager):
     # Awake()
     def __init__(self):
+        super().__init__()
         self.set_screen()
         self.set_icon()
 
@@ -86,8 +45,8 @@ class ScreenRenderer:
         self.clock = pygame.time.Clock()
         self.clock.tick(ScreenSettings.fps)
 
-    def update_sprite(self, sprite: sprite.Group, keys=None, rooms=None):
-        sprite.update(keys, rooms)
+    def update_sprite(self, sprite: sprite.Group, keys=None):
+        sprite.update(keys)
         sprite.draw(self.screen)
 
     def update_scene(self, active_scene: Scenes):
@@ -96,19 +55,18 @@ class ScreenRenderer:
                 main_menu_all.update()
                 main_menu_all.draw(self.screen)
             case Scenes.START_ROOM:
-                self.update_sprite(rooms)
-                self.update_sprite(isaac, get_keys(), rooms)
-                tears_add(isaac.sprite)
-                tears.update()
-                tears.draw(self.screen)
-                enemies.update(tears)
-                enemies.draw(self.screen)
-                for room in rooms:
-                    room.update_doors(isaac.sprite)
-                    room.update_walls(tears)
+                self.update_sprite(self.rooms)
+                self.update_sprite(self.isaac, get_keys())
+                for isaac in self.isaac:
+                    isaac.tears.draw(self.screen)
+                # enemies.update(tears)
+                # enemies.draw(self.screen)
+                # for room in self.rooms:
+                #     room.update_doors(self.isaac.sprite)
+                #     room.update_walls(tears)
                 NPCs.draw(self.screen)
                 for npc in NPCs:
-                    if npc.hit_player(isaac.sprite):
+                    if npc.hit_player(self.isaac.sprite):
                         npc.gen_chatbox(ChatBoxes, chatbox)
                     else:
                         ChatBoxes.empty()

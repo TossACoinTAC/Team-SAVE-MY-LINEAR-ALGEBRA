@@ -80,29 +80,35 @@ class StartButton(pygame.sprite.Sprite):
         self.rect.x = MainMenuSettings.StartButton.x
         self.rect.y = MainMenuSettings.StartButton.y
         self.multi = MainMenuSettings.StartButton.MULTI
-        self.image = pygame.transform.smoothscale(self.image, (self.rect.width * self.multi,
-                                                         self.rect.height * self.multi))
-        self.scaled_images = {1 : self.image,
-        1.2 : pygame.transform.smoothscale(self.image, (self.rect.width * 3.6, self.rect.height * 3.6))}
-
-       
-
+        self.image = pygame.transform.smoothscale(
+            self.image, (self.rect.width * self.multi, self.rect.height * self.multi)
+        )
+        self.scaled_images = {
+            1: self.image,
+            1.2: pygame.transform.smoothscale(
+                self.image, (self.rect.width * 3.6, self.rect.height * 3.6)
+            ),
+        }
 
     def update(self):
-        
+
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        if self.rect.left <= mouse_x <= self.rect.right*1.5 and self.rect.top <= mouse_y <= self.rect.bottom*1.2:
+        if (
+            self.rect.left <= mouse_x <= self.rect.right * 1.5
+            and self.rect.top <= mouse_y <= self.rect.bottom * 1.2
+        ):
             self.image = self.scaled_images[1.2]
             center_x, center_y = self.scaled_images[1].get_rect().center
             # Get the new rect of the scaled image
             scaled_rect = self.image.get_rect()
             # Set the center of the new rect to the original image's center
             scaled_rect.center = (center_x, center_y)
-            
+
             if pygame.mouse.get_pressed()[0]:
-                pygame.event.post(ev.Event(Events.MAIN_TO_STARTROOM))
+                ev.post(ev.Event(Events.MAIN_TO_STARTROOM))
         else:
             self.image = self.scaled_images[1]
+
 
 class Options(Static_state):
     def __init__(self):
@@ -111,8 +117,9 @@ class Options(Static_state):
             MainMenuSettings.Options.x,
             MainMenuSettings.Options.y,
             MainMenuSettings.Options.MULTI,
-            MainMenuSettings.Options.ALPHA
+            MainMenuSettings.Options.ALPHA,
         )
+
 
 class Continue(Static_state):
     def __init__(self):
@@ -121,8 +128,9 @@ class Continue(Static_state):
             MainMenuSettings.Continue.x,
             MainMenuSettings.Continue.y,
             MainMenuSettings.Continue.MULTI,
-            MainMenuSettings.Continue.ALPHA
+            MainMenuSettings.Continue.ALPHA,
         )
+
 
 class Draw(Dynamic_state):
     def __init__(self):
@@ -132,8 +140,9 @@ class Draw(Dynamic_state):
             MainMenuSettings.Draw.x,
             MainMenuSettings.Draw.y,
             MainMenuSettings.Draw.MULTI,
-            MainMenuSettings.Draw.frames_duration
+            MainMenuSettings.Draw.frames_duration,
         )
+
 
 class Bomb(Dynamic_state):
     def __init__(self):
@@ -143,5 +152,5 @@ class Bomb(Dynamic_state):
             MainMenuSettings.Bomb.x,
             MainMenuSettings.Bomb.y,
             MainMenuSettings.Bomb.MULTI,
-            MainMenuSettings.Bomb.frames_duration
+            MainMenuSettings.Bomb.frames_duration,
         )

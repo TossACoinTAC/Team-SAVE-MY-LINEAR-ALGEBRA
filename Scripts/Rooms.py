@@ -1,4 +1,5 @@
 from pygame import *
+import pygame.event as ev
 from Statics import *
 import random
 
@@ -18,12 +19,39 @@ class SingleRoom(pygame.sprite.Sprite):
             self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
         )
         self.rect = self.image.get_rect()
-        self.gen_doors()
+        self.frame = pygame.sprite.Group()
+        self.set_frame()
+        self.walls = pygame.sprite.Group()
         self.gen_walls()
+        self.doors = pygame.sprite.Group()
+        self.gen_doors()
+
+    def set_frame(self):
+        edge_thickness = 10
+        self.top_edge = pygame.Rect(
+            self.rect.left, self.rect.top, self.rect.width, edge_thickness
+        )
+        self.bottom_edge = pygame.Rect(
+            self.rect.left,
+            self.rect.bottom - edge_thickness,
+            self.rect.width,
+            edge_thickness,
+        )
+        self.left_edge = pygame.Rect(
+            self.rect.left, self.rect.top, edge_thickness, self.rect.height
+        )
+        self.right_edge = pygame.Rect(
+            self.rect.right - edge_thickness,
+            self.rect.top,
+            edge_thickness,
+            self.rect.height,
+        )
+        edges = [self.top_edge, self.bottom_edge, self.left_edge, self.right_edge]
+        for i in range(4):
+            self.frame.add(Frame(edges[i]))
 
     def gen_doors(self):
         # generate four random doors
-        self.doors = pygame.sprite.Group()
         door_locations = [
             (self.rect.width / 2, ScreenSettings.marginHeight),  # top
             (ScreenSettings.marginWidth - 40, self.rect.height / 2),  # left
@@ -38,7 +66,6 @@ class SingleRoom(pygame.sprite.Sprite):
         self.doors.draw(self.image)  # draw on the Room's frame
 
     def gen_walls(self):
-        self.walls = pygame.sprite.Group()
         mode = random.choice([1, 2, 3])  # 随机选择生成模式
 
         if mode == 1:
@@ -95,11 +122,11 @@ class SingleRoom(pygame.sprite.Sprite):
                     self.walls.add(wall)
         self.walls.draw(self.image)  # draw on the Room's frame
 
-    def update_walls(self, bullet):
-        for wall in self.walls:
-            if isinstance(wall, Shit):
-                wall.destroyed(bullet, self.image)
-        self.walls.draw(self.image)
+    # def update_walls(self, bullet):
+    #     for wall in self.walls:
+    #         if isinstance(wall, Shit):
+    #             wall.destroyed(bullet, self.image)
+    #     self.walls.draw(self.image)
 
 
 class Door(pygame.sprite.Sprite):
@@ -116,7 +143,23 @@ class Door(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
 
-class Wall(pygame.sprite.Sprite):
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.rect = pygame.Rect(0, 0, 0, 0)
+
+    def collide(self, collider: pygame.sprite.Group):
+        if self.rect.colliderect(collider):
+            ev.post(ev.Event(Events.WALL_COLLIDE), {"collider": collider})
+
+
+class Frame(Obstacle):
+    def __init__(self, rect: pygame.Rect):
+        super().__init__()
+        self.rect = rect
+
+
+class Wall(Obstacle):
     def __init__(self, wall_image):
         super().__init__()
         self.image = pygame.image.load(wall_image)
