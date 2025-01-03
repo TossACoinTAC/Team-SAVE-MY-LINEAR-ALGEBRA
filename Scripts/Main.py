@@ -11,7 +11,7 @@ def main():
 
     while True:
         event_listener.listen()
-        screen_renderer.render_screen(event_listener.change_scene())
+        screen_renderer.render_screen(event_listener.get_active_scene())
 
 
 if __name__ == "__main__":

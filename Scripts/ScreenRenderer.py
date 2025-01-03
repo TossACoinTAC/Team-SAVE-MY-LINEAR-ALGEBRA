@@ -54,6 +54,7 @@ class ScreenRenderer(GameManager):
             case Scenes.MAIN_MENU:
                 main_menu_all.update()
                 main_menu_all.draw(self.screen)
+
             case Scenes.START_ROOM:
                 self.update_sprite(self.rooms)
                 self.update_sprite(self.isaac, get_keys())
