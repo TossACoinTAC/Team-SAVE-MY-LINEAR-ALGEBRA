@@ -22,32 +22,18 @@ class SingleRoom(pygame.sprite.Sprite):
         self._doors = pygame.sprite.Group()
         self.gen_doors()
 
-    @property
-    def frame(self):
+    # property without setter
+    def get_frame(self):
         return self._frame
 
-    @property
-    def walls(self):
+    def get_walls(self):
         return self._walls
 
-    @property
-    def doors(self):
+    def get_doors(self):
         return self._doors
 
-    @frame.setter
-    def frame(self, value):
-        pass
-
-    @walls.setter
-    def frame(self, value):
-        pass
-
-    @doors.setter
-    def frame(self, value):
-        pass
-
     def set_frame(self):
-        edge_thickness = 10
+        edge_thickness = 1
         self.top_edge = pygame.Rect(
             self.rect.left, self.rect.top, self.rect.width, edge_thickness
         )
@@ -78,10 +64,9 @@ class SingleRoom(pygame.sprite.Sprite):
             (self.rect.width / 2, ScreenSettings.roomHeight),  # bottom
             (ScreenSettings.roomWidth, self.rect.height / 2),  # right
         ]
-        collide_tags = ["top", "left", "bottom", "right"]
 
         for i in range(4):
-            door = Door(collide_tags[i])
+            door = Door()
             door.image = pygame.transform.rotate(door.image, 90 * i)
             door.rect.center = door_locations[i]
             self._doors.add(door)
@@ -144,30 +129,13 @@ class SingleRoom(pygame.sprite.Sprite):
                     self._walls.add(wall)
         self._walls.draw(self.image)  # draw on the Room's frame
 
-    # def update_walls(self, bullet):
-    #     for wall in self.walls:
-    #         if isinstance(wall, Shit):
-    #             wall.destroyed(bullet, self.image)
-    #     self.walls.draw(self.image)
 
-
-class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, collide_tag: str):
-        super().__init__()
-        self.collide_tag = collide_tag
-        self.rect = pygame.Rect(0, 0, 0, 0)
-
-    def detect_collision(self, other, event: Events):
-        if pygame.sprite.spritecollide(other, self, False):
-            ev.post(ev.Event(event), {"obstacle": self, "collider": other})
-
-
-class Door(Obstacle):
+class Door(pygame.sprite.Sprite):
     # randomly select a door image if not specified
     random_image = random.choice(list(ImportedImages.DoorImages)).value
 
-    def __init__(self, collide_tag: str, doorImage=random_image):
-        super().__init__(collide_tag)
+    def __init__(self, doorImage=random_image):
+        super().__init__()
         self.image = pygame.image.load(doorImage)
         self.image = pygame.transform.scale(
             self.image,
@@ -176,15 +144,15 @@ class Door(Obstacle):
         self.rect = self.image.get_rect()
 
 
-class Frame(Obstacle):
+class Frame(pygame.sprite.Sprite):
     def __init__(self, rect: pygame.Rect):
-        super().__init__("frame")
+        super().__init__()
         self.rect = rect
 
 
-class Wall(Obstacle):
+class Wall(pygame.sprite.Sprite):
     def __init__(self, wall_image):
-        super().__init__("wall")
+        super().__init__()
         self.image = pygame.image.load(wall_image)
         self.image = pygame.transform.scale(
             self.image,

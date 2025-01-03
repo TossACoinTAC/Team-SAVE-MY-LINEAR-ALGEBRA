@@ -1,17 +1,15 @@
 import pygame
-from GameManagers.EventListener import EventListener
-from GameManagers.ScreenRenderer import ScreenRenderer
+from GameManagers.GameManager import GameManager
 
 
 def main():
 
     pygame.init()
-    event_listener = EventListener()
-    screen_renderer = ScreenRenderer()
+    game_manager: GameManager = GameManager()
 
     while True:
-        event_listener.listen()
-        screen_renderer.render_screen(event_listener.get_active_scene())
+        game_manager.deal_events()
+        game_manager.render_screen()
 
 
 if __name__ == "__main__":
