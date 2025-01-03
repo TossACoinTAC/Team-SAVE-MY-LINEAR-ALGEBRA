@@ -31,6 +31,7 @@ class Player(CanHitWalls):
         self._tears = pygame.sprite.Group()
         self.shoot_timer = 0
         self.move_sound_timer = 0
+        self.move_sound_played = False
         self.delay = 200
         self.bgm = BGMPlayer()
 
@@ -62,13 +63,12 @@ class Player(CanHitWalls):
             self.rect.move_ip(movement)
 
             # deal with sound
-            move_sound_played = False
-            if not move_sound_played:
+            if not self.move_sound_played:
                 self.bgm.play("ISAAC_WALK", 0)
-                move_sound_played = True
+                self.move_sound_played = True
                 self.move_sound_timer = pygame.time.get_ticks()
-            if pygame.time.get_ticks() - self.move_sound_timer > self.delay:
-                move_sound_played = False
+            if pygame.time.get_ticks() - self.move_sound_timer > self.delay * 3:
+                self.move_sound_played = False
 
     def shoot(self, keys):
         if (
@@ -90,7 +90,7 @@ class Player(CanHitWalls):
                 ).normalize()
                 self.bgm.play("ISAAC_SHOOT", 0)
             except ValueError:
-                shooted_tear.kill()
+                shooted_tear.direction = Vector2(0, 0)
 
             self.tear_ready.add(shooted_tear)
             self._tears.add(shooted_tear)
@@ -129,6 +129,6 @@ class Tear(CanHitWalls):
 
     def update(self):
         self.rect.move_ip(self.direction * self.speed)
-        if self._hit_wall:
+        if self._hit_wall or self._direction == Vector2(0, 0):
             print(("hitwall"))
             self.kill()

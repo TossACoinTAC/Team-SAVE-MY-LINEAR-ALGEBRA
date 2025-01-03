@@ -13,8 +13,7 @@ class BGMPlayer:
         self.sounds_to_play = []
 
     def play(self, sound, loop):  # loop = 0 is once loop = -1 is forever
-        self.sounds_to_play.append(sound)
-        print(self.sounds_to_play)
+        self.sounds_to_play.append(sound)  # use a loop to avoid clashes
         for sound in self.sounds_to_play:
             if sound == "MAIN_THEME":
                 self.channel = self.main_theme_BGM.play(loops=loop)
