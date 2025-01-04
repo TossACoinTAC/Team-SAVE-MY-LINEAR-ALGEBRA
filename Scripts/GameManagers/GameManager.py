@@ -68,6 +68,7 @@ class GameManager:
                 self.update_sprite(self.room_group)
                 self.update_sprite(self.isaac_group, self.get_keys())
                 self.isaac.tears.draw(self.screen)
+                self.room.get_walls().draw(self.screen)
 
     def deal_events(self):
         self.detect_collision()
@@ -90,8 +91,11 @@ class GameManager:
             self.isaac.rect.move_ip(-self.isaac.movement)
         #tears_detect_collision
         collision_walls = pygame.sprite.groupcollide(self.isaac.tears, self.room.get_walls(), False, False)
-        for tear, wall in collision_walls.items():
+        for tear, walls in collision_walls.items():
             tear.state = 'die'
+            for wall in walls:
+                if isinstance(wall, Shit):
+                    wall.destroyed()
         collision_frames = pygame.sprite.groupcollide(self.isaac.tears, self.room.get_frame(), False, False)
         for tear, frame in collision_frames.items():
             tear.state = 'die'
