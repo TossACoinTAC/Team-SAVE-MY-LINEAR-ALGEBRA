@@ -7,41 +7,7 @@ from TmpTools.tools import *
 class MainMenu(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
-        self.add(
-            BackGround(),
-            StartButton(),
-            StaticState(
-                ImportedImages.Options,
-                MainMenuSettings.Options.x,
-                MainMenuSettings.Options.y,
-                MainMenuSettings.Options.MULTI,
-                MainMenuSettings.Options.ALPHA,
-            ),
-            StaticState(
-                ImportedImages.Continues,
-                MainMenuSettings.Continue.x,
-                MainMenuSettings.Continue.y,
-                MainMenuSettings.Continue.MULTI,
-                MainMenuSettings.Continue.ALPHA,
-            ),
-            DynamicState(
-                ImportedImages.Draw,
-                MainMenuSettings.Draw.frame_rects,
-                MainMenuSettings.Draw.x,
-                MainMenuSettings.Draw.y,
-                MainMenuSettings.Draw.MULTI,
-                MainMenuSettings.Draw.frames_duration,
-            ),
-            DynamicState(
-                ImportedImages.Bomb,
-                MainMenuSettings.Bomb.frame_rects,
-                MainMenuSettings.Bomb.x,
-                MainMenuSettings.Bomb.y,
-                MainMenuSettings.Bomb.MULTI,
-                MainMenuSettings.Bomb.frames_duration,
-            ),
-        )
-
+        self.add(BackGround(), StartButton(), Options(), Continue(), Draw(), Bomb())
 
 class StaticState(pygame.sprite.Sprite):
     def __init__(self, importImage, x, y, MULTI, ALPHA):
