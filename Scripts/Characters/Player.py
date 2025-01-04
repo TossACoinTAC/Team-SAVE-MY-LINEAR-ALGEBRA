@@ -1,5 +1,6 @@
 from pygame import *
 from Statics import *
+from TmpTools.tools import *
 from GameManagers.BGMPlayer import BGMPlayer
 
 
@@ -100,13 +101,29 @@ class Player(pygame.sprite.Sprite):
 class Tear(pygame.sprite.Sprite):
     def __init__(self, spawn_pos: Vector2):
         super().__init__()
-        self.image = pygame.image.load(ImportedImages.tearImage)
+        self.set_animation()
+        self.image = self.frame[0]
         self.image = pygame.transform.scale(
             self.image, (TearSettings.tearWidth, TearSettings.tearHeight)
         )
         self.rect = self.image.get_rect(center=spawn_pos)
         self.speed = TearSettings.tearSpeed
         self._direction = Vector2(0, 0)
+
+    def set_animation(self):
+        self.timer = 0
+        self.state = "live"
+        self.frame = []
+        self.frame_index = 0
+        self.frame_rects = TearSettings.tear_frame_rects
+        self.sheet = pygame.image.load(ImportedImages.tear_pop_Image)
+        for i in range(len(self.frame_rects)):
+            tmp_image = get_images(self.sheet, *self.frame_rects[i], (0, 0, 0), 3.0)
+            self.frame.append(
+                pygame.transform.scale(
+                    tmp_image, (TearSettings.tearWidth, TearSettings.tearHeight)
+                )
+            )
 
     @property
     def direction(self):
@@ -119,4 +136,19 @@ class Tear(pygame.sprite.Sprite):
     def update(self):
         self.rect.move_ip(self.direction * self.speed)
         if self._direction == Vector2(0, 0):
+            self.kill()
+        if self.state == "die":
+            self.speed = 0
+            self.update_animation()
+
+    def update_animation(self):
+
+        self.image = self.frame[self.frame_index]
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.timer > 125:
+            self.timer = current_time
+            self.frame_index += 1
+
+        if self.frame_index >= 14:
             self.kill()
