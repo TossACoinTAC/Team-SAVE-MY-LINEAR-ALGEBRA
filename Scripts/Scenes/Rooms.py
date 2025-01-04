@@ -35,25 +35,19 @@ class SingleRoom(pygame.sprite.Sprite):
     def set_frame(self):
         edge_thickness = 1
         self.top_edge = pygame.Rect(
-            self.rect.left,
-            self.rect.top + ScreenSettings.marginHeight,
-            self.rect.width,
-            edge_thickness,
+            self.rect.left, self.rect.top, self.rect.width, edge_thickness
         )
         self.bottom_edge = pygame.Rect(
             self.rect.left,
-            self.rect.bottom - ScreenSettings.marginHeight - edge_thickness,
+            self.rect.bottom - edge_thickness,
             self.rect.width,
             edge_thickness,
         )
         self.left_edge = pygame.Rect(
-            self.rect.left + ScreenSettings.marginWidth,
-            self.rect.top,
-            edge_thickness,
-            self.rect.height,
+            self.rect.left, self.rect.top, edge_thickness, self.rect.height
         )
         self.right_edge = pygame.Rect(
-            self.rect.right - ScreenSettings.marginWidth - edge_thickness,
+            self.rect.right - edge_thickness,
             self.rect.top,
             edge_thickness,
             self.rect.height,
@@ -133,7 +127,6 @@ class SingleRoom(pygame.sprite.Sprite):
                         start_y + j * wall_height,
                     )
                     self._walls.add(wall)
-        self._walls.draw(self.image)  # draw on the Room's frame
 
 
 class Door(pygame.sprite.Sprite):
@@ -170,28 +163,27 @@ class Wall(pygame.sprite.Sprite):
 class Shit(Wall):
     def __init__(self):
         shit_image = ImportedImages.ShitImages["TYPE_0"].value
-        self.HP = 25
+        self.HP = 50
         super().__init__(shit_image)
 
-    def destroyed(self, bullet, img):
-        if pygame.sprite.spritecollide(self, bullet, True):
-            self.HP -= 1
-            if self.HP <= 0:
-                self.kill()
-            else:
-                new_image_key = f"TYPE_{int((50 - self.HP)/10)}"
-                # pygame.draw.rect(img, (0, 0, 0, 0), self.rect)  # 用黑色覆盖旧位置
-                self.image = pygame.image.load(
-                    ImportedImages.ShitImages[new_image_key].value
-                )
-                self.image = pygame.transform.scale(
-                    self.image,
-                    (
-                        PlayerSettings.playerWidth * 0.8,
-                        PlayerSettings.playerHeight * 0.8,
-                    ),
-                )
-                self.rect = self.image.get_rect(center=self.rect.center)
+    def destroyed(self):
+        self.HP -= 1
+        if self.HP <= 0:
+            self.kill()
+        else:
+            new_image_key = f"TYPE_{int((50 - self.HP)/10)}"
+            # pygame.draw.rect(img, (0, 0, 0, 0), self.rect)  # 用黑色覆盖旧位置
+            self.image = pygame.image.load(
+                ImportedImages.ShitImages[new_image_key].value
+            )
+            self.image = pygame.transform.scale(
+                self.image,
+                (
+                    PlayerSettings.playerWidth * 0.8,
+                    PlayerSettings.playerHeight * 0.8,
+                ),
+            )
+            self.rect = self.image.get_rect(center=self.rect.center)
 
 
 class StartRoom(SingleRoom):
