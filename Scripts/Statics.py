@@ -19,6 +19,8 @@ class ImportedImages:
     # Player
     playerImage = "Src/Textures/Play/Issac_Loot.png"
     tearImage = "Src/Textures/Play/Tear.png"
+    tear_pop_Image = "data/textures/tears/tears_pop.png"
+    heartImage = "Src/Textures/Play/Heart.png"
 
     # Rooms
     class RoomImages(Enum):
@@ -85,12 +87,30 @@ class PlayerSettings:
     playerHeight = 90
     playerSpeed = 3
     PlayerAttackSpeed = 0.5
+    PlayerHP = 6
 
 
 class TearSettings:
-    tearWidth = 30
-    tearHeight = 30
+    tearWidth = 100
+    tearHeight = 100
     tearSpeed = 6
+    tear_frame_rects = [
+        (0, 0, 64, 64),
+        (64, 0, 64, 64),
+        (128, 0, 64, 64),
+        (192, 0, 64, 64),
+        (256, 0, 64, 64),
+        (320, 0, 64, 64),
+        (384, 0, 64, 64),
+        (448, 0, 64, 64),
+        (512, 0, 64, 64),
+        (576, 0, 64, 64),
+        (640, 0, 64, 64),
+        (704, 0, 64, 64),
+        (768, 0, 64, 64),
+        (832, 0, 64, 64),
+        (896, 0, 64, 64)
+    ]
 
 
 class MainMenuSettings:
