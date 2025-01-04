@@ -20,6 +20,7 @@ class ImportedImages:
     playerImage = "Src/Textures/Play/Issac_Loot.png"
     tearImage = "Src/Textures/Play/Tear.png"
     tear_pop_Image = "data/textures/tears/tears_pop.png"
+    BldtearImage = "Src/Textures/Play/Tear_002.png"
     heartImage = "Src/Textures/Play/Heart.png"
 
     # Rooms
@@ -42,6 +43,9 @@ class ImportedImages:
         TYPE_2 = "Src/Textures/Play/poops/poops (3).png"
         TYPE_3 = "Src/Textures/Play/poops/poops (4).png"
         TYPE_4 = "Src/Textures/Play/poops/poops (5).png"
+
+    class BlockImage(Enum):
+        Rock = "Data/Textures/Room/altars.png"
 
     # MainMenu
     BackGround = "Src/Textures/Title/Title1.png"
@@ -109,7 +113,23 @@ class TearSettings:
         (704, 0, 64, 64),
         (768, 0, 64, 64),
         (832, 0, 64, 64),
-        (896, 0, 64, 64)
+        (896, 0, 64, 64),
+
+        (0, 64, 64, 64),
+        (64, 64, 64, 64),
+        (128, 64, 64, 64),
+        (192, 64, 64, 64),
+        (256, 64, 64, 64),
+        (320, 64, 64, 64),
+        (384, 64, 64, 64),
+        (448, 64, 64, 64),
+        (512, 64, 64, 64),
+        (576, 64, 64, 64),
+        (640, 64, 64, 64),
+        (704, 64, 64, 64),
+        (768, 64, 64, 64),
+        (832, 64, 64, 64),
+        (896, 64, 64, 64)
     ]
 
 
