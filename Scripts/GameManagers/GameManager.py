@@ -89,17 +89,22 @@ class GameManager:
             or pygame.sprite.spritecollide(self.isaac, self.room.get_doors(), False)
         ):
             self.isaac.rect.move_ip(-self.isaac.movement)
-        #tears_detect_collision
-        collision_walls = pygame.sprite.groupcollide(self.isaac.tears, self.room.get_walls(), False, False)
+        # tears_detect_collision
+        collision_walls = pygame.sprite.groupcollide(
+            self.isaac.tears, self.room.get_walls(), False, False
+        )
         for tear, walls in collision_walls.items():
-            tear.state = 'die'
+            tear.state = "die"
             for wall in walls:
                 if isinstance(wall, Shit):
                     wall.destroyed()
-        collision_frames = pygame.sprite.groupcollide(self.isaac.tears, self.room.get_frame(), False, False)
+        collision_frames = pygame.sprite.groupcollide(
+            self.isaac.tears, self.room.get_frame(), False, False
+        )
         for tear, frame in collision_frames.items():
-            tear.state = 'die'
-        collision_doors = pygame.sprite.groupcollide(self.isaac.tears, self.room.get_doors(), False, False) 
+            tear.state = "die"
+        collision_doors = pygame.sprite.groupcollide(
+            self.isaac.tears, self.room.get_doors(), False, False
+        )
         for tear, doors in collision_doors.items():
-            tear.state = 'die'
-        
+            tear.state = "die"

@@ -27,7 +27,7 @@ class Player(pygame.sprite.Sprite):
         self.move_sound_delay = 600
         self.move_sound_played = False
 
-    # resource system : HP
+        # resource system : HP
         self.heart = pygame.sprite.GroupSingle()
         self.heart.add(Heart())
 
@@ -122,6 +122,7 @@ class Heart(pygame.sprite.Sprite):
         self.rect.y = ScreenSettings.marginHeight
         self.HP = PlayerSettings.PlayerHP
         self.timer = 0
+
     def update(self):
         current_time = pygame.time.get_ticks()
         if current_time - self.timer > 1000:
@@ -131,14 +132,12 @@ class Heart(pygame.sprite.Sprite):
         if self.HP == 0:
 
             event.post(event.Event(Events.GAMEOVER))
-            #触发事件游戏结束
-        self.image = self.frame[6-self.HP]
-
-
+            # 触发事件游戏结束
+        self.image = self.frame[6 - self.HP]
 
 
 class Tear(pygame.sprite.Sprite):
-    def __init__(self, spawn_pos: Vector2, Bloody = False):
+    def __init__(self, spawn_pos: Vector2, Bloody=False):
         super().__init__()
         self.set_die_animation(Bloody)
         self.image = self.frame[0]
@@ -157,7 +156,9 @@ class Tear(pygame.sprite.Sprite):
         self.frame_rects = TearSettings.tear_frame_rects
         self.sheet = pygame.image.load(ImportedImages.tear_pop_Image)
         for i in range(15):
-            tmp_image = get_images(self.sheet, *self.frame_rects[i+1 * 15], (0, 0, 0), 3.0)
+            tmp_image = get_images(
+                self.sheet, *self.frame_rects[i + 1 * 15], (0, 0, 0), 3.0
+            )
             self.frame.append(
                 pygame.transform.scale(
                     tmp_image, (TearSettings.tearWidth, TearSettings.tearHeight)
@@ -192,6 +193,7 @@ class Tear(pygame.sprite.Sprite):
         if self.frame_index >= 14:
             self.kill()
 
+
 class Bloody_Tear(Tear):
     def __init__(self):
-        super().__init__(ImportedImages.BldtearImage.value)
+        super().__init__(ImportedImages.BldtearImage)

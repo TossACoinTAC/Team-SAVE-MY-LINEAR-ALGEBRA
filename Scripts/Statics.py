@@ -4,7 +4,8 @@ from enum import Enum
 
 class Events:
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
-    WALL_COLLIDE = pygame.USEREVENT + 2
+    WALL_COLLIDE = pygame.USEREVENT + 11
+    GAME_OVER = pygame.USEREVENT + 21
 
 
 class Scenes(Enum):
@@ -114,7 +115,6 @@ class TearSettings:
         (768, 0, 64, 64),
         (832, 0, 64, 64),
         (896, 0, 64, 64),
-
         (0, 64, 64, 64),
         (64, 64, 64, 64),
         (128, 64, 64, 64),
@@ -129,7 +129,7 @@ class TearSettings:
         (704, 64, 64, 64),
         (768, 64, 64, 64),
         (832, 64, 64, 64),
-        (896, 64, 64, 64)
+        (896, 64, 64, 64),
     ]
 
 
