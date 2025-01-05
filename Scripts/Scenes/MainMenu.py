@@ -9,6 +9,7 @@ class MainMenu(pygame.sprite.Group):
         super().__init__()
         self.add(BackGround(), StartButton(), Options(), Continue(), Draw(), Bomb())
 
+
 class StaticState(pygame.sprite.Sprite):
     def __init__(self, importImage, x, y, MULTI, ALPHA):
         super().__init__()
@@ -33,7 +34,7 @@ class DynamicState(pygame.sprite.Sprite):
         self.frames_index = 0
         self.frame_rects = frame_rects
         self.load_frames(self.frame_rects, importImage, MULTI)
-        self.image = self.frames[self.frames_index]
+        self.image: pygame.Surface = self.frames[self.frames_index]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

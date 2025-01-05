@@ -29,14 +29,18 @@ class ImportedImages:
         START_ROOM = "Src/Textures/Map/start_000.png"
         COMMON_ROOM = "Src/Textures/Map/room_000.png"
         SHOP = "Src/Textures/Map/shop.png"
-        SECRET = "Src/Textures/Map/secret.png"
         TREASURE = "Src/Textures/Map/treasure.png"
-        DEPTH = "Src/Textures/Map/depth.png"
-        CATACOMB = "Src/Textures/Map/catacomb.png"
+        SECRET = "Src/Textures/Map/secret.png"
         BLUEWOMB = "Src/Textures/Map/bluewomb.png"
+        CATACOMB = "Src/Textures/Map/catacomb.png"  # For Boss Room ?
 
-    class DoorImages(Enum):
-        OPEN_DOOR = "Src/Textures/Map/OpenDoor.png"
+    class OpenDoorImages(Enum):
+        OPEN_Wood_DOOR = "Src/Textures/Map/OpenWoodDoor.png"
+
+    class ClosedDoorImages(Enum):
+        CLOSED_WOOD_DOOR = "Src/Textures/Map/ClosedWoodDoor.png"
+        CLOSED_SHOP_DOOR = "Src/Textures/Map/ClosedShopDoor.png"
+        CLOSED_TREASURE_DOOR = "Src/Textures/Map/ClosedTreasureDoor.png"
 
     class ShitImages(Enum):
         TYPE_0 = "Src/Textures/Play/poops/poops (1).png"

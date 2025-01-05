@@ -1,26 +1,30 @@
 from pygame import *
-import pygame.event as ev
 from Statics import *
 import random
 
 
 class SingleRoom(pygame.sprite.Sprite):
-    # randomly select a room image if not specified
-    random_image = random.choice(list(ImportedImages.RoomImages)).value
-
-    def __init__(self, roomImage=random_image):
+    def __init__(self, roomImage=None):
         super().__init__()
+        # randomly select a room image if not specified
+        if not roomImage:
+            roomImage = random.choice(list(ImportedImages.RoomImages)).value
         self.image = pygame.image.load(roomImage)
         self.image = pygame.transform.scale(
             self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
         )
         self.rect = self.image.get_rect()
+
         self._frame = pygame.sprite.Group()
         self.set_frame()
         self._walls = pygame.sprite.Group()
         self.gen_walls()
         self._doors = pygame.sprite.Group()
         self.gen_doors()
+
+        self.roomImage = random.choice(
+            list(ImportedImages.RoomImages)
+        ).value  # random again for next initialization
 
     # property without setter
     def get_frame(self):
@@ -42,12 +46,15 @@ class SingleRoom(pygame.sprite.Sprite):
         )
         self.bottom_edge = pygame.Rect(
             self.rect.left,
-            self.rect.bottom - edge_thickness,
+            self.rect.bottom - ScreenSettings.marginHeight,
             self.rect.width,
             edge_thickness,
         )
         self.left_edge = pygame.Rect(
-            self.rect.left, self.rect.top, edge_thickness, self.rect.height
+            self.rect.left + ScreenSettings.marginWidth,
+            self.rect.top,
+            edge_thickness,
+            self.rect.height,
         )
         self.right_edge = pygame.Rect(
             self.rect.right - ScreenSettings.marginWidth,
@@ -62,10 +69,10 @@ class SingleRoom(pygame.sprite.Sprite):
     def gen_doors(self):
         # generate four random doors
         door_locations = [
-            (self.rect.width / 2, ScreenSettings.marginHeight),  # top
-            (ScreenSettings.marginWidth - 40, self.rect.height / 2),  # left
-            (self.rect.width / 2, ScreenSettings.roomHeight),  # bottom
-            (ScreenSettings.roomWidth, self.rect.height / 2),  # right
+            (self.rect.width / 2, ScreenSettings.marginHeight + 10),  # top
+            (ScreenSettings.marginWidth - 25, self.rect.height / 2),  # left
+            (self.rect.width / 2, ScreenSettings.roomHeight - 10),  # bottom
+            (ScreenSettings.roomWidth + 10, self.rect.height / 2),  # right
         ]
         door_location_tags = ["top", "left", "bottom", "right"]
 
@@ -144,24 +151,29 @@ class SingleRoom(pygame.sprite.Sprite):
                 )
                 rock = Rock()
                 rock.rect.center = (x, y)
+
                 if not any(wall.rect.colliderect(rock.rect) for wall in self._walls):
                     self._walls.add(rock)
                     break
 
 
 class Door(pygame.sprite.Sprite):
-    # randomly select a door image if not specified
-    random_image = random.choice(list(ImportedImages.DoorImages)).value
-
-    def __init__(self, location_tag: str, doorImage=random_image):
+    def __init__(self, location_tag: str, doorImage=None):
         super().__init__()
+        # randomly select a door image if not specified
+        if not doorImage:
+            doorImage = random.choice(list(ImportedImages.ClosedDoorImages)).value
         self.image = pygame.image.load(doorImage)
         self.image = pygame.transform.scale(
             self.image,
-            (PlayerSettings.playerWidth * 1.5, PlayerSettings.playerHeight * 1.5),
+            (PlayerSettings.playerWidth * 1.5, PlayerSettings.playerHeight * 1.3),
         )
         self.rect = self.image.get_rect()
         self.location_tag = location_tag
+        match doorImage:
+            case ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR.value:
+                print("closed wood door initialized")
+                self.type_tag = "Wood"
 
 
 class Frame(pygame.sprite.Sprite):
