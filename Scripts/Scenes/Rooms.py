@@ -67,9 +67,10 @@ class SingleRoom(pygame.sprite.Sprite):
             (self.rect.width / 2, ScreenSettings.roomHeight),  # bottom
             (ScreenSettings.roomWidth, self.rect.height / 2),  # right
         ]
+        door_location_tags = ["top", "left", "bottom", "right"]
 
         for i in range(4):
-            door = Door()
+            door = Door(door_location_tags[i])
             door.image = pygame.transform.rotate(door.image, 90 * i)
             door.rect.center = door_locations[i]
             self._doors.add(door)
@@ -152,7 +153,7 @@ class Door(pygame.sprite.Sprite):
     # randomly select a door image if not specified
     random_image = random.choice(list(ImportedImages.DoorImages)).value
 
-    def __init__(self, doorImage=random_image):
+    def __init__(self, location_tag: str, doorImage=random_image):
         super().__init__()
         self.image = pygame.image.load(doorImage)
         self.image = pygame.transform.scale(
@@ -160,6 +161,7 @@ class Door(pygame.sprite.Sprite):
             (PlayerSettings.playerWidth * 1.5, PlayerSettings.playerHeight * 1.5),
         )
         self.rect = self.image.get_rect()
+        self.location_tag = location_tag
 
 
 class Frame(pygame.sprite.Sprite):
