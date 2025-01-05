@@ -131,7 +131,7 @@ class Heart(pygame.sprite.Sprite):
 
         if self.HP == 0:
 
-            event.post(event.Event(Events.GAMEOVER))
+            event.post(event.Event(Events.GAME_OVER))
             # 触发事件游戏结束
         self.image = self.frame[6 - self.HP]
 
