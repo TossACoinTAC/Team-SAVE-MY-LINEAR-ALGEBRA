@@ -33,12 +33,12 @@ class SingleRoom(pygame.sprite.Sprite):
         return self._doors
 
     def set_frame(self):
-        edge_thickness = 1
+        edge_thickness = 10
         self.top_edge = pygame.Rect(
-            self.rect.left, 
-            self.rect.top + ScreenSettings.marginHeight, 
-            self.rect.width, 
-            edge_thickness
+            self.rect.left,
+            self.rect.top + ScreenSettings.marginHeight,
+            self.rect.width,
+            edge_thickness,
         )
         self.bottom_edge = pygame.Rect(
             self.rect.left,
@@ -50,7 +50,7 @@ class SingleRoom(pygame.sprite.Sprite):
             self.rect.left, self.rect.top, edge_thickness, self.rect.height
         )
         self.right_edge = pygame.Rect(
-            self.rect.right - edge_thickness,
+            self.rect.right - ScreenSettings.marginWidth,
             self.rect.top,
             edge_thickness,
             self.rect.height,
@@ -89,7 +89,7 @@ class SingleRoom(pygame.sprite.Sprite):
                     ScreenSettings.marginHeight,
                     ScreenSettings.roomHeight,
                     Shit().image.get_height(),
-                ):  
+                ):
                     wall = Shit()
                     if (
                         y > ScreenSettings.marginHeight + Shit().image.get_height()
@@ -129,12 +129,18 @@ class SingleRoom(pygame.sprite.Sprite):
                         start_y + j * wall_height,
                     )
                     self._walls.add(wall)
-    
+
         num_rocks = random.randint(1, 5)
         for _ in range(num_rocks):
             while True:
-                x = random.randint(ScreenSettings.marginWidth, ScreenSettings.roomWidth - ScreenSettings.marginWidth)
-                y = random.randint(ScreenSettings.marginHeight, ScreenSettings.roomHeight - ScreenSettings.marginHeight)
+                x = random.randint(
+                    ScreenSettings.marginWidth,
+                    ScreenSettings.roomWidth - ScreenSettings.marginWidth,
+                )
+                y = random.randint(
+                    ScreenSettings.marginHeight,
+                    ScreenSettings.roomHeight - ScreenSettings.marginHeight,
+                )
                 rock = Rock()
                 rock.rect.center = (x, y)
                 if not any(wall.rect.colliderect(rock.rect) for wall in self._walls):
@@ -198,9 +204,11 @@ class Shit(Wall):
             )
             self.rect = self.image.get_rect(center=self.rect.center)
 
+
 class Block(Wall):
     def __init__(self, block_image):
         super().__init__(block_image)
+
 
 def divide_image(img):
     image_width, image_height = img.get_size()
@@ -212,20 +220,30 @@ def divide_image(img):
         elements.append(part)
     return elements
 
+
 class Rock(Block):
     def __init__(self):
-        self.image = divide_image(pygame.image.load(ImportedImages.BlockImage.Rock.value))[0]
+        self.image = divide_image(
+            pygame.image.load(ImportedImages.BlockImage.Rock.value)
+        )[0]
         super().__init__(self.image)
+
 
 class Black_Treasure_Box(Block):
     def __init__(self):
-        self.image = divide_image(pygame.image.load(ImportedImages.BlockImage.Rock.value))[1]
+        self.image = divide_image(
+            pygame.image.load(ImportedImages.BlockImage.Rock.value)
+        )[1]
         super().__init__(self.image)
+
 
 class Gold_Treasure_Box(Block):
     def __init__(self):
-        self.image = divide_image(pygame.image.load(ImportedImages.BlockImage.Rock.value))[2]
+        self.image = divide_image(
+            pygame.image.load(ImportedImages.BlockImage.Rock.value)
+        )[2]
         super().__init__(self.image)
+
 
 class StartRoom(SingleRoom):
     def __init__(self):
