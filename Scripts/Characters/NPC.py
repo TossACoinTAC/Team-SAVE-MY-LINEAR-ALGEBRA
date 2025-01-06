@@ -34,7 +34,7 @@ class NPC(pygame.sprite.Sprite):
             return True
         return False
 
-    def update(self):
+    def update(self, keys = None):
         pass
 
 
@@ -63,7 +63,7 @@ class ChatBox(pygame.sprite.Sprite):
 
         # 游戏文本内容
         self.GAME_TEXTS = [
-            "Start chatting with the NPC! Type 'exit' or 'quit' to end the chat.",
+            "Welcome, brave adventurer! I sense that you are seeking a challenge worthy of your mettle. As the guardian of this fortress, it is my duty to test your wits and abilities. Type 'exit' or 'quit' to end the chat.",
         ]
         self.chat_log.append(self.GAME_TEXTS[0])
 
@@ -98,8 +98,14 @@ class ChatBox(pygame.sprite.Sprite):
                     # 调用 LLM_chat 函数获取回复
                     response = LLM_chat(self.input_text.strip())
                     self.chat_log.append(f"NPC: {response}")
-
                     self.input_text = ""
+
+                if "$$%#@#$$" in response:
+                    PlayerSettings.PlayerBuff = 1
+                if "$$@*@#$$" in response:
+                    PlayerSettings.PlayerBuff = 2
+                if "$$#*&&$$" in response:
+                    PlayerSettings.PlayerBuff = 3
 
             elif event.key == K_BACKSPACE:
                 self.input_text = self.input_text[:-1]
@@ -112,7 +118,6 @@ class ChatBox(pygame.sprite.Sprite):
         max_width = ScreenSettings.screenWidth - 40
         current_line = []
         current_width = 0
-        self.linenumber = 1
         for word in words:
             word_width, word_height = self.FONT.size(word)
             if current_width + word_width + space_width > max_width:
@@ -129,7 +134,7 @@ class ChatBox(pygame.sprite.Sprite):
             self.render_text(" ".join(current_line), x, y, color)
 
 
-"""
+
 pygame.init()
 screen = pygame.display.set_mode((ScreenSettings.screenWidth, ScreenSettings.screenHeight))
 pygame.display.set_caption("ChatBox Game")
@@ -156,7 +161,7 @@ while run_game:
 
 # 退出游戏
 pygame.quit()
-
+'''
 
 # 初始化 Pygame
 pygame.init()
@@ -234,4 +239,4 @@ while run_game:
 
 # 退出游戏
 pygame.quit()
-"""
+'''
