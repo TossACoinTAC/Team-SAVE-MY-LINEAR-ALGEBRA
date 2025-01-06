@@ -170,10 +170,28 @@ class Door(pygame.sprite.Sprite):
         )
         self.rect = self.image.get_rect()
         self.location_tag = location_tag
+        self._is_open = True
         match doorImage:
             case ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR.value:
-                print("closed wood door initialized")
                 self.type_tag = "Wood"
+            case ImportedImages.ClosedDoorImages.CLOSED_SHOP_DOOR.value:
+                self.type_tag = "Shop"
+            case ImportedImages.ClosedDoorImages.CLOSED_TREASURE_DOOR.value:
+                self.type_tag = "Treasure"
+            case ImportedImages.ClosedDoorImages.CLOSED_SECRET_DOOR.value:
+                self.type_tag = "Secret"
+            case ImportedImages.ClosedDoorImages.CLOSED_BLUEWOMB_DOOR.value:
+                self.type_tag = "BlueWomb"
+            case ImportedImages.ClosedDoorImages.CLOSED_CATACOMB_DOOR.value:
+                self.type_tag = "Catacomb"
+
+    @property
+    def is_open(self):
+        return self._is_open
+
+    @is_open.setter
+    def is_open(self, value: bool):
+        self._is_open = value
 
 
 class Frame(pygame.sprite.Sprite):
@@ -267,3 +285,23 @@ class StartRoom(SingleRoom):
 class Shop(SingleRoom):
     def __init__(self):
         super().__init__(ImportedImages.RoomImages.SHOP.value)
+
+
+class TreasureRoom(SingleRoom):
+    def __init__(self):
+        super().__init__(ImportedImages.RoomImages.TREASURE.value)
+
+
+class SecretRoom(SingleRoom):
+    def __init__(self):
+        super().__init__(ImportedImages.RoomImages.SECRET.value)
+
+
+class BlueWomb(SingleRoom):
+    def __init__(self):
+        super().__init__(ImportedImages.RoomImages.BLUEWOMB.value)
+
+
+class BossRoom(SingleRoom):
+    def __init__(self):
+        super().__init__(ImportedImages.RoomImages.CATACOMB.value)
