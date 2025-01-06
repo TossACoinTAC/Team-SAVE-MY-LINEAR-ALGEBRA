@@ -33,6 +33,7 @@ class Player(pygame.sprite.Sprite):
 
         #planting bomb
         self.bomb_group = pygame.sprite.GroupSingle()
+        self.explosion_group = pygame.sprite.GroupSingle()
 
     @property
     def tears(self):
@@ -100,6 +101,8 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_e] and not self.bomb_group.sprites():
             new_bomb = Bomb(self.rect.center)
             self.bomb_group.add(new_bomb)
+            new_explosion = Explosion(self.rect.center)
+            self.explosion_group.add(new_explosion)
 
 
     def update(self, keys):
@@ -107,7 +110,9 @@ class Player(pygame.sprite.Sprite):
         self.shoot(keys)
         self.planting(keys)
         self._tears.update()
+
         self.bomb_group.update()
+        self.explosion_group.update()
 
 
 # class Heart(pygame.sprite.Sprite):
@@ -224,6 +229,10 @@ class Bomb(pygame.sprite.Sprite):
             )
         self.image = self.frame[0]
         self.rect = self.image.get_rect(center=spawn_pos)
+
+        self.radius = BombSettings.affect_radius   #伤害半径
+        self.power = BombSettings.power   #伤害值
+
         self.timer = 0
         self.frame_index = 0 
         self.flicker_timer = 0
@@ -237,6 +246,40 @@ class Bomb(pygame.sprite.Sprite):
             self.flicker_timer += 1
 
         if self.flicker_timer >= 9:
+            self.kill()
+
+    def update(self):
+        self.explode_animation()
+
+class Explosion(pygame.sprite.Sprite):    #just act as an animation
+    def __init__(self, spawn_pos: Vector2):
+        super().__init__()
+        self.frame_rects = ExplosionSettings.explosion_frame_rects
+        self.sheet = pygame.image.load(ImportedImages.ExplosionImage)
+        self.frame = []
+        for i in range(16):
+            tmp_image = get_images(
+                self.sheet, *self.frame_rects[i], (0, 0, 0), 3.0
+            )
+            self.frame.append(
+                pygame.transform.scale(
+                    tmp_image, (ExplosionSettings.explosionWidth, ExplosionSettings.explosionHeight)
+                )
+            )
+        self.image = self.frame[8]
+        self.rect = self.image.get_rect(center=spawn_pos)
+
+        self.timer = 0
+        self.frame_index = 8
+    
+    def explode_animation(self):
+        self.image = self.frame[self.frame_index]
+        current_time = pygame.time.get_ticks()
+        if current_time - self.timer > 200:
+            self.timer = current_time
+            self.frame_index = (self.frame_index + 1)%16
+
+        if self.frame_index == 7:
             self.kill()
 
     def update(self):
