@@ -36,7 +36,10 @@ class GameManager:
         self.room_group.add(self.room)
 
         self.enemy_group = pygame.sprite.Group()
+
         self.npc_group = pygame.sprite.Group()
+        npc1 = NPC()
+        self.npc_group.add(npc1)
 
     def set_screen(self):
         self.screen = pygame.display.set_mode(
@@ -67,6 +70,7 @@ class GameManager:
             case Scenes.START_ROOM:
                 self.update_sprite(self.room_group)
                 self.update_sprite(self.isaac_group, self.get_keys())
+                self.update_sprite(self.npc_group, self.get_keys())
                 self.isaac.tears.draw(self.screen)
                 self.room.get_walls().draw(self.screen)
 
