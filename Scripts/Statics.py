@@ -5,19 +5,12 @@ from enum import Enum
 class Events:
     # Scene Changes
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
-    IN_STRATROOM = pygame.USEREVENT + 2
     TO_COMMONROOM = pygame.USEREVENT + 3
-    IN_COMMONROOM = pygame.USEREVENT + 4
     TO_SHOP = pygame.USEREVENT + 5
-    IN_SHOP = pygame.USEREVENT + 6
     TO_TREASURE = pygame.USEREVENT + 7
-    IN_TREASURE = pygame.USEREVENT + 8
     TO_SECRET = pygame.USEREVENT + 9
-    IN_SECRET = pygame.USEREVENT + 10
     TO_BLUEWOMB = pygame.USEREVENT + 11
-    IN_BLUEWOMB = pygame.USEREVENT + 12
     TO_CATACOMB = pygame.USEREVENT + 13
-    IN_CATACOMB = pygame.USEREVENT + 14
 
     # States
     GAME_OVER = pygame.USEREVENT + 21

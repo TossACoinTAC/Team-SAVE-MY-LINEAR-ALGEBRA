@@ -31,9 +31,10 @@ class GameManager:
 
         self.main_menu: pygame.sprite.Group = MainMenu()
 
-        self.room_group = pygame.sprite.GroupSingle()
+        self.room_group = pygame.sprite.Group()
         self.room = StartRoom()
         self.room_group.add(self.room)
+        self.new_room = None
 
         self.enemy_group = pygame.sprite.Group()
         self.npc_group = pygame.sprite.Group()
@@ -87,8 +88,6 @@ class GameManager:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
                     # self.bgm_player.play("STARTROOM", -1)    # need bgm here , can be a common bgm for all rooms
-                case Events.IN_STRATROOM:
-                    pass
 
     def detect_collision(self):
         # detect isaac-walls collision
