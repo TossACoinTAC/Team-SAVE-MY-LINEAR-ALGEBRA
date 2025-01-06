@@ -97,6 +97,7 @@ class PlayerSettings:
     playerSpeed = 3
     PlayerAttackSpeed = 0.5
     PlayerHP = 6
+    PlayerBuff = 0
 
 
 class TearSettings:
