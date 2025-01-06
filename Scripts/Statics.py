@@ -3,14 +3,29 @@ from enum import Enum
 
 
 class Events:
+    # Scene Changes
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
-    WALL_COLLIDE = pygame.USEREVENT + 11
+    TO_COMMONROOM = pygame.USEREVENT + 3
+    TO_SHOP = pygame.USEREVENT + 5
+    TO_TREASURE = pygame.USEREVENT + 7
+    TO_SECRET = pygame.USEREVENT + 9
+    TO_BLUEWOMB = pygame.USEREVENT + 11
+    TO_CATACOMB = pygame.USEREVENT + 13
+
+    # States
     GAME_OVER = pygame.USEREVENT + 21
+    ROOM_CLEAR = pygame.USEREVENT + 22
 
 
 class Scenes(Enum):
     MAIN_MENU = 0
     START_ROOM = 1
+    COMMON_ROOM = 2
+    SHOP = 3
+    TREASURE = 4
+    SECRET = 5
+    BLUEWOMB = 6
+    CATACOMB = 7
 
 
 # Files
@@ -35,12 +50,20 @@ class ImportedImages:
         CATACOMB = "Src/Textures/Map/catacomb.png"  # For Boss Room ?
 
     class OpenDoorImages(Enum):
-        OPEN_Wood_DOOR = "Src/Textures/Map/OpenWoodDoor.png"
+        OPEN_WOOD_DOOR = "Src/Textures/Map/OpenWoodDoor.png"
+        OPEN_SHOP_DOOR = "Src/Textures/Map/OpenShopDoor.png"
+        OPEN_TREASURE_DOOR = "Src/Textures/Map/OpenTreasureDoor.png"
+        OPEN_SECRET_DOOR = "Src/Textures/Map/OpenStoneDoor.png"
+        OPEN_BLUEWOMB_DOOR = "Src/Textures/Map/OpenBlueWombDoor.png"
+        OPEN_CATACOMB_DOOR = "Src/Textures/Map/OpenDevilDoor.png"
 
     class ClosedDoorImages(Enum):
-        CLOSED_WOOD_DOOR = "Src/Textures/Map/ClosedWoodDoor.png"
+        CLOSED_WOOD_DOOR = "Src/Textures/Map/ClosedWoodDoor.png"  # to common room
         CLOSED_SHOP_DOOR = "Src/Textures/Map/ClosedShopDoor.png"
         CLOSED_TREASURE_DOOR = "Src/Textures/Map/ClosedTreasureDoor.png"
+        CLOSED_SECRET_DOOR = "Src/Textures/Map/ClosedStoneDoor.png"
+        CLOSED_BLUEWOMB_DOOR = "Src/Textures/Map/ClosedBlueWombDoor.png"
+        CLOSED_CATACOMB_DOOR = "Src/Textures/Map/ClosedDevilDoor.png"
 
     class ShitImages(Enum):
         TYPE_0 = "Src/Textures/Play/poops/poops (1).png"

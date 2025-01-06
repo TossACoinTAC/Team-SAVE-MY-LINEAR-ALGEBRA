@@ -31,9 +31,10 @@ class GameManager:
 
         self.main_menu: pygame.sprite.Group = MainMenu()
 
-        self.room_group = pygame.sprite.GroupSingle()
+        self.room_group = pygame.sprite.Group()
         self.room = StartRoom()
         self.room_group.add(self.room)
+        self.new_room = None
 
         self.enemy_group = pygame.sprite.Group()
 
@@ -81,6 +82,12 @@ class GameManager:
                 case pygame.QUIT:
                     pygame.quit()
                     exit()
+                case Events.GAME_OVER:
+                    pass
+                case Events.ROOM_CLEAR:
+                    for door in self.room.get_doors():
+                        door: Door
+                        door.is_open = True
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
@@ -88,17 +95,18 @@ class GameManager:
 
     def detect_collision(self):
         # detect isaac-walls collision
+        if (
+            pygame.sprite.spritecollide(self.isaac, self.room.get_walls(), False)
+        ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
+            self.isaac.rect.move_ip(-self.isaac.movement)
+
         collided_isaac_and_doors = pygame.sprite.spritecollide(
             self.isaac, self.room.get_doors(), False
         )
-        if (
-            pygame.sprite.spritecollide(self.isaac, self.room.get_walls(), False)
-            or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False)
-            or collided_isaac_and_doors
-        ):
-            self.isaac.rect.move_ip(-self.isaac.movement)
         for door in collided_isaac_and_doors:
             door: Door
+            if door.is_open:
+                pass
             print(door.location_tag)
 
         # detect tears-walls collision
@@ -111,13 +119,9 @@ class GameManager:
             for wall in walls:
                 if isinstance(wall, Shit):
                     wall.destroyed()
+
         collided_tears_and_frames = pygame.sprite.groupcollide(
             self.isaac.tears, self.room.get_frame(), False, False
         )
         for tear, frame in collided_tears_and_frames.items():
-            tear.state = "die"
-        collided_tears_and_doors = pygame.sprite.groupcollide(
-            self.isaac.tears, self.room.get_doors(), False, False
-        )
-        for tear, doors in collided_tears_and_doors.items():
             tear.state = "die"

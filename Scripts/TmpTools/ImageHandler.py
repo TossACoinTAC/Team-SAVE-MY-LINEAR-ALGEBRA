@@ -55,26 +55,26 @@ def HandleDoorImage():
 
     door_image = pygame.image.load("data/textures/room/doors.png")
 
-    door_width, door_height = door_image.get_size()
+    image_width, image_height = door_image.get_size()
 
-    for i in range(10):
-        pass
+    door_types = ["Stone", "BlueWomb", "Blood", "Devil", "Treasure"]
 
-    door_closed_0 = door_image.subsurface((0, 0, door_width // 4, door_height))
-    door_closed_1 = door_image.subsurface(
-        (door_width // 4, 0, door_width // 4, door_height)
-    )
-    door_closed_2 = door_image.subsurface(
-        (door_width // 2, 0, door_width // 4, door_height)
-    )
-    door_open = door_image.subsurface(
-        (3 * door_width // 4, 0, door_width // 4, door_height)
-    )
-
-    pygame.image.save(door_open, "Src/Textures/Map/OpenDoor.png")
-    pygame.image.save(door_closed_0, "Src/Textures/Map/ClosedDoor0.png")
-    pygame.image.save(door_closed_1, "Src/Textures/Map/ClosedDoor1.png")
-    pygame.image.save(door_closed_2, "Src/Textures/Map/ClosedDoor2.png")
+    for i in range(5):
+        door_closed = door_image.subsurface(
+            ((3 + i) * image_width // 11, 0, image_width // 11, image_height // 6)
+        )
+        door_open = door_image.subsurface(
+            (
+                (3 + i) * image_width // 11,
+                image_height // 5,
+                image_width // 11,
+                image_height // 6,
+            )
+        )
+        pygame.image.save(
+            door_closed, f"Src/Textures/Map/Closed{door_types[i]}Door.png"
+        )
+        pygame.image.save(door_open, f"Src/Textures/Map/Open{door_types[i]}Door.png")
 
 
 # HandleRoomImage()
