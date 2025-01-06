@@ -38,6 +38,7 @@ class ImportedImages:
     tear_pop_Image = "data/textures/tears/tears_pop.png"
     BldtearImage = "Src/Textures/Play/Tear_002.png"
     heartImage = "Src/Textures/Play/Heart.png"
+    BombImage = "Src/Textures/Play/bomb.png"
 
     # Rooms
     class RoomImages(Enum):
@@ -158,6 +159,15 @@ class TearSettings:
         (768, 64, 64, 64),
         (832, 64, 64, 64),
         (896, 64, 64, 64),
+    ]
+
+class BombSettings:
+    bombWidth = 40
+    bombHeight = 42
+    bomb_frame_rects = [
+        (0, 0, 40, 42),
+        (40, 0, 40, 42),
+        (80, 0, 40, 42),
     ]
 
 

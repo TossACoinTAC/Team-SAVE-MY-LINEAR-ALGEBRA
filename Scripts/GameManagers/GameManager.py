@@ -73,6 +73,7 @@ class GameManager:
                 self.update_sprite(self.isaac_group, self.get_keys())
                 self.update_sprite(self.npc_group, self.get_keys())
                 self.isaac.tears.draw(self.screen)
+                self.isaac.bomb_group.draw(self.screen)
                 self.room.get_walls().draw(self.screen)
 
     def deal_events(self):
