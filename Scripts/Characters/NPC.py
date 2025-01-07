@@ -107,6 +107,10 @@ class ChatBox(pygame.sprite.Sprite):
             self.input_text = self.input_text[:-1]
             self.last_key = pygame.K_BACKSPACE
 
+        elif keys[pygame.K_SPACE] and self.last_key != pygame.K_SPACE:
+            self.input_text += " "
+            self.last_key = pygame.K_SPACE
+
         else:
             for key in range(len(keys)):
                 if keys[key] and self.last_key != key:
