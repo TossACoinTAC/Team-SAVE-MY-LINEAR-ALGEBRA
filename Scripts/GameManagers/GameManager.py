@@ -16,12 +16,27 @@ class GameManager:
     def __init__(self):
         self.set_screen()
         self.set_icon()
+        self.set_room()
+        self.set_issac()
+        self.set_npc()
+        self.set_spawn_monster()
+        self.set_bgm()
+        self.set_scenes()
+        self.set_clock()
+
+    # SET
+    def set_scenes(self):
+        self.active_scene = Scenes.MAIN_MENU
+        self.main_menu: pygame.sprite.Group = MainMenu()
+
+    def set_clock(self):
         self.clock = pygame.time.Clock()
+
+    def set_bgm(self):
         self.bgm_player = BGMPlayer()
         self.bgm_player.play("MAIN_THEME", -1)
 
-        self.active_scene = Scenes.MAIN_MENU
-
+    def set_issac(self):
         self.isaac_group = pygame.sprite.GroupSingle()
         self.isaac = Player(
             spawn_pos=0.5
@@ -29,13 +44,18 @@ class GameManager:
         )
         self.isaac_group.add(self.isaac)
 
-        self.main_menu: pygame.sprite.Group = MainMenu()
+    def set_npc(self):
+        self.npc_group = pygame.sprite.Group()
+        npc1 = NPC()
+        self.npc_group.add(npc1)
 
+    def set_room(self):
         self.room_group = pygame.sprite.Group()
         self.room = StartRoom()
         self.room_group.add(self.room)
         self.new_room = None
 
+    def set_spawn_monster(self):
         self.enemy_group = pygame.sprite.Group()
 
         self.npc_group = pygame.sprite.GroupSingle()
@@ -109,12 +129,49 @@ class GameManager:
                 case Events.BOMB_EXPLOSION:
                     pos = event.pos
                     radius = event.radius
-                    for group in [self.enemy_group, self.npc_group, self.room.get_walls(), self.isaac_group]:
+                    for group in [
+                        self.enemy_group,
+                        self.npc_group,
+                        self.room.get_walls(),
+                        self.isaac_group,
+                    ]:
                         for entity in group:
                             if Vector2(entity.rect.center).distance_to(pos) <= radius:
                                 entity.kill()
+
     def detect_collision(self):
-        # detect isaac-walls collision
+        self.detect_collision_issac_and_walls()
+        self.detect_collision_tears_and_walls()
+        self.detect_collision_tears_and_monsters()
+
+    def detect_collision_tears_and_monsters(self):
+        collided_tears_and_monsters = pygame.sprite.groupcollide(
+            self.isaac.tears, self.enemy_group, False, False)
+        for tear, enemies in collided_tears_and_monsters.items():
+            for enemy in enemies:
+                if tear.state == 'live':
+                    enemy.HP -= 1
+            tear.state = 'die'
+
+    def detect_collision_tears_and_walls(self):
+        # detect tears-walls collision
+        collided_tears_and_walls = pygame.sprite.groupcollide(
+            self.isaac.tears, self.room.get_walls(), False, False
+        )
+        for tear, walls in collided_tears_and_walls.items():
+            tear: Tear  # once for all below, sweet
+            for wall in walls:
+                if tear.state == 'live' and isinstance(wall, Shit):
+                    wall.destroyed()
+            tear.state = "die"
+
+        collided_tears_and_frames = pygame.sprite.groupcollide(
+            self.isaac.tears, self.room.get_frame(), False, False
+        )
+        for tear, frame in collided_tears_and_frames.items():
+            tear.state = "die"
+
+    def detect_collision_issac_and_walls(self):
         if (
             pygame.sprite.spritecollide(self.isaac, self.room.get_walls(), False)
         ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
