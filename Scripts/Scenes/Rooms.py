@@ -142,12 +142,12 @@ class SingleRoom(pygame.sprite.Sprite):
         for _ in range(num_rocks):
             while True:
                 x = random.randint(
-                    ScreenSettings.marginWidth,
-                    ScreenSettings.roomWidth - ScreenSettings.marginWidth,
+                    ScreenSettings.marginWidth + 100,
+                    ScreenSettings.roomWidth - ScreenSettings.marginWidth - 100,
                 )
                 y = random.randint(
-                    ScreenSettings.marginHeight,
-                    ScreenSettings.roomHeight - ScreenSettings.marginHeight,
+                    ScreenSettings.marginHeight + 100,
+                    ScreenSettings.roomHeight - ScreenSettings.marginHeight - 100,
                 )
                 rock = Rock()
                 rock.rect.center = (x, y)

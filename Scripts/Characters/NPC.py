@@ -1,7 +1,8 @@
 from pygame import *
 from Statics import *
 from Characters.Player import Player
-from Characters.LLM import *
+from LLM import *
+import pygame.event as ev 
 
 
 class NPC(pygame.sprite.Sprite):
@@ -16,25 +17,11 @@ class NPC(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (500, 500)  # 随便设的地方，有商店了可以让他再商店里生成
 
-    def gen_chatbox(self, Chatboxes, chatbox):
-        Chatboxes.empty()
-        Chatboxes.add(chatbox)
-        Chatboxes.update()
-        Chatboxes.draw(
-            pygame.display.set_mode(
-                (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
-            )
-        )
+    def gen_chatbox(self):
+        ev.post(ev.Event(Events.TO_CHATBOX))
 
-    def hit_player(self, player: Player):
-        if (
-            abs(self.rect.x - player.rect.x) <= 10
-            and abs(self.rect.x - player.rect.y) <= 10
-        ):
-            return True
-        return False
 
-    def update(self):
+    def update(self, keys = None):
         pass
 
 
@@ -54,6 +41,7 @@ class ChatBox(pygame.sprite.Sprite):
         self.chat_log = []
         self.current_step = 0
         self.input_text = ""
+        self.last_key = None
 
         # 定义字体和颜色
         pygame.font.init()
@@ -63,22 +51,24 @@ class ChatBox(pygame.sprite.Sprite):
 
         # 游戏文本内容
         self.GAME_TEXTS = [
-            "Start chatting with the NPC! Type 'exit' or 'quit' to end the chat.",
+            "Welcome, brave adventurer! I sense that you are seeking a challenge worthy of your mettle. As the guardian of this fortress, it is my duty to test your wits and abilities. Type 'exit' or 'quit' to end the chat.",
         ]
         self.chat_log.append(self.GAME_TEXTS[0])
 
-        self.linenumber = 1
+        self.linenumber = 2
+        self.y_offset = 20
 
     def render_text(self, text, x, y, color=(255, 255, 255)):
         text_surface = self.FONT.render(text, True, color)
         self.image.blit(text_surface, (x, y))
 
-    def update(self):
+    def update(self, keys):
         # 显示聊天日志
-        y_offset = 20
-        for line in self.chat_log[-5:]:  # 显示最后 10 条记录
-            self.render_wrapped_text(line, 20, y_offset)
-            y_offset += 40 * self.linenumber
+        self.image.fill(self.BG_COLOR)
+        self.y_offset = 20
+        for line in self.chat_log[-2:]:  # 显示最后 2 条记录
+            self.render_wrapped_text(line, 20, self.y_offset)
+            self.y_offset += 25
 
         # 显示输入框
         pygame.draw.rect(
@@ -86,25 +76,34 @@ class ChatBox(pygame.sprite.Sprite):
             self.INPUT_COLOR,
             (20, ScreenSettings.screenHeight - 60, ScreenSettings.screenWidth - 40, 40),
         )
+        
+        self.handle_input(keys)
         self.render_wrapped_text(self.input_text, 30, ScreenSettings.screenHeight - 50)
 
-    def handle_input(self, event):
-        if event.type == KEYDOWN:
-            if event.key == K_RETURN:
-                if self.input_text.strip():
-                    # 添加玩家输入到聊天日志
-                    self.chat_log.append(f"You: {self.input_text.strip()}")
+    def handle_input(self, keys):
+        if keys[pygame.K_RETURN] and self.last_key != pygame.K_RETURN:
+            if self.input_text.strip():
+                # 添加玩家输入到聊天日志
+                self.chat_log.append(f"You: {self.input_text.strip()}")
 
-                    # 调用 LLM_chat 函数获取回复
-                    response = LLM_chat(self.input_text.strip())
-                    self.chat_log.append(f"NPC: {response}")
+                # 调用 LLM_chat 函数获取回复
+                response = LLM_chat(self.input_text.strip(), messages)
+                #print(response)
+                self.chat_log.append(f"NPC: {response}")
+                self.input_text = ""
 
-                    self.input_text = ""
+            self.last_key = pygame.K_RETURN
 
-            elif event.key == K_BACKSPACE:
-                self.input_text = self.input_text[:-1]
-            else:
-                self.input_text += event.unicode
+        elif keys[pygame.K_BACKSPACE] and self.last_key != pygame.K_BACKSPACE:
+            self.input_text = self.input_text[:-1]
+            self.last_key = pygame.K_BACKSPACE
+
+        else:
+            for key in range(len(keys)):
+                if keys[key] and self.last_key != key:
+                    self.input_text += pygame.key.name(key)
+                    self.last_key = key
+                    break
 
     def render_wrapped_text(self, text, x, y, color=(255, 255, 255)):
         words = text.split(" ")
@@ -112,7 +111,6 @@ class ChatBox(pygame.sprite.Sprite):
         max_width = ScreenSettings.screenWidth - 40
         current_line = []
         current_width = 0
-        self.linenumber = 1
         for word in words:
             word_width, word_height = self.FONT.size(word)
             if current_width + word_width + space_width > max_width:
@@ -129,7 +127,7 @@ class ChatBox(pygame.sprite.Sprite):
             self.render_text(" ".join(current_line), x, y, color)
 
 
-"""
+'''
 pygame.init()
 screen = pygame.display.set_mode((ScreenSettings.screenWidth, ScreenSettings.screenHeight))
 pygame.display.set_caption("ChatBox Game")
@@ -234,4 +232,4 @@ while run_game:
 
 # 退出游戏
 pygame.quit()
-"""
+'''

@@ -76,6 +76,7 @@ class Events:
     # States
     GAME_OVER = pygame.USEREVENT + 21
     ROOM_CLEAR = pygame.USEREVENT + 22
+    BOMB_EXPLOSION = pygame.USEREVENT + 23
 
 
 class Scenes(Enum):
@@ -99,6 +100,8 @@ class ImportedImages:
     tear_pop_Image = "data/textures/tears/tears_pop.png"
     BldtearImage = "Src/Textures/Play/Tear_002.png"
     heartImage = "Src/Textures/Play/Heart.png"
+    BombImage = "Src/Textures/Play/bomb.png"
+    ExplosionImage = "Src/Textures/Play/effect_029_explosion.png"
 
     # Rooms
     class RoomImages(Enum):
@@ -181,6 +184,7 @@ class PlayerSettings:
     playerSpeed = 3
     PlayerAttackSpeed = 0.5
     PlayerHP = 6
+    PlayerBuff = 0
 
 
 class TearSettings:
@@ -220,6 +224,24 @@ class TearSettings:
         (896, 64, 64, 64),
     ]
 
+class BombSettings:
+    bombWidth = 40
+    bombHeight = 42
+    bomb_frame_rects = [
+        (0, 0, 40, 42),
+        (40, 0, 40, 42),
+        (80, 0, 40, 42),
+    ]
+    affect_radius = 100
+    power = 3
+
+class ExplosionSettings:
+    explosionWidth = 96
+    explosionHeight = 96
+    explosion_frame_rects = []
+    for i in range(4):
+        for j in range(4):
+            explosion_frame_rects.append((96 * j, 96 * i, 96, 96))
 
 class MainMenuSettings:
     class StartButton:
