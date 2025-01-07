@@ -1,7 +1,7 @@
 from pygame import *
 from Statics import *
 from Characters.Player import Player
-from LLM import *
+from Characters.LLM import *
 import pygame.event as ev 
 
 
@@ -17,8 +17,9 @@ class NPC(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (500, 500)  # 随便设的地方，有商店了可以让他再商店里生成
 
-    def gen_chatbox(self):
-        ev.post(ev.Event(Events.TO_CHATBOX))
+    def gen_chatbox(self, keys):
+        if keys[pygame.K_q]:
+            ev.post(ev.Event(Events.TO_CHATBOX))
 
 
     def update(self, keys = None):
@@ -90,6 +91,14 @@ class ChatBox(pygame.sprite.Sprite):
                 response = LLM_chat(self.input_text.strip(), messages)
                 #print(response)
                 self.chat_log.append(f"NPC: {response}")
+
+                if "quit" in self.input_text.strip() or "exit" in self.input_text.strip():
+                    for sprite in self.groups():
+                        if isinstance(sprite, ChatBox):
+                            sprite.kill()
+                    ev.post(ev.Event(Events.EXIT_CHATBOX))
+                    #self.kill()
+                
                 self.input_text = ""
 
             self.last_key = pygame.K_RETURN
@@ -97,6 +106,10 @@ class ChatBox(pygame.sprite.Sprite):
         elif keys[pygame.K_BACKSPACE] and self.last_key != pygame.K_BACKSPACE:
             self.input_text = self.input_text[:-1]
             self.last_key = pygame.K_BACKSPACE
+
+        elif keys[pygame.K_SPACE] and self.last_key != pygame.K_SPACE:
+            self.input_text += " "
+            self.last_key = pygame.K_SPACE
 
         else:
             for key in range(len(keys)):

@@ -5,7 +5,7 @@ from Characters.NPC import *
 from Characters.Enemies import *
 from Scenes.Rooms import *
 from Scenes.MainMenu import MainMenu
-
+from Scenes.Heart import *
 
 class GameManager:
     # just an alias
@@ -19,12 +19,23 @@ class GameManager:
         self.set_room()
         self.set_issac()
         self.set_npc()
-        self.set_spawn_monster()
+        self.set_spawn_enemies()
         self.set_bgm()
         self.set_scenes()
         self.set_clock()
+        self.set_heart()
+        self.set_chatbox()
 
     # SET
+    def set_spawn_enemies(self):
+        self.enemy_group = pygame.sprite.Group()
+        self.update_enemies_normal_state = 'True'
+        self.update_enemies_boss_state = 'True'
+
+    def set_heart(self):
+        self.heart = pygame.sprite.GroupSingle()
+        self.heart.add(Heart())
+    
     def set_scenes(self):
         self.active_scene = Scenes.MAIN_MENU
         self.main_menu: pygame.sprite.Group = MainMenu()
@@ -46,8 +57,8 @@ class GameManager:
 
     def set_npc(self):
         self.npc_group = pygame.sprite.Group()
-        npc1 = NPC()
-        self.npc_group.add(npc1)
+        self.npc1 = NPC()
+        self.npc_group.add(self.npc1)
 
     def set_room(self):
         self.room_group = pygame.sprite.Group()
@@ -55,13 +66,7 @@ class GameManager:
         self.room_group.add(self.room)
         self.new_room = None
 
-    def set_spawn_monster(self):
-        self.enemy_group = pygame.sprite.Group()
-
-        self.npc_group = pygame.sprite.GroupSingle()
-        self.npc1 = NPC()
-        self.npc_group.add(self.npc1)
-
+    def set_chatbox(self):
         self.Chatboxes = pygame.sprite.GroupSingle()
         chatbox = ChatBox()
         self.Chatboxes.add(chatbox)
@@ -85,14 +90,24 @@ class GameManager:
     def update_sprite(self, sprite: sprite.GroupSingle, keys=None):
         sprite.update(keys)
         sprite.draw(self.screen)
+    
+    def update_enemies_normal(self):
+        if self.update_enemies_normal_state == 'True':
+            for i in range(UpdateEnemiesSettings.flyNumber):
+                self.enemy_group.add(Fly())
+        self.update_enemies_normal_state = 'False'
 
     def update_scene(self, active_scene: Scenes):
         match active_scene:
+
             case Scenes.MAIN_MENU:
                 self.main_menu.update()
                 self.main_menu.draw(self.screen)
 
             case Scenes.START_ROOM:
+
+                self.update_enemies_normal()
+
                 self.update_sprite(self.room_group)
                 self.update_sprite(self.isaac_group, self.get_keys())
                 self.update_sprite(self.npc_group, self.get_keys())
@@ -100,6 +115,8 @@ class GameManager:
                 self.isaac.explosion_group.draw(self.screen)
                 self.isaac.bomb_group.draw(self.screen)
                 self.room.get_walls().draw(self.screen)
+                self.heart.update()
+                self.heart.draw(self.screen)
 
             case Scenes.CHAT_BOX:
                 self.update_sprite(self.Chatboxes, self.get_keys())
@@ -123,6 +140,8 @@ class GameManager:
                     # self.bgm_player.play("STARTROOM", -1)    # need bgm here , can be a common bgm for all rooms
                 case Events.TO_CHATBOX:
                     self.active_scene = Scenes.CHAT_BOX
+                case Events.EXIT_CHATBOX:
+                    self.active_scene = Scenes.START_ROOM
                 case Events.BOMB_EXPLOSION:
                     pos = event.pos
                     radius = event.radius
@@ -137,11 +156,20 @@ class GameManager:
                                 entity.kill()
 
     def detect_collision(self):
-        self.detect_collision_issac_and_walls()
+        self.detect_collision_isaac_and_walls()
         self.detect_collision_tears_and_walls()
-        self.detect_collision_tears_and_monsters()
+        self.detect_collision_tears_and_enemies()
+        self.detect_collision_isaac_and_npc()
+        self.detect_collision_isaac_and_enemies()
+    
+    def detect_collision_isaac_and_enemies(self):
+        collided_isaac_and_enemies = StaticMethods.mask_spritecollide(
+            self.isaac, self.enemy_group, False)
+        if collided_isaac_and_enemies:
+            self.heart.state = 'reduce'
 
-    def detect_collision_tears_and_monsters(self):
+
+    def detect_collision_tears_and_enemies(self):
         collided_tears_and_monsters = StaticMethods.mask_groupcollide(
             self.isaac.tears, self.enemy_group, False, False
         )
@@ -152,7 +180,7 @@ class GameManager:
             tear.state = "die"
 
     def detect_collision_tears_and_walls(self):
-        # detect tears-walls collision
+ 
         collided_tears_and_walls = StaticMethods.mask_groupcollide(
             self.isaac.tears, self.room.get_walls(), False, False
         )
@@ -169,7 +197,7 @@ class GameManager:
         for tear, frame in collided_tears_and_frames.items():
             tear.state = "die"
 
-    def detect_collision_issac_and_walls(self):
+    def detect_collision_isaac_and_walls(self):
         if (
             StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
         ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
@@ -184,26 +212,9 @@ class GameManager:
                 pass
             print(door.location_tag)
 
-        # detect tears-walls collision
-        collided_tears_and_walls = StaticMethods.mask_groupcollide(
-            self.isaac.tears, self.room.get_walls(), False, False
-        )
-        for tear, walls in collided_tears_and_walls.items():
-            tear: Tear  # once for all below, sweet
-            tear.state = "die"
-            for wall in walls:
-                if isinstance(wall, Shit):
-                    wall.destroyed()
-
-        collided_tears_and_frames = pygame.sprite.groupcollide(
-            self.isaac.tears, self.room.get_frame(), False, False
-        )
-        for tear, frame in collided_tears_and_frames.items():
-            tear.state = "die"
-
-        # detect isaac-npc collision
+    def detect_collision_isaac_and_npc(self):
         if (
-            abs(self.npc1.rect.x - self.isaac.rect.x) <= 10
-            and abs(self.npc1.rect.x - self.isaac.rect.y) <= 10
+            abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
+            and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
-            self.npc1.gen_chatbox()
+            self.npc1.gen_chatbox(self.get_keys())
