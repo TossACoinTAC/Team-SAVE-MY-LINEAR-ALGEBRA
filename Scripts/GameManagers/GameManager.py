@@ -66,7 +66,6 @@ class GameManager:
         chatbox = ChatBox()
         self.Chatboxes.add(chatbox)
 
-
     def set_screen(self):
         self.screen = pygame.display.set_mode(
             (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
@@ -104,8 +103,6 @@ class GameManager:
 
             case Scenes.CHAT_BOX:
                 self.update_sprite(self.Chatboxes, self.get_keys())
-
-            
 
     def deal_events(self):
         self.detect_collision()
@@ -145,23 +142,24 @@ class GameManager:
         self.detect_collision_tears_and_monsters()
 
     def detect_collision_tears_and_monsters(self):
-        collided_tears_and_monsters = pygame.sprite.groupcollide(
-            self.isaac.tears, self.enemy_group, False, False)
+        collided_tears_and_monsters = StaticMethods.mask_groupcollide(
+            self.isaac.tears, self.enemy_group, False, False
+        )
         for tear, enemies in collided_tears_and_monsters.items():
             for enemy in enemies:
-                if tear.state == 'live':
+                if tear.state == "live":
                     enemy.HP -= 1
-            tear.state = 'die'
+            tear.state = "die"
 
     def detect_collision_tears_and_walls(self):
         # detect tears-walls collision
-        collided_tears_and_walls = pygame.sprite.groupcollide(
+        collided_tears_and_walls = StaticMethods.mask_groupcollide(
             self.isaac.tears, self.room.get_walls(), False, False
         )
         for tear, walls in collided_tears_and_walls.items():
             tear: Tear  # once for all below, sweet
             for wall in walls:
-                if tear.state == 'live' and isinstance(wall, Shit):
+                if tear.state == "live" and isinstance(wall, Shit):
                     wall.destroyed()
             tear.state = "die"
 
@@ -203,7 +201,7 @@ class GameManager:
         for tear, frame in collided_tears_and_frames.items():
             tear.state = "die"
 
-        #detect isaac-npc collision
+        # detect isaac-npc collision
         if (
             abs(self.npc1.rect.x - self.isaac.rect.x) <= 10
             and abs(self.npc1.rect.x - self.isaac.rect.y) <= 10
