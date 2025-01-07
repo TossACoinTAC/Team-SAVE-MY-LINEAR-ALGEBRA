@@ -2,6 +2,67 @@ import pygame
 from enum import Enum
 
 
+class StaticMethods:
+    # Custom spritecollide using mask collision
+    @staticmethod
+    def mask_spritecollide(
+        sprite: pygame.sprite.Sprite, group: pygame.sprite.Group, dokill: bool
+    ) -> list:
+        collided_sprites = []
+
+        # Get the mask and rect for the main sprite
+        mask1 = pygame.mask.from_surface(sprite.image)
+        rect1 = sprite.rect
+
+        for group_sprite in group:
+            # Get the mask and rect for the group sprite
+            mask2 = pygame.mask.from_surface(group_sprite.image)
+            rect2 = group_sprite.rect
+
+            # Calculate the offset for collision checking
+            offset = (rect2.x - rect1.x, rect2.y - rect1.y)
+
+            # Check for a pixel-perfect collision using masks
+            if mask1.overlap(mask2, offset):
+                collided_sprites.append(group_sprite)
+
+                if dokill:
+                    group.remove(group_sprite)
+
+        return collided_sprites
+
+    @staticmethod
+    def mask_groupcollide(
+        group1: pygame.sprite.Group,
+        group2: pygame.sprite.Group,
+        dokill1: bool,
+        dokill2: bool,
+    ) -> dict:
+        collided = {}
+
+        for sprite1 in group1:
+            mask1 = pygame.mask.from_surface(sprite1.image)
+            rect1 = sprite1.rect
+
+            for sprite2 in group2:
+                mask2 = pygame.mask.from_surface(sprite2.image)
+                rect2 = sprite2.rect
+
+                offset = (rect2.x - rect1.x, rect2.y - rect1.y)
+
+                if mask1.overlap(mask2, offset):
+                    if sprite1 not in collided:
+                        collided[sprite1] = []
+                    collided[sprite1].append(sprite2)
+
+                    if dokill1:
+                        group1.remove(sprite1)
+                    if dokill2:
+                        group2.remove(sprite2)
+
+        return collided
+
+
 class Events:
     # Scene Changes
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
