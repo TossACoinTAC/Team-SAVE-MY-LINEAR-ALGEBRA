@@ -15,6 +15,7 @@ class Events:
     # States
     GAME_OVER = pygame.USEREVENT + 21
     ROOM_CLEAR = pygame.USEREVENT + 22
+    BOMB_EXPLOSION = pygame.USEREVENT + 23
 
 
 class Scenes(Enum):

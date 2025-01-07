@@ -2,6 +2,7 @@ from pygame import *
 from Statics import *
 from TmpTools.tools import *
 from GameManagers.BGMPlayer import BGMPlayer
+import pygame.event as ev
 
 
 class Player(pygame.sprite.Sprite):
@@ -246,6 +247,7 @@ class Bomb(pygame.sprite.Sprite):
             self.flicker_timer += 1
 
         if self.flicker_timer >= 9:
+            ev.post(ev.Event(Events.BOMB_EXPLOSION, {"pos": self.rect.center, "radius": self.radius, "power": self.power}))
             self.kill()
 
     def update(self):

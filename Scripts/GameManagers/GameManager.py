@@ -94,7 +94,13 @@ class GameManager:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
                     # self.bgm_player.play("STARTROOM", -1)    # need bgm here , can be a common bgm for all rooms
-
+                case Events.BOMB_EXPLOSION:
+                    pos = event.pos
+                    radius = event.radius
+                    for group in [self.enemy_group, self.npc_group, self.room.get_walls(), self.isaac_group]:
+                        for entity in group:
+                            if Vector2(entity.rect.center).distance_to(pos) <= radius:
+                                entity.kill()
     def detect_collision(self):
         # detect isaac-walls collision
         if (
