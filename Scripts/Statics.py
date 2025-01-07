@@ -12,6 +12,9 @@ class Events:
     TO_BLUEWOMB = pygame.USEREVENT + 11
     TO_CATACOMB = pygame.USEREVENT + 13
 
+    TO_CHATBOX = pygame.USEREVENT + 19
+    EXIT_CHATBOX = pygame.USEREVENT + 20
+
     # States
     GAME_OVER = pygame.USEREVENT + 21
     ROOM_CLEAR = pygame.USEREVENT + 22
@@ -27,6 +30,7 @@ class Scenes(Enum):
     SECRET = 5
     BLUEWOMB = 6
     CATACOMB = 7
+    CHAT_BOX = 11
 
 
 # Files
