@@ -38,9 +38,14 @@ class GameManager:
 
         self.enemy_group = pygame.sprite.Group()
 
-        self.npc_group = pygame.sprite.Group()
-        npc1 = NPC()
-        self.npc_group.add(npc1)
+        self.npc_group = pygame.sprite.GroupSingle()
+        self.npc1 = NPC()
+        self.npc_group.add(self.npc1)
+
+        self.Chatboxes = pygame.sprite.GroupSingle()
+        chatbox = ChatBox()
+        self.Chatboxes.add(chatbox)
+
 
     def set_screen(self):
         self.screen = pygame.display.set_mode(
@@ -77,6 +82,11 @@ class GameManager:
                 self.isaac.bomb_group.draw(self.screen)
                 self.room.get_walls().draw(self.screen)
 
+            case Scenes.CHAT_BOX:
+                self.update_sprite(self.Chatboxes, self.get_keys())
+
+            
+
     def deal_events(self):
         self.detect_collision()
         for event in pygame.event.get():
@@ -94,6 +104,8 @@ class GameManager:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
                     # self.bgm_player.play("STARTROOM", -1)    # need bgm here , can be a common bgm for all rooms
+                case Events.TO_CHATBOX:
+                    self.active_scene = Scenes.CHAT_BOX
                 case Events.BOMB_EXPLOSION:
                     pos = event.pos
                     radius = event.radius
@@ -133,3 +145,10 @@ class GameManager:
         )
         for tear, frame in collided_tears_and_frames.items():
             tear.state = "die"
+
+        #detect isaac-npc collision
+        if (
+            abs(self.npc1.rect.x - self.isaac.rect.x) <= 10
+            and abs(self.npc1.rect.x - self.isaac.rect.y) <= 10
+        ):
+            self.npc1.gen_chatbox()
