@@ -92,11 +92,11 @@ class GameManager:
     def detect_collision(self):
         # detect isaac-walls collision
         if (
-            pygame.sprite.spritecollide(self.isaac, self.room.get_walls(), False)
+            StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
         ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
-        collided_isaac_and_doors = pygame.sprite.spritecollide(
+        collided_isaac_and_doors = StaticMethods.mask_spritecollide(
             self.isaac, self.room.get_doors(), False
         )
         for door in collided_isaac_and_doors:
@@ -106,7 +106,7 @@ class GameManager:
             print(door.location_tag)
 
         # detect tears-walls collision
-        collided_tears_and_walls = pygame.sprite.groupcollide(
+        collided_tears_and_walls = StaticMethods.mask_groupcollide(
             self.isaac.tears, self.room.get_walls(), False, False
         )
         for tear, walls in collided_tears_and_walls.items():
