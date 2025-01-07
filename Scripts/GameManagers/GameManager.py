@@ -126,6 +126,8 @@ class GameManager:
                     # self.bgm_player.play("STARTROOM", -1)    # need bgm here , can be a common bgm for all rooms
                 case Events.TO_CHATBOX:
                     self.active_scene = Scenes.CHAT_BOX
+                case Events.EXIT_CHATBOX:
+                    self.active_scene = Scenes.START_ROOM
                 case Events.BOMB_EXPLOSION:
                     pos = event.pos
                     radius = event.radius
@@ -205,7 +207,7 @@ class GameManager:
 
         #detect isaac-npc collision
         if (
-            abs(self.npc1.rect.x - self.isaac.rect.x) <= 10
-            and abs(self.npc1.rect.x - self.isaac.rect.y) <= 10
+            abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
+            and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
-            self.npc1.gen_chatbox()
+            self.npc1.gen_chatbox(self.get_keys())
