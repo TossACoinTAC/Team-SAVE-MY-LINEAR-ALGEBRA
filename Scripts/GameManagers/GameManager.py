@@ -25,8 +25,14 @@ class GameManager:
         self.set_clock()
         self.set_heart()
         self.set_chatbox()
+        self.set_boss_shoot()
 
     # SET
+    def set_boss_shoot(self):
+        self.bossAttack = BossAttack()
+        self.bloodyTears = pygame.sprite.Group()
+
+
     def set_spawn_enemies(self):
         self.enemy_group = pygame.sprite.Group()
         self.update_enemies_normal_state = 'True'
@@ -34,7 +40,8 @@ class GameManager:
 
     def set_heart(self):
         self.heart = pygame.sprite.GroupSingle()
-        self.heart.add(Heart())
+        self._heart = Heart() 
+        self.heart.add(self._heart)
     
     def set_scenes(self):
         self.active_scene = Scenes.MAIN_MENU
@@ -50,8 +57,7 @@ class GameManager:
     def set_issac(self):
         self.isaac_group = pygame.sprite.GroupSingle()
         self.isaac = Player(
-            spawn_pos=0.5
-            * Vector2(ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+            spawn_pos = (640, 600)
         )
         self.isaac_group.add(self.isaac)
 
@@ -97,6 +103,25 @@ class GameManager:
                 self.enemy_group.add(Fly())
         self.update_enemies_normal_state = 'False'
 
+    def update_enemies_boss(self):
+        if self.update_enemies_boss_state == 'True':
+            for i in range(UpdateEnemiesSettings.bossNumber):
+                self.enemy_group.add(BossBody(), self.bossAttack)
+        self.update_enemies_boss_state = 'False'
+        if self.bossAttack.if_shoot == 'True':
+            vector_list1 = [(-1.732/2, -1/2), (-2/2, 0), (-1.732/2, 1/2), (-1/2, 1.732/2), (0, 2/2)]
+            vector_list2 = [(-1.732/2, 1/2), (-1/2, 1.732/2), (0, 2/2), (1/2, 1.732/2),(1.732/2, 1/2)]
+            vector_list3 = [(0, 2/2), (1/2, 1.732/2),(1.732/2, 1/2),(2/2, 0), (1.732/2, -1/2),(1/2, -1.732/2)]
+            if self.isaac.rect.x <= 462:
+                vector_list = vector_list1
+            elif self.isaac.rect.x >= 1280 - 462:
+                vector_list = vector_list3
+            else:
+                vector_list = vector_list2
+            for (direction_x, direction_y) in vector_list:
+                self.bloodyTears.add(BloodyTear(self.bossAttack.rect.x, self.bossAttack.rect.y, direction_x, direction_y))
+            self.bossAttack.if_shoot = 'False'
+
     def update_scene(self, active_scene: Scenes):
         match active_scene:
 
@@ -105,8 +130,10 @@ class GameManager:
                 self.main_menu.draw(self.screen)
 
             case Scenes.START_ROOM:
-
+                #制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
+                self.update_enemies_boss()
                 self.update_enemies_normal()
+                
 
                 self.update_sprite(self.room_group)
                 self.update_sprite(self.isaac_group, self.get_keys())
@@ -117,6 +144,10 @@ class GameManager:
                 self.room.get_walls().draw(self.screen)
                 self.heart.update()
                 self.heart.draw(self.screen)
+                self.enemy_group.update()
+                self.enemy_group.draw(self.screen)
+                self.bloodyTears.update()
+                self.bloodyTears.draw(self.screen)
 
             case Scenes.CHAT_BOX:
                 self.update_sprite(self.Chatboxes, self.get_keys())
@@ -161,13 +192,32 @@ class GameManager:
         self.detect_collision_tears_and_enemies()
         self.detect_collision_isaac_and_npc()
         self.detect_collision_isaac_and_enemies()
+        self.detect_collision_bloodytear_and_frames()
+        self.detect_collision_bloodytear_and_isaac()
+
+    def detect_collision_bloodytear_and_frames(self):
+        collided_bloodytear_and_frames = pygame.sprite.groupcollide(
+            self.bloodyTears, self.room.get_frame(), False, False)
+        for bloodytear, frame in collided_bloodytear_and_frames.items():
+            bloodytear.state = "die"
     
     def detect_collision_isaac_and_enemies(self):
         collided_isaac_and_enemies = StaticMethods.mask_spritecollide(
             self.isaac, self.enemy_group, False)
         if collided_isaac_and_enemies:
-            self.heart.state = 'reduce'
+            for heart in self.heart:
+                heart.state = 'reduce'
 
+    def detect_collision_bloodytear_and_isaac(self):
+        collided_isaac_and_bloodytear = StaticMethods.mask_spritecollide(
+            self.isaac, self.bloodyTears, False)
+
+        for bloodytear in collided_isaac_and_bloodytear:
+
+            if bloodytear.state == 'live':
+                for heart in self.heart:
+                    heart.state = 'reduce'
+                bloodytear.state = 'die'
 
     def detect_collision_tears_and_enemies(self):
         collided_tears_and_monsters = StaticMethods.mask_groupcollide(
@@ -177,7 +227,7 @@ class GameManager:
             for enemy in enemies:
                 if tear.state == "live":
                     enemy.HP -= 1
-            tear.state = "die"
+                    tear.state = "die"
 
     def detect_collision_tears_and_walls(self):
  
@@ -210,7 +260,7 @@ class GameManager:
             door: Door
             if door.is_open:
                 pass
-            print(door.location_tag)
+
 
     def detect_collision_isaac_and_npc(self):
         if (
