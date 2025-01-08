@@ -13,12 +13,14 @@ class Events:
     TO_SECRET = pygame.USEREVENT + 9
     TO_BLUEWOMB = pygame.USEREVENT + 11
     TO_CATACOMB = pygame.USEREVENT + 13
+    TO_MAIN = pygame.USEREVENT + 25
 
     TO_CHATBOX = pygame.USEREVENT + 19
     EXIT_CHATBOX = pygame.USEREVENT + 20
 
     # States
     GAME_OVER = pygame.USEREVENT + 21
+    GAME_WIN = pygame.USEREVENT + 24
     ROOM_CLEAR = pygame.USEREVENT + 22
     BOMB_EXPLOSION = pygame.USEREVENT + 23
 
@@ -33,6 +35,7 @@ class Scenes(Enum):
     BLUEWOMB = 6
     CATACOMB = 7
     CHAT_BOX = 11
+    GAMEWIN = 100
 
 
 # Files
@@ -104,6 +107,10 @@ class ImportedImages:
     Draw = "Src/Textures/Title/Draw1.png"
     bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar_full.png"
 
+    #GAMEWIN
+    ReplayButton = "Src/backselectwidget.png"
+    deathPortraits =  "Src/death portraits.png"
+
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
     Fly_die = "data/textures/enemies/fly_rip.png"
@@ -162,7 +169,7 @@ class UISettings:
 
 class BossSettings:
     class health_bar:
-        max = 100
+        max = 10
         width = 600
         height = 30
         x = 1280 / 2 - 600 / 2 + 50
@@ -332,6 +339,15 @@ class ShopSettings:
     class lucky:
         x = 800
         y = 480
+
+class GameWinSettings:
+    class death:
+        x = 1280 * 0.2
+        y = 5
+        MULTI = 3.0
+    class ReplayButton:
+        x = 1280 * 0.5 + 350
+        y = 720 * 0.6 + 30
 
 
 class MainMenuSettings:
