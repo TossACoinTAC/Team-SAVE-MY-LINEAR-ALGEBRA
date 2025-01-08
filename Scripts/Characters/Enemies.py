@@ -1,8 +1,8 @@
-import pygame
+from pygame import *
 from TmpTools.tools import *
 import random
 from Statics import *
-
+from math import *
 
 class Monster(pygame.sprite.Sprite):
     def __init__(
@@ -56,11 +56,15 @@ class Monster(pygame.sprite.Sprite):
         for frame_rect in frame_rects:
             frame.append(get_images(sheet, *frame_rect, (0, 0, 0), MULTI))
 
-    def update(self, tears):
+    def update(self):
 
         self.update_animation()
-        self.check_collision_kill(tears)
         self.update_position()
+        self.check_die()
+    
+    def check_die(self):
+        if self.HP <= 0:
+            self.state = 'die'
 
     def update_position(self):
         if self.move_mode == "straight":
@@ -119,11 +123,6 @@ class Monster(pygame.sprite.Sprite):
 
             self.image = self.frames_die[self.frames_index_die]
 
-    def check_collision_kill(self, tears):
-        if pygame.sprite.spritecollide(self, tears, False):
-            self.HP -= 1
-        if self.HP <= 0:
-            self.state = "die"
 
 
 class Fly(Monster):
@@ -140,3 +139,155 @@ class Fly(Monster):
             EnemiesSettings.Fly.HP,
             EnemiesSettings.Fly.speed,
         )
+
+class BossBody(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        
+        self.set_body_animation()
+
+        self.set_clock()
+        self.set_position()
+        self.set_HP()
+        self.if_beattacked = 'False'
+
+
+    
+    def set_HP(self):
+        self.HP = 100
+
+    def set_position(self):
+        self.rect.centerx = 0.5 * ScreenSettings.screenWidth
+        self.rect.centery = 0.3 * ScreenSettings.screenHeight
+
+    def set_clock(self):
+        self.animation_timer = 0
+        self.beattacked_timer = 0
+
+    def set_body_animation(self):
+        self.frames = []
+        self.frame_index = 0
+        self.frame_rects = BossSettings.Body.frame_rects
+        
+        sheet = pygame.image.load(ImportedImages.Boss)
+        for frame_rect in self.frame_rects:
+            self.frames.append(pygame.transform.scale(
+                get_images(sheet, *frame_rect, (0, 0, 0), 1.0),
+                (int(140 * 2.2), int(120 * 2.2))))
+
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect()
+
+    def update(self):
+
+        if self.if_beattacked == 'False':
+            current_time = pygame.time.get_ticks()
+            if self.animation_timer == 0:
+                self.animation_timer = current_time
+            elif current_time - self.animation_timer > 500:
+                self.frame_index += 1
+                self.frame_index %= len(self.frame_rects)
+                self.animation_timer = current_time
+            self.image = self.frames[self.frame_index]
+
+class BossAttack(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        
+        self.set_Attack_animation()
+        self.set_clock()
+        self.set_position()
+        self.state = 'sleep'
+        self.if_shoot = 'False'
+
+    def set_position(self):
+        self.rect.centerx = 0.5 * ScreenSettings.screenWidth
+        self.rect.centery = 0.25 * ScreenSettings.screenHeight
+
+    def set_clock(self):
+        self.timer = 0
+
+    def set_Attack_animation(self):
+
+        self.frames = []
+        self.frame_index = 0
+        self.frame_rects = BossSettings.attack.frame_rects
+        
+        sheet = pygame.image.load(ImportedImages.Boss)
+        for frame_rect in self.frame_rects:
+            self.frames.append(pygame.transform.scale(
+                get_images(sheet, *frame_rect, (0, 0, 0), 1.0),
+                (int(frame_rect[2] * 2.2), int(frame_rect[3] * 2.2))))
+
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        if self.state == 'awake':
+            duration = [125, 125, 125, 400, 400, 400, 125, 125]
+            self.current_time = pygame.time.get_ticks()
+            if self.timer == 0:
+                self.timer = self.current_time
+            elif self.current_time - self.timer > duration[self.frame_index]:
+                self.frame_index += 1
+                self.timer = self.current_time
+                if self.frame_index == 4:
+                    self.if_shoot = 'True'
+            self.image = self.frames[self.frame_index]
+            if self.frame_index == len(self.frame_rects) - 1:
+                self.state = 'sleep'
+                self.frame_index = 0
+        if self.state == 'sleep':
+            self.current_time = pygame.time.get_ticks()
+            if self.current_time - self.timer > random.randint(1000, 3000):
+                self.state = 'awake'
+        
+        
+
+class BloodyTear(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction_x, direction_y):
+        super().__init__()
+        self.set_animation()
+
+        self.image = self.frame[0]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = TearSettings.tearSpeed
+        self.timer = 0
+        self.direction = Vector2(direction_x, direction_y)
+
+    def set_animation(self):
+
+        self.state = "live"
+        self.frame = []
+        self.frame_index = 0
+        self.frame_rects = TearSettings.tear_frame_rects
+        self.sheet = pygame.image.load(ImportedImages.tear_pop_Image)
+        for i in range(len(self.frame_rects)//2):
+            self.frame.append(pygame.transform.scale(
+                get_images(self.sheet, *self.frame_rects[i + 15], (0, 0, 0), 1.0),
+                (TearSettings.tearWidth, TearSettings.tearHeight)))
+
+
+    def update(self):
+        self.rect.move_ip(self.direction * self.speed)
+
+
+        if self.state == "die":
+            self.speed = 0
+            self.update_animation()
+
+    def update_animation(self):
+
+        self.image = self.frame[self.frame_index]
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.timer > 125:
+            self.timer = current_time
+            self.frame_index += 1
+
+        if self.frame_index >= 14:
+            self.kill()
+
+
