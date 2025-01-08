@@ -8,6 +8,8 @@ from Scenes.MainMenu import MainMenu
 from Scenes.MainMenu import bossHealthBarIcon
 from Scenes.Heart import *
 from Scenes.bosshp import bossheart
+from Scenes.shop import *
+from Scenes.UI import *
 
 class GameManager:
     # just an alias
@@ -28,8 +30,21 @@ class GameManager:
         self.set_heart()
         self.set_chatbox()
         self.set_boss()
+        self.set_shop()
+        self.set_UI()
 
     # SET
+    def set_UI(self):
+        self.UI = pygame.sprite.Group()
+        self.coinsystem = coin()
+        self.attacksystem = attack()
+        self.UI.add(self.coinsystem, self.attacksystem)
+    def set_shop(self):
+        self.lucky = pygame.sprite.Group()
+        self._lucky = lucky()
+        self._price = price()
+        self.lucky.add(self._lucky, self._price)
+
     def set_boss(self):
         self.bossBody = BossBody()
         self.bossAttack = BossAttack()
@@ -115,7 +130,7 @@ class GameManager:
     def update_boss_spawn_fly(self):
         if self.bossAttack.if_spwan_fly == 'True':
             self.bossAttack.if_spwan_fly = 'False'
-            for i in range(random.randint(3, 5)):
+            for i in range(random.randint(1, 3)):
                 self.enemy_group.add(Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y))
 
     def update_boss_shoot(self):
@@ -146,10 +161,15 @@ class GameManager:
                 self.update_enemies_normal()
                 self.update_boss_spawn_fly()
                 self.update_boss_shoot()
+                
 
                 self.update_sprite(self.room_group)
                 self.update_sprite(self.isaac_group, self.get_keys())
                 self.update_sprite(self.npc_group, self.get_keys())
+
+                self.lucky.update()
+                self.lucky.draw(self.screen)
+                
                 self.enemy_group.update()
                 self.enemy_group.draw(self.screen)
                 self.isaac.tears.draw(self.screen)
@@ -166,6 +186,9 @@ class GameManager:
                 bossheart.update(self.screen, BossSettings.health_bar.x, BossSettings.health_bar.y, BossSettings.health_bar.width, BossSettings.health_bar.height, self.bossBody.HP, BossSettings.health_bar.max)
                 self.bosshpicon.update()
                 self.bosshpicon.draw(self.screen)
+
+                self.UI.update(self.screen)
+                self.UI.draw(self.screen)
 
             case Scenes.CHAT_BOX:
                 self.update_sprite(self.Chatboxes, self.get_keys())
@@ -198,18 +221,11 @@ class GameManager:
                         self.enemy_group,
                         self.npc_group,
                         self.room.get_walls(),
+                        self.isaac_group,
                     ]:
                         for entity in group:
                             if Vector2(entity.rect.center).distance_to(pos) <= radius:
-                                entity.HP -= 3
-                                if isinstance(entity, Wall):
-                                    entity.destroyed()
-                                else:
-                                    entity.update()
-                    for entity in self.isaac_group:
-                        if Vector2(entity.rect.center).distance_to(pos) <= radius:
-                            for heart in self.heart:
-                                heart.state = 'reduce'
+                                entity.kill()
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
@@ -219,6 +235,41 @@ class GameManager:
         self.detect_collision_isaac_and_enemies()
         self.detect_collision_bloodytear_and_frames()
         self.detect_collision_bloodytear_and_isaac()
+        self.detect_collision_lucky_and_isaac()
+        self.detect_collision_boss_and_isaac()
+
+    def detect_collision_boss_and_isaac(self):
+        collided_boss_and_isaac = StaticMethods.mask_spritecollide(
+            self.bossBody, self.isaac_group, False)
+        if collided_boss_and_isaac:
+            self.isaac.rect.move_ip(-self.isaac.movement)
+
+    def detect_collision_lucky_and_isaac(self):
+        collided_lucky_and_isaac = StaticMethods.mask_spritecollide(
+            self.isaac, self.lucky, False)
+        
+        if self._lucky.state == 'destroy':
+            mode = random.choice(['heart', 'attack', 'coin'])
+            if mode == 'heart':
+                if self._heart.HP < 4:
+                    self._heart.HP += 2
+                else:
+                    self._heart.HP = PlayerSettings.PlayerHP
+            if mode == 'attack':
+                self.isaac.attack += 1
+                self.attacksystem.attack_num += 1
+            if mode == 'coin':
+                self.coinsystem.coin_num += 3
+            self._lucky.state = 'normal'
+
+
+        keys = pygame.key.get_pressed()
+        if self.coinsystem.coin_num >= 5 and self._lucky.state == 'normal'and keys[pygame.K_q] and pygame.sprite.spritecollide(self.isaac, self.lucky, False):
+            self._lucky.state = 'open'
+            self.coinsystem.coin_num -= 5
+        if StaticMethods.mask_spritecollide(self.isaac, self.lucky, False):
+            self.isaac.rect.move_ip(-self.isaac.movement)
+        
 
     def detect_collision_bloodytear_and_frames(self):
         collided_bloodytear_and_frames = pygame.sprite.groupcollide(
@@ -253,8 +304,9 @@ class GameManager:
                 if tear.state == "live":
                     if enemy.HP > 0:
                         tear.state = "die"
-                    self.bgm_player.play("TEAR_HIT", 0)
-                    enemy.HP -= 1
+                    enemy.HP -= self.isaac.attack
+                    if enemy.state == 'live' and enemy.HP <= 0:
+                        self.coinsystem.coin_num += 1
 
 
     def detect_collision_tears_and_walls(self):
@@ -266,9 +318,7 @@ class GameManager:
             tear: Tear  # once for all below, sweet
             for wall in walls:
                 if tear.state == "live" and isinstance(wall, Shit):
-                    wall.HP -= 1
                     wall.destroyed()
-                    self.bgm_player.play("TEAR_HIT", 0)
             tear.state = "die"
 
         collided_tears_and_frames = pygame.sprite.groupcollide(
@@ -278,11 +328,9 @@ class GameManager:
             tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
-        if (
-            StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
+        if (StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
         ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
             self.isaac.rect.move_ip(-self.isaac.movement)
-            self.bgm_player.play("ISAAC_WALK", 0)  
 
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(
             self.isaac, self.room.get_doors(), False
