@@ -1,6 +1,7 @@
 import pygame
 from enum import Enum
 
+
 class Events:
     # Scene Changes
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
@@ -88,11 +89,12 @@ class ImportedImages:
     Continues = "Src/Textures/Title/Continue.png"
     Bomb = "Src/Textures/Play/pickup_016_bomb.png"
     Draw = "Src/Textures/Title/Draw1.png"
+    bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar_full.png"
 
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
     Fly_die = "data/textures/enemies/fly_rip.png"
-    Boss = "Src/boss/gurdy.png"
+    Boss = "Src/Textures/enemies/gurdy.png"
 
     # Friendly_NPCs
     NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
@@ -120,16 +122,23 @@ class ScreenSettings:
     caption = "The Binding of Issac"
     fps = 60
 
+
 class UpdateEnemiesSettings:
     flyNumber = 5
-    bossNumber = 1 
+    bossNumber = 1
+
 
 class BossSettings:
+    class health_bar:
+        max = 100
+        width = 600
+        height = 30
+        x = 1280 / 2 - 600 / 2 + 50
+        y = 50
+
     class Body:
-        frame_rects = [
-            (9, 17, 133, 116),
-            (167, 20, 136, 113),
-            (5, 168, 140, 109)]
+        frame_rects = [(9, 17, 133, 116), (167, 20, 136, 113), (5, 168, 140, 109)]
+
     class attack:
         frame_rects = [
             (7, 344, 32, 28),
@@ -140,11 +149,13 @@ class BossSettings:
             (160, 342, 46, 29),
             (209, 344, 44, 28),
             (257, 345, 41, 27),
-            (0, 0, 1, 1)]
+            (0, 0, 1, 1),
+        ]
+
 
 class HeartSettings:
     heartWidth = 48 * 3
-    heartHeight = 48 
+    heartHeight = 48
     heart_frame_rects = [
         (0, 0, 74, 24),
         (0, 24, 74, 24),
@@ -152,7 +163,7 @@ class HeartSettings:
         (0, 72, 74, 24),
         (0, 96, 74, 24),
         (0, 120, 74, 24),
-        (0, 144, 74, 24)
+        (0, 144, 74, 24),
     ]
 
 
@@ -202,6 +213,7 @@ class TearSettings:
         (896, 64, 64, 64),
     ]
 
+
 class BombSettings:
     bombWidth = 40
     bombHeight = 42
@@ -213,6 +225,7 @@ class BombSettings:
     affect_radius = 100
     power = 3
 
+
 class ExplosionSettings:
     explosionWidth = 96
     explosionHeight = 96
@@ -220,6 +233,7 @@ class ExplosionSettings:
     for i in range(4):
         for j in range(4):
             explosion_frame_rects.append((96 * j, 96 * i, 96, 96))
+
 
 class MainMenuSettings:
     class StartButton:
@@ -231,6 +245,12 @@ class MainMenuSettings:
         ALPHA = 180
         x = 420
         y = 500
+
+    class bossHealthBarIcon:
+        MULTI = 2.5
+        ALPHA = 180
+        x = 1280 / 2 - 600 / 2 + 15
+        y = 40
 
     class Continue:
         MULTI = 1.5
