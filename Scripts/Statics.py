@@ -1,68 +1,6 @@
 import pygame
 from enum import Enum
 
-
-class StaticMethods:
-    # Custom spritecollide using mask collision
-    @staticmethod
-    def mask_spritecollide(
-        sprite: pygame.sprite.Sprite, group: pygame.sprite.Group, dokill: bool
-    ) -> list:
-        collided_sprites = []
-
-        # Get the mask and rect for the main sprite
-        mask1 = pygame.mask.from_surface(sprite.image)
-        rect1 = sprite.rect
-
-        for group_sprite in group:
-            # Get the mask and rect for the group sprite
-            mask2 = pygame.mask.from_surface(group_sprite.image)
-            rect2 = group_sprite.rect
-
-            # Calculate the offset for collision checking
-            offset = (rect2.x - rect1.x, rect2.y - rect1.y)
-
-            # Check for a pixel-perfect collision using masks
-            if mask1.overlap(mask2, offset):
-                collided_sprites.append(group_sprite)
-
-                if dokill:
-                    group.remove(group_sprite)
-
-        return collided_sprites
-
-    @staticmethod
-    def mask_groupcollide(
-        group1: pygame.sprite.Group,
-        group2: pygame.sprite.Group,
-        dokill1: bool,
-        dokill2: bool,
-    ) -> dict:
-        collided = {}
-
-        for sprite1 in group1:
-            mask1 = pygame.mask.from_surface(sprite1.image)
-            rect1 = sprite1.rect
-
-            for sprite2 in group2:
-                mask2 = pygame.mask.from_surface(sprite2.image)
-                rect2 = sprite2.rect
-
-                offset = (rect2.x - rect1.x, rect2.y - rect1.y)
-
-                if mask1.overlap(mask2, offset):
-                    if sprite1 not in collided:
-                        collided[sprite1] = []
-                    collided[sprite1].append(sprite2)
-
-                    if dokill1:
-                        group1.remove(sprite1)
-                    if dokill2:
-                        group2.remove(sprite2)
-
-        return collided
-
-
 class Events:
     # Scene Changes
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
@@ -154,6 +92,7 @@ class ImportedImages:
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
     Fly_die = "data/textures/enemies/fly_rip.png"
+    Boss = "Src/boss/gurdy.png"
 
     # Friendly_NPCs
     NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
@@ -180,6 +119,41 @@ class ScreenSettings:
 
     caption = "The Binding of Issac"
     fps = 60
+
+class UpdateEnemiesSettings:
+    flyNumber = 5
+    bossNumber = 1 
+
+class BossSettings:
+    class Body:
+        frame_rects = [
+            (9, 17, 133, 116),
+            (167, 20, 136, 113),
+            (5, 168, 140, 109)]
+    class attack:
+        frame_rects = [
+            (7, 344, 32, 28),
+            (49, 345, 40, 33),
+            (98, 344, 44, 29),
+            (160, 342, 46, 29),
+            (209, 344, 44, 28),
+            (160, 342, 46, 29),
+            (209, 344, 44, 28),
+            (257, 345, 41, 27),
+            (0, 0, 1, 1)]
+
+class HeartSettings:
+    heartWidth = 48 * 3
+    heartHeight = 48 
+    heart_frame_rects = [
+        (0, 0, 74, 24),
+        (0, 24, 74, 24),
+        (0, 48, 74, 24),
+        (0, 72, 74, 24),
+        (0, 96, 74, 24),
+        (0, 120, 74, 24),
+        (0, 144, 74, 24)
+    ]
 
 
 class PlayerSettings:
@@ -249,10 +223,8 @@ class ExplosionSettings:
 
 class MainMenuSettings:
     class StartButton:
-        MULTI = 3.0
-        ALPHA = 200
-        x = 450
-        y = 400
+        x = 1280 * 0.5 + 20
+        y = 720 * 0.6 + 30
 
     class Options:
         MULTI = 1.5
@@ -317,3 +289,64 @@ class EnemiesSettings:
             (64, 126, 64, 63),
             (128, 126, 64, 63),
         ]
+
+
+class StaticMethods:
+    # Custom spritecollide using mask collision
+    @staticmethod
+    def mask_spritecollide(
+        sprite: pygame.sprite.Sprite, group: pygame.sprite.Group, dokill: bool
+    ) -> list:
+        collided_sprites = []
+
+        # Get the mask and rect for the main sprite
+        mask1 = pygame.mask.from_surface(sprite.image)
+        rect1 = sprite.rect
+
+        for group_sprite in group:
+            # Get the mask and rect for the group sprite
+            mask2 = pygame.mask.from_surface(group_sprite.image)
+            rect2 = group_sprite.rect
+
+            # Calculate the offset for collision checking
+            offset = (rect2.x - rect1.x, rect2.y - rect1.y)
+
+            # Check for a pixel-perfect collision using masks
+            if mask1.overlap(mask2, offset):
+                collided_sprites.append(group_sprite)
+
+                if dokill:
+                    group.remove(group_sprite)
+
+        return collided_sprites
+
+    @staticmethod
+    def mask_groupcollide(
+        group1: pygame.sprite.Group,
+        group2: pygame.sprite.Group,
+        dokill1: bool,
+        dokill2: bool,
+    ) -> dict:
+        collided = {}
+
+        for sprite1 in group1:
+            mask1 = pygame.mask.from_surface(sprite1.image)
+            rect1 = sprite1.rect
+
+            for sprite2 in group2:
+                mask2 = pygame.mask.from_surface(sprite2.image)
+                rect2 = sprite2.rect
+
+                offset = (rect2.x - rect1.x, rect2.y - rect1.y)
+
+                if mask1.overlap(mask2, offset):
+                    if sprite1 not in collided:
+                        collided[sprite1] = []
+                    collided[sprite1].append(sprite2)
+
+                    if dokill1:
+                        group1.remove(sprite1)
+                    if dokill2:
+                        group2.remove(sprite2)
+
+        return collided
