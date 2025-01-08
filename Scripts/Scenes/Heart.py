@@ -1,6 +1,7 @@
 from pygame import *
 from Statics import *
 from TmpTools.tools import *
+from GameManagers.BGMPlayer import BGMPlayer
 class Heart(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -22,6 +23,7 @@ class Heart(pygame.sprite.Sprite):
         self.HP = PlayerSettings.PlayerHP
         self.state = 'normal'
         self.timer = 0
+        self.bgm_player = BGMPlayer()
 
     def update(self):
 
@@ -30,7 +32,7 @@ class Heart(pygame.sprite.Sprite):
             self.HP -= 1
             self.timer = current_time
             self.state = 'normal'
-
+            self.bgm_player.play("ISAAC_HURT", 0)
         if self.HP == 0:
             event.post(event.Event(Events.GAME_OVER))
             # 触发事件游戏结束

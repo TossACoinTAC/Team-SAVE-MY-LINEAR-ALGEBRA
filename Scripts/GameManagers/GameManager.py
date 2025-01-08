@@ -253,6 +253,7 @@ class GameManager:
                 if tear.state == "live":
                     if enemy.HP > 0:
                         tear.state = "die"
+                    self.bgm_player.play("TEAR_HIT", 0)
                     enemy.HP -= 1
 
 
@@ -267,6 +268,7 @@ class GameManager:
                 if tear.state == "live" and isinstance(wall, Shit):
                     wall.HP -= 1
                     wall.destroyed()
+                    self.bgm_player.play("TEAR_HIT", 0)
             tear.state = "die"
 
         collided_tears_and_frames = pygame.sprite.groupcollide(
@@ -280,6 +282,7 @@ class GameManager:
             StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
         ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
             self.isaac.rect.move_ip(-self.isaac.movement)
+            self.bgm_player.play("ISAAC_WALK", 0)  
 
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(
             self.isaac, self.room.get_doors(), False
