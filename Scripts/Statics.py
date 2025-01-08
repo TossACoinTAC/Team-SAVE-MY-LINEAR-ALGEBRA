@@ -3,6 +3,7 @@ import random
 from enum import Enum
 import math
 
+
 class Events:
     # Scene Changes
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
@@ -38,9 +39,8 @@ class Scenes(Enum):
 class ImportedImages:
     icon = "Src/icons/64x64.ico"
 
-
     # Player
-    playerImage = "Src/Textures/Play/Issac_Loot.png"
+    playerImage = "Src/Textures/Play/Issac_sprite.png"
     tearImage = "Src/Textures/Play/Tear.png"
     tear_pop_Image = "data/textures/tears/tears_pop.png"
     BldtearImage = "Src/Textures/Play/Tear_002.png"
@@ -83,13 +83,14 @@ class ImportedImages:
 
     class BlockImage(Enum):
         Rock = "Data/Textures/Room/altars.png"
-    
+
     class shop:
         lucky_1 = "Src/Textures/Play/slot_001_machine.png"
         lucky_2 = "Src/Textures/Play/slot_002_machine.png"
         lucky_3 = "Src/Textures/Play/slot_003_machine.png"
         lucky_4 = "Src/Textures/Play/slot_004_machine.png"
         price = "Src/Textures/Play/price.png"
+
     class UI:
         coin = "Src/Textures/Play/coin.png"
         attack = "Src/Textures/Play/collectibles_705_darkarts.png"
@@ -140,15 +141,18 @@ class UpdateEnemiesSettings:
     flyNumber = 5
     bossNumber = 1
 
+
 class UISettings:
     class coin:
         x = 50
         y = 100
         MULTI = 2.5
         ALPHA = 256
+
     class heart:
         x = 50
         y = 30
+
     class attack:
         x = 40
         y = 150
@@ -202,6 +206,61 @@ class PlayerSettings:
     PlayerAttackSpeed = 0.5
     PlayerHP = 6
     PlayerBuff = 0
+    MULTI = 1.8
+    head_frame_rects = [
+        (4, 20, 29, 26),  # down
+        (83, 21, 29, 26),  # right
+        (243, 20, 29, 26),  # left
+        (202, 21, 29, 26),  # up
+    ]
+    body_down_frame_rects = [
+        (9, 75, 19, 14),
+        (41, 75, 19, 14),
+        (74, 75, 19, 14),
+        (105, 75, 19, 14),
+        (137, 75, 19, 14),
+        (169, 75, 19, 14),
+        (201, 75, 19, 14),
+        (232, 75, 19, 14),
+        (265, 75, 19, 14),
+        (297, 75, 19, 14),
+    ]
+    body_left_frame_rects = [
+        (9, 118, 19, 14),
+        (41, 118, 19, 14),
+        (74, 118, 19, 14),
+        (105, 118, 19, 14),
+        (137, 118, 19, 14),
+        (169, 118, 19, 14),
+        (201, 118, 19, 14),
+        (232, 118, 19, 14),
+        (265, 118, 19, 14),
+        (297, 118, 19, 14),
+    ]
+    body_up_frame_rects = [
+        (9, 405, 19, 14),
+        (41, 405, 19, 14),
+        (74, 405, 19, 14),
+        (105, 405, 19, 14),
+        (137, 405, 19, 14),
+        (169, 405, 19, 14),
+        (201, 405, 19, 14),
+        (232, 405, 19, 14),
+        (265, 405, 19, 14),
+        (297, 405, 19, 14),
+    ]
+    body_right_frame_rects = [
+        (9, 448, 19, 14),
+        (41, 448, 19, 14),
+        (74, 448, 19, 14),
+        (105, 448, 19, 14),
+        (137, 448, 19, 14),
+        (169, 448, 19, 14),
+        (201, 448, 19, 14),
+        (232, 448, 19, 14),
+        (265, 448, 19, 14),
+        (297, 448, 19, 14),
+    ]
 
 
 class TearSettings:
@@ -262,15 +321,18 @@ class ExplosionSettings:
         for j in range(4):
             explosion_frame_rects.append((96 * j, 96 * i, 96, 96))
 
+
 class ShopSettings:
     class price:
         MULTI = 1.5
         ALPHA = 256
         x = 800
         y = 450
+
     class lucky:
         x = 800
         y = 480
+
 
 class MainMenuSettings:
     class StartButton:
@@ -329,12 +391,14 @@ class EnemiesSettings:
             (7, 8, 42, 33),
             (71, 8, 42, 33),
             (134, 8, 42, 33),
-            (197, 8, 42, 33)]
+            (197, 8, 42, 33),
+        ]
         frame_rects_blood = [
             (0, 0, 40, 35),
             (41, 0, 30, 35),
             (72, 0, 40, 35),
-            (112, 0, 30, 35)]
+            (112, 0, 30, 35),
+        ]
         HP = 1
         speed = [0.5, 0.8, 1, 1.2, 3, -0.5, -0.8, -1, -1.2, -3]
         frame_rects_die = [
@@ -355,6 +419,14 @@ class EnemiesSettings:
 class StaticMethods:
 
     @staticmethod
+    def get_images(sheet, x, y, width, height, colorkey, scale):
+        image = pygame.Surface((width, height))
+        image.blit(sheet, (0, 0), (x, y, width, height))
+        image.set_colorkey(colorkey)
+        image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        return image
+
+    @staticmethod
     def get_direction_vector(sprite1, x, y):
         """
         获取一个sprite实例相对另一个sprite实例的方向向量(单位向量形式)
@@ -371,7 +443,7 @@ class StaticMethods:
         # 获取两个精灵中心的y坐标差值
         dy = y - sprite1.rect.centery
         # 计算两个精灵之间的距离
-        distance = math.sqrt(dx ** 2 + dy ** 2)
+        distance = math.sqrt(dx**2 + dy**2)
         if distance > 0:  # 避免除0错误，当两个精灵重合时距离为0
             # 将坐标差值转换为单位向量，即向量的长度归一化为1
             dx /= distance
