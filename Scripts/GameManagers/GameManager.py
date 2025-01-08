@@ -61,9 +61,7 @@ class GameManager:
 
     def set_issac(self):
         self.isaac_group = pygame.sprite.GroupSingle()
-        self.isaac = Player(
-            spawn_pos = (640, 600)
-        )
+        self.isaac = Player(spawn_pos = (640, 600))
         self.isaac_group.add(self.isaac)
 
     def set_npc(self):
@@ -113,7 +111,16 @@ class GameManager:
             for i in range(UpdateEnemiesSettings.bossNumber):
                 self.enemy_group.add(self.bossBody, self.bossAttack)
         self.update_enemies_boss_state = 'False'
+
+    def update_boss_spawn_fly(self):
+        if self.bossAttack.if_spwan_fly == 'True':
+            self.bossAttack.if_spwan_fly = 'False'
+            for i in range(random.randint(3, 5)):
+                self.enemy_group.add(Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y))
+
+    def update_boss_shoot(self):
         if self.bossAttack.if_shoot == 'True':
+            self.bossAttack.if_shoot = 'False'
             vector_list1 = [(-1.732/2, -1/2), (-2/2, 0), (-1.732/2, 1/2), (-1/2, 1.732/2), (0, 2/2)]
             vector_list2 = [(-1.732/2, 1/2), (-1/2, 1.732/2), (0, 2/2), (1/2, 1.732/2),(1.732/2, 1/2)]
             vector_list3 = [(0, 2/2), (1/2, 1.732/2),(1.732/2, 1/2),(2/2, 0), (1.732/2, -1/2),(1/2, -1.732/2)]
@@ -125,8 +132,7 @@ class GameManager:
                 vector_list = vector_list2
             for (direction_x, direction_y) in vector_list:
                 self.bloodyTears.add(BloodyTear(self.bossAttack.rect.x, self.bossAttack.rect.y, direction_x, direction_y))
-            self.bossAttack.if_shoot = 'False'
-
+            
     def update_scene(self, active_scene: Scenes):
         match active_scene:
 
@@ -138,7 +144,8 @@ class GameManager:
                 #制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
                 self.update_enemies_boss()
                 self.update_enemies_normal()
-                
+                self.update_boss_spawn_fly()
+                self.update_boss_shoot()
 
                 self.update_sprite(self.room_group)
                 self.update_sprite(self.isaac_group, self.get_keys())
