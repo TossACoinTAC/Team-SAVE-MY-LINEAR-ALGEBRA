@@ -6,6 +6,7 @@ from Characters.Enemies import *
 from Scenes.Rooms import *
 from Scenes.MainMenu import MainMenu
 from Scenes.MainMenu import bossHealthBarIcon
+from Scenes.GameWin import GameWin
 from Scenes.Heart import *
 from Scenes.bosshp import bossheart
 from Scenes.shop import *
@@ -66,6 +67,7 @@ class GameManager:
     def set_scenes(self):
         self.active_scene = Scenes.MAIN_MENU
         self.main_menu: pygame.sprite.Group = MainMenu()
+        self.game_win: pygame.sprite.Group = GameWin()
 
     def set_clock(self):
         self.clock = pygame.time.Clock()
@@ -154,6 +156,11 @@ class GameManager:
             case Scenes.MAIN_MENU:
                 self.main_menu.update()
                 self.main_menu.draw(self.screen)
+            
+            case Scenes.GAMEWIN:
+                self.screen.fill((0, 0, 0))
+                self.game_win.update()
+                self.game_win.draw(self.screen)
 
             case Scenes.START_ROOM:
                 #制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
@@ -201,7 +208,13 @@ class GameManager:
                     pygame.quit()
                     exit()
                 case Events.GAME_OVER:
-                    pass
+                    pygame.quit()
+                    exit()
+                case Events.GAME_WIN:
+                    self.active_scene = Scenes.GAMEWIN
+                case Events.TO_MAIN:
+                    self.bossBody.HP = 10
+                    self.active_scene = Scenes.MAIN_MENU
                 case Events.ROOM_CLEAR:
                     for door in self.room.get_doors():
                         door: Door
