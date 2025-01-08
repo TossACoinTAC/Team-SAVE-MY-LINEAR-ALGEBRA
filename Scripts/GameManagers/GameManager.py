@@ -5,7 +5,9 @@ from Characters.NPC import *
 from Characters.Enemies import *
 from Scenes.Rooms import *
 from Scenes.MainMenu import MainMenu
+from Scenes.MainMenu import bossHealthBarIcon
 from Scenes.Heart import *
+from Scenes.bosshp import bossheart
 
 class GameManager:
     # just an alias
@@ -25,12 +27,15 @@ class GameManager:
         self.set_clock()
         self.set_heart()
         self.set_chatbox()
-        self.set_boss_shoot()
+        self.set_boss()
 
     # SET
-    def set_boss_shoot(self):
+    def set_boss(self):
+        self.bossBody = BossBody()
         self.bossAttack = BossAttack()
         self.bloodyTears = pygame.sprite.Group()
+        self.bosshpicon = pygame.sprite.Group()
+        self.bosshpicon.add(bossHealthBarIcon())
 
 
     def set_spawn_enemies(self):
@@ -106,7 +111,7 @@ class GameManager:
     def update_enemies_boss(self):
         if self.update_enemies_boss_state == 'True':
             for i in range(UpdateEnemiesSettings.bossNumber):
-                self.enemy_group.add(BossBody(), self.bossAttack)
+                self.enemy_group.add(self.bossBody, self.bossAttack)
         self.update_enemies_boss_state = 'False'
         if self.bossAttack.if_shoot == 'True':
             vector_list1 = [(-1.732/2, -1/2), (-2/2, 0), (-1.732/2, 1/2), (-1/2, 1.732/2), (0, 2/2)]
@@ -138,16 +143,22 @@ class GameManager:
                 self.update_sprite(self.room_group)
                 self.update_sprite(self.isaac_group, self.get_keys())
                 self.update_sprite(self.npc_group, self.get_keys())
+                self.enemy_group.update()
+                self.enemy_group.draw(self.screen)
                 self.isaac.tears.draw(self.screen)
                 self.isaac.explosion_group.draw(self.screen)
                 self.isaac.bomb_group.draw(self.screen)
                 self.room.get_walls().draw(self.screen)
                 self.heart.update()
                 self.heart.draw(self.screen)
-                self.enemy_group.update()
-                self.enemy_group.draw(self.screen)
+                
                 self.bloodyTears.update()
                 self.bloodyTears.draw(self.screen)
+
+                #temp code
+                bossheart.update(self.screen, BossSettings.health_bar.x, BossSettings.health_bar.y, BossSettings.health_bar.width, BossSettings.health_bar.height, self.bossBody.HP, BossSettings.health_bar.max)
+                self.bosshpicon.update()
+                self.bosshpicon.draw(self.screen)
 
             case Scenes.CHAT_BOX:
                 self.update_sprite(self.Chatboxes, self.get_keys())
@@ -226,8 +237,10 @@ class GameManager:
         for tear, enemies in collided_tears_and_monsters.items():
             for enemy in enemies:
                 if tear.state == "live":
+                    if enemy.HP > 0:
+                        tear.state = "die"
                     enemy.HP -= 1
-                    tear.state = "die"
+
 
     def detect_collision_tears_and_walls(self):
  
