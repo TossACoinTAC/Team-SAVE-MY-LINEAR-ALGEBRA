@@ -16,6 +16,7 @@ class NPC(pygame.sprite.Sprite):
         )
         self.rect = self.image.get_rect()
         self.rect.center = (500, 500)  # 随便设的地方，有商店了可以让他再商店里生成
+        self.HP = 0x3f3f3f3f  # 无敌
 
     def gen_chatbox(self, keys):
         if keys[pygame.K_q]:

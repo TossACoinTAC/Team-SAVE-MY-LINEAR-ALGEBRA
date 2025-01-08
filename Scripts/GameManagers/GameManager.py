@@ -191,11 +191,18 @@ class GameManager:
                         self.enemy_group,
                         self.npc_group,
                         self.room.get_walls(),
-                        self.isaac_group,
                     ]:
                         for entity in group:
                             if Vector2(entity.rect.center).distance_to(pos) <= radius:
-                                entity.kill()
+                                entity.HP -= 3
+                                if isinstance(entity, Wall):
+                                    entity.destroyed()
+                                else:
+                                    entity.update()
+                    for entity in self.isaac_group:
+                        if Vector2(entity.rect.center).distance_to(pos) <= radius:
+                            for heart in self.heart:
+                                heart.state = 'reduce'
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
@@ -251,6 +258,7 @@ class GameManager:
             tear: Tear  # once for all below, sweet
             for wall in walls:
                 if tear.state == "live" and isinstance(wall, Shit):
+                    wall.HP -= 1
                     wall.destroyed()
             tear.state = "die"
 

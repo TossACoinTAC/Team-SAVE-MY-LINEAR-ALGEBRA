@@ -201,9 +201,10 @@ class Frame(pygame.sprite.Sprite):
 
 
 class Wall(pygame.sprite.Sprite):
-    def __init__(self, wall_image):
+    def __init__(self, wall_image, HP=3):
         super().__init__()
         self.image = wall_image
+        self.HP = HP
         self.image = pygame.transform.scale(
             self.image,
             (PlayerSettings.playerWidth * 0.8, PlayerSettings.playerHeight * 0.8),
@@ -214,15 +215,14 @@ class Wall(pygame.sprite.Sprite):
 class Shit(Wall):
     def __init__(self):
         shit_image = pygame.image.load(ImportedImages.ShitImages["TYPE_0"].value)
-        self.HP = 50
-        super().__init__(shit_image)
+        HP = 5
+        super().__init__(shit_image, HP)
 
     def destroyed(self):
-        self.HP -= 1
         if self.HP <= 0:
             self.kill()
         else:
-            new_image_key = f"TYPE_{int((50 - self.HP)/10)}"
+            new_image_key = f"TYPE_{int(5 - self.HP)}"
             # pygame.draw.rect(img, (0, 0, 0, 0), self.rect)  # 用黑色覆盖旧位置
             self.image = pygame.image.load(
                 ImportedImages.ShitImages[new_image_key].value
@@ -237,9 +237,14 @@ class Shit(Wall):
             self.rect = self.image.get_rect(center=self.rect.center)
 
 
+
 class Block(Wall):
     def __init__(self, block_image):
         super().__init__(block_image)
+
+    def destroyed(self):
+        if self.HP <= 0:
+            self.kill()
 
 
 def divide_image(img):
