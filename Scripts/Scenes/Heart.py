@@ -24,11 +24,12 @@ class Heart(pygame.sprite.Sprite):
         self.timer = 0
 
     def update(self):
+
         current_time = pygame.time.get_ticks()
         if self.state == 'reduce' and current_time - self.timer > 1000:
-            self.state = 'normal'
             self.HP -= 1
             self.timer = current_time
+            self.state = 'normal'
 
         if self.HP == 0:
             event.post(event.Event(Events.GAME_OVER))
