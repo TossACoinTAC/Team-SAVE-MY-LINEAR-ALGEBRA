@@ -38,6 +38,7 @@ class Scenes(Enum):
 class ImportedImages:
     icon = "Src/icons/64x64.ico"
 
+
     # Player
     playerImage = "Src/Textures/Play/Issac_Loot.png"
     tearImage = "Src/Textures/Play/Tear.png"
@@ -82,6 +83,16 @@ class ImportedImages:
 
     class BlockImage(Enum):
         Rock = "Data/Textures/Room/altars.png"
+    
+    class shop:
+        lucky_1 = "Src/Textures/Play/slot_001_machine.png"
+        lucky_2 = "Src/Textures/Play/slot_002_machine.png"
+        lucky_3 = "Src/Textures/Play/slot_003_machine.png"
+        lucky_4 = "Src/Textures/Play/slot_004_machine.png"
+        price = "Src/Textures/Play/price.png"
+    class UI:
+        coin = "Src/Textures/Play/coin.png"
+        attack = "Src/Textures/Play/collectibles_705_darkarts.png"
 
     # MainMenu
     BackGround = "Src/Textures/Title/Title1.png"
@@ -90,7 +101,7 @@ class ImportedImages:
     Continues = "Src/Textures/Title/Continue.png"
     Bomb = "Src/Textures/Play/pickup_016_bomb.png"
     Draw = "Src/Textures/Title/Draw1.png"
-    bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar.png"
+    bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar_full.png"
 
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
@@ -105,11 +116,8 @@ class ImportedImages:
 
 class ImportedBGM:
     main_theme = "Src/sounds/main_theme.mp3"
-    walk = "data/sounds/squish1.mp3"
+    walk = "Src/sounds/isaac_hurt1.mp3"
     shoot = "Src/sounds/pop1.wav"
-    hurt = "data/sounds/isaac_hurt1.mp3"
-    explosion = "data/sounds/explosion1.mp3"
-    tear_impact = "data/sounds/tear_impact1.mp3"
 
 
 # Settings
@@ -131,6 +139,21 @@ class ScreenSettings:
 class UpdateEnemiesSettings:
     flyNumber = 5
     bossNumber = 1
+
+class UISettings:
+    class coin:
+        x = 50
+        y = 100
+        MULTI = 2.5
+        ALPHA = 256
+    class heart:
+        x = 50
+        y = 30
+    class attack:
+        x = 40
+        y = 150
+        MULTI = 2.3
+        ALPHA = 256
 
 
 class BossSettings:
@@ -239,6 +262,15 @@ class ExplosionSettings:
         for j in range(4):
             explosion_frame_rects.append((96 * j, 96 * i, 96, 96))
 
+class ShopSettings:
+    class price:
+        MULTI = 1.5
+        ALPHA = 256
+        x = 800
+        y = 450
+    class lucky:
+        x = 800
+        y = 480
 
 class MainMenuSettings:
     class StartButton:
