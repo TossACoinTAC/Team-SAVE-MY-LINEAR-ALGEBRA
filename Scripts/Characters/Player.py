@@ -8,10 +8,10 @@ import pygame.event as ev
 class Player(pygame.sprite.Sprite):
     def __init__(self, spawn_pos: Vector2):  # spawn_pos: for transportation
         super().__init__()
-        self.image = pygame.image.load(ImportedImages.playerImage)
-        self.image = pygame.transform.scale(
-            self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
-        )
+        self.set_animation()
+        self.attack = 1
+        
+
         self.rect = self.image.get_rect(center=spawn_pos)
 
         self.speed = PlayerSettings.playerSpeed
@@ -32,9 +32,103 @@ class Player(pygame.sprite.Sprite):
         # self.heart = pygame.sprite.GroupSingle()
         # self.heart.add(Heart())
 
-        #planting bomb
+        # planting bomb
         self.bomb_group = pygame.sprite.GroupSingle()
         self.explosion_group = pygame.sprite.GroupSingle()
+
+    def set_animation(self):
+
+        self.timer = 0
+        self.frame_index = 0
+        m = PlayerSettings.MULTI
+        sheet = pygame.image.load(ImportedImages.playerImage)
+
+
+        #set_head_animation
+        self.head_frames = []
+        self.head_frames_rects = PlayerSettings.head_frame_rects
+        for i in range(len(PlayerSettings.head_frame_rects)):
+            self.head_frames.append(StaticMethods.get_images(sheet, *self.head_frames_rects[i], (0, 0, 0), m))
+        
+        #set_body_animation
+        self.body_right_frames = []
+        self.body_right_frames_rects = PlayerSettings.body_right_frame_rects
+        for i in range(len(PlayerSettings.body_right_frame_rects)):
+            self.body_right_frames.append(StaticMethods.get_images(sheet, *self.body_right_frames_rects[i], (0, 0, 0), m))
+        
+        self.body_left_frames = []
+        self.body_left_frames_rects = PlayerSettings.body_left_frame_rects
+        for i in range(len(PlayerSettings.body_left_frame_rects)):
+            self.body_left_frames.append(StaticMethods.get_images(sheet, *self.body_left_frames_rects[i], (0, 0, 0), m))
+        
+        self.body_up_frames = []
+        self.body_up_frames_rects = PlayerSettings.body_up_frame_rects
+        for i in range(len(PlayerSettings.body_up_frame_rects)):
+            self.body_up_frames.append(StaticMethods.get_images(sheet, *self.body_up_frames_rects[i], (0, 0, 0), m))
+        
+        self.body_down_frames = []
+        self.body_down_frames_rects = PlayerSettings.body_down_frame_rects
+        for i in range(len(PlayerSettings.body_down_frame_rects)):
+            self.body_down_frames.append(StaticMethods.get_images(sheet, *self.body_down_frames_rects[i], (0, 0, 0), m))
+
+        m = PlayerSettings.MULTI
+        head_height = self.head_frames_rects[0][3] * m
+        dx = (self.head_frames_rects[0][2] - self.body_down_frames_rects[0][2]) * m // 2
+        complete_width = self.head_frames_rects[0][2] * m
+        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
+        complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+        complete_image.blit(self.body_down_frames[self.frame_index], (dx, head_height - 10))
+        complete_image.blit(self.head_frames[0], (0, 0))
+        self.image = complete_image
+
+
+    def update_animation(self, keys):
+
+
+        m = PlayerSettings.MULTI
+        head_height = self.head_frames_rects[0][3] * m
+        dx = (self.head_frames_rects[0][2] - self.body_down_frames_rects[0][2]) * m // 2
+        complete_width = self.head_frames_rects[0][2] * m
+        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
+        
+        current_time = time.get_ticks()
+        if self.timer == 0:
+            self.timer = current_time
+        elif current_time - self.timer > 125:
+            self.timer = current_time
+            self.frame_index += 1
+            self.frame_index %= 10
+
+
+        if keys[K_s]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_down_frames[self.frame_index], (dx, head_height - 10))
+            complete_image.blit(self.head_frames[0], (0, 0))
+            self.image = complete_image
+            
+        if keys[K_d]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_right_frames[self.frame_index], (dx, head_height - 10))
+            complete_image.blit(self.head_frames[1], (0, 0))
+            self.image = complete_image
+         
+        if keys[K_a]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_left_frames[self.frame_index], (dx, head_height - 10))
+            complete_image.blit(self.head_frames[2], (0, 0))
+            self.image = complete_image
+           
+        if keys[K_w]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_up_frames[self.frame_index], (dx, head_height - 10))
+            complete_image.blit(self.head_frames[3], (0, 0))
+            self.image = complete_image
+
+    def get_x(self):
+        return self.rect.x
+
+    def get_y(self):
+        return self.rect.y
 
     @property
     def tears(self):
@@ -62,7 +156,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.move_ip(self.movement)
 
             # deal with sound
-            if not self.move_sound_played:        
+            if not self.move_sound_played:
+                self.bgm_player.play("ISAAC_WALK", 0)
                 self.move_sound_timer = pygame.time.get_ticks()
                 self.move_sound_played = True
             if pygame.time.get_ticks() - self.move_sound_timer > self.move_sound_delay:
@@ -86,7 +181,7 @@ class Player(pygame.sprite.Sprite):
                     keys[pygame.K_RIGHT] - keys[pygame.K_LEFT],
                     keys[pygame.K_DOWN] - keys[pygame.K_UP],
                 ).normalize()
-                #self.bgm_player.play("ISAAC_SHOOT", 0)    #太吵了
+                self.bgm_player.play("ISAAC_SHOOT", 0)
             except ValueError:
                 shooted_tear.direction = Vector2(0, 0)
 
@@ -97,13 +192,12 @@ class Player(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.shoot_timer > self.shoot_delay:
             self.tear_ready.empty()
 
-    def planting(self, keys):       #plant the bomb
+    def planting(self, keys):  # plant the bomb
         if keys[pygame.K_e] and not self.bomb_group.sprites():
             new_bomb = Bomb(self.rect.center)
             self.bomb_group.add(new_bomb)
             new_explosion = Explosion(self.rect.center)
             self.explosion_group.add(new_explosion)
-
 
     def update(self, keys):
         self.move(keys)
@@ -113,6 +207,7 @@ class Player(pygame.sprite.Sprite):
 
         self.bomb_group.update()
         self.explosion_group.update()
+        self.update_animation(keys)
 
 
 # class Heart(pygame.sprite.Sprite):
@@ -219,9 +314,7 @@ class Bomb(pygame.sprite.Sprite):
         self.sheet = pygame.image.load(ImportedImages.BombImage)
         self.frame = []
         for i in range(3):
-            tmp_image = get_images(
-                self.sheet, *self.frame_rects[i], (0, 0, 0), 3.0
-            )
+            tmp_image = get_images(self.sheet, *self.frame_rects[i], (0, 0, 0), 3.0)
             self.frame.append(
                 pygame.transform.scale(
                     tmp_image, (BombSettings.bombWidth, BombSettings.bombHeight)
@@ -229,44 +322,54 @@ class Bomb(pygame.sprite.Sprite):
             )
         self.image = self.frame[0]
         self.rect = self.image.get_rect(center=spawn_pos)
-        self.bgm_player = BGMPlayer()
 
-        self.radius = BombSettings.affect_radius   #伤害半径
-        self.power = BombSettings.power   #伤害值
+        self.radius = BombSettings.affect_radius  # 伤害半径
+        self.power = BombSettings.power  # 伤害值
 
         self.timer = 0
-        self.frame_index = 0 
+        self.frame_index = 0
         self.flicker_timer = 0
-    
+
     def explode_animation(self):
         self.image = self.frame[self.frame_index]
         current_time = pygame.time.get_ticks()
         if current_time - self.timer > 100:
             self.timer = current_time
-            self.frame_index = (self.frame_index + 1)%3
+            self.frame_index = (self.frame_index + 1) % 3
             self.flicker_timer += 1
 
         if self.flicker_timer >= 9:
-            self.bgm_player.play("BOMB_EXPLODE", 0)
-            ev.post(ev.Event(Events.BOMB_EXPLOSION, {"pos": self.rect.center, "radius": self.radius, "power": self.power}))
+            ev.post(
+                ev.Event(
+                    Events.BOMB_EXPLOSION,
+                    {
+                        "pos": self.rect.center,
+                        "radius": self.radius,
+                        "power": self.power,
+                    },
+                )
+            )
             self.kill()
 
     def update(self):
         self.explode_animation()
 
-class Explosion(pygame.sprite.Sprite):    #just act as an animation
+
+class Explosion(pygame.sprite.Sprite):  # just act as an animation
     def __init__(self, spawn_pos: Vector2):
         super().__init__()
         self.frame_rects = ExplosionSettings.explosion_frame_rects
         self.sheet = pygame.image.load(ImportedImages.ExplosionImage)
         self.frame = []
         for i in range(16):
-            tmp_image = get_images(
-                self.sheet, *self.frame_rects[i], (0, 0, 0), 3.0
-            )
+            tmp_image = get_images(self.sheet, *self.frame_rects[i], (0, 0, 0), 3.0)
             self.frame.append(
                 pygame.transform.scale(
-                    tmp_image, (ExplosionSettings.explosionWidth, ExplosionSettings.explosionHeight)
+                    tmp_image,
+                    (
+                        ExplosionSettings.explosionWidth,
+                        ExplosionSettings.explosionHeight,
+                    ),
                 )
             )
         self.image = self.frame[8]
@@ -274,13 +377,13 @@ class Explosion(pygame.sprite.Sprite):    #just act as an animation
 
         self.timer = 0
         self.frame_index = 8
-    
+
     def explode_animation(self):
         self.image = self.frame[self.frame_index]
         current_time = pygame.time.get_ticks()
         if current_time - self.timer > 200:
             self.timer = current_time
-            self.frame_index = (self.frame_index + 1)%16
+            self.frame_index = (self.frame_index + 1) % 16
 
         if self.frame_index == 7:
             self.kill()
