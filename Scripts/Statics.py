@@ -1,6 +1,7 @@
 import pygame
+import random
 from enum import Enum
-
+import math
 
 class Events:
     # Scene Changes
@@ -94,6 +95,7 @@ class ImportedImages:
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
     Fly_die = "data/textures/enemies/fly_rip.png"
+    Fly_blood = "Src/Textures/enemies/fly_ne_ok.png"
     Boss = "Src/Textures/enemies/gurdy.png"
 
     # Friendly_NPCs
@@ -285,17 +287,21 @@ class EnemiesSettings:
     class Fly:
         MULTI = 1.0
         ALPHA = 256
-        x = 400
-        y = 400
+        x = random.randint(350, 550)
+        y = random.randint(350, 550)
         frames_duration = 125
         frame_rects = [
             (7, 8, 42, 33),
             (71, 8, 42, 33),
             (134, 8, 42, 33),
-            (197, 8, 42, 33),
-        ]
+            (197, 8, 42, 33)]
+        frame_rects_blood = [
+            (0, 0, 40, 35),
+            (41, 0, 30, 35),
+            (72, 0, 40, 35),
+            (112, 0, 30, 35)]
         HP = 1
-        speed = [1, 1, 5, -1, -1, -5]
+        speed = [0.5, 0.8, 1, 1.2, 3, -0.5, -0.8, -1, -1.2, -3]
         frame_rects_die = [
             (0, 0, 64, 63),
             (64, 0, 64, 63),
@@ -312,6 +318,31 @@ class EnemiesSettings:
 
 
 class StaticMethods:
+
+    @staticmethod
+    def get_direction_vector(sprite1, x, y):
+        """
+        获取一个sprite实例相对另一个sprite实例的方向向量(单位向量形式)
+
+        参数:
+        sprite1 (pygame.sprite.Sprite): 第一个精灵实例
+        sprite2 (pygame.sprite.Sprite): 第二个精灵实例
+
+        返回:
+        tuple: 包含x方向和y方向分量的方向向量(单位向量)，例如 (dx, dy)
+        """
+        # 获取两个精灵中心的x坐标差值
+        dx = x - sprite1.rect.centerx
+        # 获取两个精灵中心的y坐标差值
+        dy = y - sprite1.rect.centery
+        # 计算两个精灵之间的距离
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        if distance > 0:  # 避免除0错误，当两个精灵重合时距离为0
+            # 将坐标差值转换为单位向量，即向量的长度归一化为1
+            dx /= distance
+            dy /= distance
+        return dx, dy
+
     # Custom spritecollide using mask collision
     @staticmethod
     def mask_spritecollide(
