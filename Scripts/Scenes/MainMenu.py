@@ -104,6 +104,15 @@ class StartButton(pygame.sprite.Sprite):
             self.rect.centerx = MainMenuSettings.StartButton.x
             self.rect.centery = MainMenuSettings.StartButton.y
 
+class bossHealthBarIcon(StaticState):
+    def __init__(self):
+        super().__init__(
+            ImportedImages.bossHealthBarIcon,
+            MainMenuSettings.bossHealthBarIcon.x,
+            MainMenuSettings.bossHealthBarIcon.y,
+            MainMenuSettings.bossHealthBarIcon.MULTI,
+            MainMenuSettings.bossHealthBarIcon.ALPHA
+        )
 
 class Options(StaticState):
     def __init__(self):
