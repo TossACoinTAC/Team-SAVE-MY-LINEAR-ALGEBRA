@@ -17,6 +17,7 @@ class Monster(pygame.sprite.Sprite):
         frame_duration,
         HP,
         speed,
+
     ):
         super().__init__()
         # setup_live_animation
@@ -36,16 +37,19 @@ class Monster(pygame.sprite.Sprite):
 
         # update_position
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(400, 800)
-        self.rect.y = random.randint(200, 500)
+        self.rect.x = x
+        self.rect.y = y
         self.speed = speed
         self.speed_x = random.choice(self.speed)
         self.speed_y = random.choice(self.speed)
+
         self.move_mode = random.choice(["straight"])  # random_turn 没写完
+
         self.turn_interval = random.randint(500, 1000)
         self.turn_countdown = self.turn_interval
 
         # not important
+
         self.HP = HP
         self.state = "live"
         self.timer = 0
@@ -65,19 +69,22 @@ class Monster(pygame.sprite.Sprite):
     def check_die(self):
         if self.HP <= 0:
             self.state = 'die'
+    
+    def detect_collision(self):
+        if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
+            ScreenSettings.screenWidth - ScreenSettings.marginWidth):
+            self.speed_x = -self.speed_x
+        if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
+            ScreenSettings.screenHeight - ScreenSettings.marginHeight):
+            self.speed_y = -self.speed_y
 
     def update_position(self):
+
+
         if self.move_mode == "straight":
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
-            if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
-                ScreenSettings.screenWidth - ScreenSettings.marginWidth
-            ):
-                self.speed_x = -self.speed_x
-            if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
-                ScreenSettings.screenHeight - ScreenSettings.marginHeight
-            ):
-                self.speed_y = -self.speed_y
+            self.detect_collision()
 
         if self.move_mode == "radnom_turn":
             self.turn_countdown -= 1
@@ -87,14 +94,7 @@ class Monster(pygame.sprite.Sprite):
                 self.turn_countdown = self.turn_interval
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
-            if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
-                ScreenSettings.screenWidth - ScreenSettings.marginWidth
-            ):
-                self.speed_x = -self.speed_x
-            if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
-                ScreenSettings.screenHeight - ScreenSettings.marginHeight
-            ):
-                self.speed_y = -self.speed_y
+            self.detect_collision()
 
     def update_animation(self):
 
@@ -137,8 +137,20 @@ class Fly(Monster):
             EnemiesSettings.Fly.MULTI,
             EnemiesSettings.Fly.frames_duration,
             EnemiesSettings.Fly.HP,
-            EnemiesSettings.Fly.speed,
-        )
+            EnemiesSettings.Fly.speed,)
+
+class Fly_blood(Monster):
+    def __init__(self, x, y):
+        super().__init__(
+            ImportedImages.Fly_blood,
+            ImportedImages.Fly_die,
+            EnemiesSettings.Fly.frame_rects_blood,
+            EnemiesSettings.Fly.frame_rects_die,
+            x,y,
+            EnemiesSettings.Fly.MULTI,
+            EnemiesSettings.Fly.frames_duration,
+            EnemiesSettings.Fly.HP,
+            EnemiesSettings.Fly.speed,)
 
 class BossBody(pygame.sprite.Sprite):
     def __init__(self):
@@ -154,7 +166,7 @@ class BossBody(pygame.sprite.Sprite):
 
     
     def set_HP(self):
-        self.HP = 100
+        self.HP = BossSettings.health_bar.max
 
     def set_position(self):
         self.rect.centerx = 0.5 * ScreenSettings.screenWidth
@@ -193,16 +205,17 @@ class BossBody(pygame.sprite.Sprite):
 class BossAttack(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        
+        self.HP = 10000000
         self.set_Attack_animation()
         self.set_clock()
         self.set_position()
         self.state = 'sleep'
         self.if_shoot = 'False'
+        self.if_spwan_fly = 'False'
 
     def set_position(self):
         self.rect.centerx = 0.5 * ScreenSettings.screenWidth
-        self.rect.centery = 0.25 * ScreenSettings.screenHeight
+        self.rect.centery = 0.22 * ScreenSettings.screenHeight
 
     def set_clock(self):
         self.timer = 0
@@ -233,6 +246,8 @@ class BossAttack(pygame.sprite.Sprite):
                 self.timer = self.current_time
                 if self.frame_index == 4:
                     self.if_shoot = 'True'
+                if self.frame_index == 5:
+                    self.if_spwan_fly = 'True'
             self.image = self.frames[self.frame_index]
             if self.frame_index == len(self.frame_rects) - 1:
                 self.state = 'sleep'
