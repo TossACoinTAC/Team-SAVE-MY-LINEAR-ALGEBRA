@@ -78,40 +78,41 @@ class StartButton(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(ImportedImages.StartButton)
         self.rect = self.image.get_rect()
-        self.image.set_alpha(MainMenuSettings.StartButton.ALPHA)
-        self.rect = self.image.get_rect()
-        self.rect.x = MainMenuSettings.StartButton.x
-        self.rect.y = MainMenuSettings.StartButton.y
-        self.multi = MainMenuSettings.StartButton.MULTI
-        self.image = pygame.transform.smoothscale(
-            self.image, (self.rect.width * self.multi, self.rect.height * self.multi)
-        )
+
+
+        self.rect.centerx = MainMenuSettings.StartButton.x
+        self.rect.centery = MainMenuSettings.StartButton.y
+
         self.scaled_images = {
-            1: self.image,
-            1.2: pygame.transform.smoothscale(
-                self.image, (self.rect.width * 3.6, self.rect.height * 3.6)
-            ),
-        }
+            1: pygame.transform.smoothscale(self.image, (self.rect.width * 3, self.rect.height * 3)),
+            1.2: pygame.transform.smoothscale(self.image, (self.rect.width * 3.6, self.rect.height * 3.6))}
 
     def update(self):
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        if (
-            self.rect.left <= mouse_x <= self.rect.right * 1.5
-            and self.rect.top <= mouse_y <= self.rect.bottom * 1.2
-        ):
+        if (self.rect.left <= mouse_x <= self.rect.right and self.rect.top <= mouse_y <= self.rect.bottom):
             self.image = self.scaled_images[1.2]
-            center_x, center_y = self.scaled_images[1].get_rect().center
-            # Get the new rect of the scaled image
-            scaled_rect = self.image.get_rect()
-            # Set the center of the new rect to the original image's center
-            scaled_rect.center = (center_x, center_y)
+            self.rect = self.image.get_rect()
+            self.rect.centerx = MainMenuSettings.StartButton.x
+            self.rect.centery = MainMenuSettings.StartButton.y
 
             if pygame.mouse.get_pressed()[0]:
                 ev.post(ev.Event(Events.MAIN_TO_STARTROOM))
         else:
             self.image = self.scaled_images[1]
+            self.rect = self.image.get_rect()
+            self.rect.centerx = MainMenuSettings.StartButton.x
+            self.rect.centery = MainMenuSettings.StartButton.y
 
+class bossHealthBarIcon(StaticState):
+    def __init__(self):
+        super().__init__(
+            ImportedImages.bossHealthBarIcon,
+            MainMenuSettings.bossHealthBarIcon.x,
+            MainMenuSettings.bossHealthBarIcon.y,
+            MainMenuSettings.bossHealthBarIcon.MULTI,
+            MainMenuSettings.bossHealthBarIcon.ALPHA
+        )
 
 class Options(StaticState):
     def __init__(self):

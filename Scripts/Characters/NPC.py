@@ -16,6 +16,7 @@ class NPC(pygame.sprite.Sprite):
         )
         self.rect = self.image.get_rect()
         self.rect.center = (500, 500)  # 随便设的地方，有商店了可以让他再商店里生成
+        self.HP = 0x3f3f3f3f  # 无敌
 
     def gen_chatbox(self, keys):
         if keys[pygame.K_q]:
@@ -42,7 +43,7 @@ class ChatBox(pygame.sprite.Sprite):
         self.chat_log = []
         self.current_step = 0
         self.input_text = ""
-        self.last_key = None
+        self.allow_input = True
 
         # 定义字体和颜色
         pygame.font.init()
@@ -82,8 +83,9 @@ class ChatBox(pygame.sprite.Sprite):
         self.render_wrapped_text(self.input_text, 30, ScreenSettings.screenHeight - 50)
 
     def handle_input(self, keys):
-        if keys[pygame.K_RETURN] and self.last_key != pygame.K_RETURN:
-            if self.input_text.strip():
+        inputed = False
+        if keys[pygame.K_RETURN]:
+            if self.input_text.strip() and self.allow_input:
                 # 添加玩家输入到聊天日志
                 self.chat_log.append(f"You: {self.input_text.strip()}")
 
@@ -100,23 +102,29 @@ class ChatBox(pygame.sprite.Sprite):
                     #self.kill()
                 
                 self.input_text = ""
+            inputed = True
 
-            self.last_key = pygame.K_RETURN
 
-        elif keys[pygame.K_BACKSPACE] and self.last_key != pygame.K_BACKSPACE:
-            self.input_text = self.input_text[:-1]
-            self.last_key = pygame.K_BACKSPACE
+        elif keys[pygame.K_BACKSPACE]:
+            if self.input_text:
+                self.input_text = self.input_text[:-1]
+            inputed = True
 
-        elif keys[pygame.K_SPACE] and self.last_key != pygame.K_SPACE:
-            self.input_text += " "
-            self.last_key = pygame.K_SPACE
+        elif keys[pygame.K_SPACE]:
+            if self.input_text:
+                self.input_text += " "
+            inputed = True
 
         else:
             for key in range(len(keys)):
-                if keys[key] and self.last_key != key:
-                    self.input_text += pygame.key.name(key)
-                    self.last_key = key
+                if keys[key]:
+                    if self.allow_input:
+                        self.input_text += pygame.key.name(key)
+                    inputed = True
                     break
+
+        self.allow_input = not inputed
+
 
     def render_wrapped_text(self, text, x, y, color=(255, 255, 255)):
         words = text.split(" ")

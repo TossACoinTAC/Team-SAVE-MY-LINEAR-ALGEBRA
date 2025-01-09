@@ -1,8 +1,474 @@
 import pygame
+import random
 from enum import Enum
+import math
+
+
+class Events:
+    # Scene Changes
+    MAIN_TO_STARTROOM = pygame.USEREVENT + 1
+    TO_COMMONROOM = pygame.USEREVENT + 3
+    TO_SHOP = pygame.USEREVENT + 5
+    TO_TREASURE = pygame.USEREVENT + 7
+    TO_SECRET = pygame.USEREVENT + 9
+    TO_BLUEWOMB = pygame.USEREVENT + 11
+    TO_CATACOMB = pygame.USEREVENT + 13
+    TO_MAIN = pygame.USEREVENT + 25
+
+    TO_CHATBOX = pygame.USEREVENT + 19
+    EXIT_CHATBOX = pygame.USEREVENT + 20
+
+    # States
+    GAME_OVER = pygame.USEREVENT + 21
+    GAME_WIN = pygame.USEREVENT + 24
+    ROOM_CLEAR = pygame.USEREVENT + 22
+    BOMB_EXPLOSION = pygame.USEREVENT + 23
+
+
+class Scenes(Enum):
+    MAIN_MENU = 0
+    START_ROOM = 1
+    COMMON_ROOM = 2
+    SHOP = 3
+    TREASURE = 4
+    SECRET = 5
+    BLUEWOMB = 6
+    CATACOMB = 7
+    CHAT_BOX = 11
+    GAMEWIN = 100
+
+
+# Files
+class ImportedImages:
+    icon = "Src/icons/64x64.ico"
+
+    # Player
+    playerImage = "Src/Textures/Play/Issac_sprite.png"
+    tearImage = "Src/Textures/Play/Tear.png"
+    tear_pop_Image = "data/textures/tears/tears_pop.png"
+    BldtearImage = "Src/Textures/Play/Tear_002.png"
+    heartImage = "Src/Textures/Play/Heart.png"
+    BombImage = "Src/Textures/Play/bomb.png"
+    ExplosionImage = "Src/Textures/Play/effect_029_explosion.png"
+
+    # Rooms
+    class RoomImages(Enum):
+        START_ROOM = "Src/Textures/Map/start_000.png"
+        COMMON_ROOM = "Src/Textures/Map/room_000.png"
+        SHOP = "Src/Textures/Map/shop.png"
+        TREASURE = "Src/Textures/Map/treasure.png"
+        SECRET = "Src/Textures/Map/secret.png"
+        BLUEWOMB = "Src/Textures/Map/bluewomb.png"
+        CATACOMB = "Src/Textures/Map/catacomb.png"  # For Boss Room ?
+
+    class OpenDoorImages(Enum):
+        OPEN_WOOD_DOOR = "Src/Textures/Map/OpenWoodDoor.png"
+        OPEN_SHOP_DOOR = "Src/Textures/Map/OpenShopDoor.png"
+        OPEN_TREASURE_DOOR = "Src/Textures/Map/OpenTreasureDoor.png"
+        OPEN_SECRET_DOOR = "Src/Textures/Map/OpenStoneDoor.png"
+        OPEN_BLUEWOMB_DOOR = "Src/Textures/Map/OpenBlueWombDoor.png"
+        OPEN_CATACOMB_DOOR = "Src/Textures/Map/OpenDevilDoor.png"
+
+    class ClosedDoorImages(Enum):
+        CLOSED_WOOD_DOOR = "Src/Textures/Map/ClosedWoodDoor.png"  # to common room
+        CLOSED_SHOP_DOOR = "Src/Textures/Map/ClosedShopDoor.png"
+        CLOSED_TREASURE_DOOR = "Src/Textures/Map/ClosedTreasureDoor.png"
+        CLOSED_SECRET_DOOR = "Src/Textures/Map/ClosedStoneDoor.png"
+        CLOSED_BLUEWOMB_DOOR = "Src/Textures/Map/ClosedBlueWombDoor.png"
+        CLOSED_CATACOMB_DOOR = "Src/Textures/Map/ClosedDevilDoor.png"
+
+    class ShitImages(Enum):
+        TYPE_0 = "Src/Textures/Play/poops/poops (1).png"
+        TYPE_1 = "Src/Textures/Play/poops/poops (2).png"
+        TYPE_2 = "Src/Textures/Play/poops/poops (3).png"
+        TYPE_3 = "Src/Textures/Play/poops/poops (4).png"
+        TYPE_4 = "Src/Textures/Play/poops/poops (5).png"
+
+    class BlockImage(Enum):
+        Rock = "Data/Textures/Room/altars.png"
+
+    class shop:
+        lucky_1 = "Src/Textures/Play/slot_001_machine.png"
+        lucky_2 = "Src/Textures/Play/slot_002_machine.png"
+        lucky_3 = "Src/Textures/Play/slot_003_machine.png"
+        lucky_4 = "Src/Textures/Play/slot_004_machine.png"
+        price = "Src/Textures/Play/price.png"
+
+    class UI:
+        coin = "Src/Textures/Play/coin.png"
+        attack = "Src/Textures/Play/collectibles_705_darkarts.png"
+
+    # MainMenu
+    BackGround = "Src/Textures/Title/Title1.png"
+    StartButton = "Src/Textures/Title/Draw2.png"
+    Options = "Src/Textures/Title/Options.png"
+    Continues = "Src/Textures/Title/Continue.png"
+    Bomb = "Src/Textures/Play/pickup_016_bomb.png"
+    Draw = "Src/Textures/Title/Draw1.png"
+    bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar_full.png"
+
+    #GAMEWIN
+    ReplayButton = "Src/backselectwidget.png"
+    deathPortraits =  "Src/death portraits.png"
+
+    # Enemies
+    Fly = "data/textures/enemies/fly_ok.png"
+    Fly_die = "data/textures/enemies/fly_rip.png"
+    Fly_blood = "Src/Textures/enemies/fly_ne_ok.png"
+    Boss = "Src/Textures/enemies/gurdy.png"
+
+    # Friendly_NPCs
+    NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
+    chatboxImage = "Src/Textures/Play/Issac_Loot.png"
+
+
+class ImportedBGM:
+    main_theme = "Src/sounds/main_theme.mp3"
+    walk = "data/sounds/squish1.mp3"
+    shoot = "Src/sounds/pop1.wav"
+    hurt = "data/sounds/isaac_hurt1.mp3"
+    explosion = "data/sounds/explosion1.mp3"
+    tear_impact = "data/sounds/tear_impact1.mp3"
+
+
+# Settings
+class ScreenSettings:
+    screenWidth = 1280
+    screenHeight = 720
+
+    # distance between screen frame and room frame
+    marginWidth = 150
+    marginHeight = 50
+
+    roomWidth = screenWidth - marginWidth
+    roomHeight = screenHeight - marginHeight
+
+    caption = "The Binding of Issac"
+    fps = 60
+
+
+class UpdateEnemiesSettings:
+    flyNumber = 5
+    bossNumber = 1
+
+
+class UISettings:
+    class coin:
+        x = 50
+        y = 100
+        MULTI = 2.5
+        ALPHA = 256
+
+    class heart:
+        x = 50
+        y = 30
+
+    class attack:
+        x = 40
+        y = 150
+        MULTI = 2.3
+        ALPHA = 256
+
+
+class BossSettings:
+    class health_bar:
+        max = 10
+        width = 600
+        height = 30
+        x = 1280 / 2 - 600 / 2 + 50
+        y = 50
+
+    class Body:
+        frame_rects = [(9, 17, 133, 116), (167, 20, 136, 113), (5, 168, 140, 109)]
+
+    class attack:
+        frame_rects = [
+            (7, 344, 32, 28),
+            (49, 345, 40, 33),
+            (98, 344, 44, 29),
+            (160, 342, 46, 29),
+            (209, 344, 44, 28),
+            (160, 342, 46, 29),
+            (209, 344, 44, 28),
+            (257, 345, 41, 27),
+            (0, 0, 1, 1),
+        ]
+
+
+class HeartSettings:
+    heartWidth = 48 * 3
+    heartHeight = 48
+    heart_frame_rects = [
+        (0, 0, 74, 24),
+        (0, 24, 74, 24),
+        (0, 48, 74, 24),
+        (0, 72, 74, 24),
+        (0, 96, 74, 24),
+        (0, 120, 74, 24),
+        (0, 144, 74, 24),
+    ]
+
+
+class PlayerSettings:
+    playerWidth = 65
+    playerHeight = 90
+    playerSpeed = 3
+    PlayerAttackSpeed = 0.5
+    PlayerHP = 6
+    PlayerBuff = 0
+    MULTI = 1.8
+    head_frame_rects = [
+        (4, 20, 29, 26),  # down
+        (83, 21, 29, 26),  # right
+        (243, 20, 29, 26),  # left
+        (202, 21, 29, 26),  # up
+    ]
+    body_down_frame_rects = [
+        (9, 75, 19, 14),
+        (41, 75, 19, 14),
+        (74, 75, 19, 14),
+        (105, 75, 19, 14),
+        (137, 75, 19, 14),
+        (169, 75, 19, 14),
+        (201, 75, 19, 14),
+        (232, 75, 19, 14),
+        (265, 75, 19, 14),
+        (297, 75, 19, 14),
+    ]
+    body_left_frame_rects = [
+        (9, 118, 19, 14),
+        (41, 118, 19, 14),
+        (74, 118, 19, 14),
+        (105, 118, 19, 14),
+        (137, 118, 19, 14),
+        (169, 118, 19, 14),
+        (201, 118, 19, 14),
+        (232, 118, 19, 14),
+        (265, 118, 19, 14),
+        (297, 118, 19, 14),
+    ]
+    body_up_frame_rects = [
+        (9, 405, 19, 14),
+        (41, 405, 19, 14),
+        (74, 405, 19, 14),
+        (105, 405, 19, 14),
+        (137, 405, 19, 14),
+        (169, 405, 19, 14),
+        (201, 405, 19, 14),
+        (232, 405, 19, 14),
+        (265, 405, 19, 14),
+        (297, 405, 19, 14),
+    ]
+    body_right_frame_rects = [
+        (9, 448, 19, 14),
+        (41, 448, 19, 14),
+        (74, 448, 19, 14),
+        (105, 448, 19, 14),
+        (137, 448, 19, 14),
+        (169, 448, 19, 14),
+        (201, 448, 19, 14),
+        (232, 448, 19, 14),
+        (265, 448, 19, 14),
+        (297, 448, 19, 14),
+    ]
+
+
+class TearSettings:
+    tearWidth = 100
+    tearHeight = 100
+    tearSpeed = 6
+    tear_frame_rects = [
+        (0, 0, 64, 64),
+        (64, 0, 64, 64),
+        (128, 0, 64, 64),
+        (192, 0, 64, 64),
+        (256, 0, 64, 64),
+        (320, 0, 64, 64),
+        (384, 0, 64, 64),
+        (448, 0, 64, 64),
+        (512, 0, 64, 64),
+        (576, 0, 64, 64),
+        (640, 0, 64, 64),
+        (704, 0, 64, 64),
+        (768, 0, 64, 64),
+        (832, 0, 64, 64),
+        (896, 0, 64, 64),
+        (0, 64, 64, 64),
+        (64, 64, 64, 64),
+        (128, 64, 64, 64),
+        (192, 64, 64, 64),
+        (256, 64, 64, 64),
+        (320, 64, 64, 64),
+        (384, 64, 64, 64),
+        (448, 64, 64, 64),
+        (512, 64, 64, 64),
+        (576, 64, 64, 64),
+        (640, 64, 64, 64),
+        (704, 64, 64, 64),
+        (768, 64, 64, 64),
+        (832, 64, 64, 64),
+        (896, 64, 64, 64),
+    ]
+
+
+class BombSettings:
+    bombWidth = 40
+    bombHeight = 42
+    bomb_frame_rects = [
+        (0, 0, 40, 42),
+        (40, 0, 40, 42),
+        (80, 0, 40, 42),
+    ]
+    affect_radius = 100
+    power = 3
+
+
+class ExplosionSettings:
+    explosionWidth = 96
+    explosionHeight = 96
+    explosion_frame_rects = []
+    for i in range(4):
+        for j in range(4):
+            explosion_frame_rects.append((96 * j, 96 * i, 96, 96))
+
+
+class ShopSettings:
+    class price:
+        MULTI = 1.5
+        ALPHA = 256
+        x = 800
+        y = 450
+
+    class lucky:
+        x = 800
+        y = 480
+
+class GameWinSettings:
+    class death:
+        x = 1280 * 0.2
+        y = 5
+        MULTI = 3.0
+    class ReplayButton:
+        x = 1280 * 0.5 + 350
+        y = 720 * 0.6 + 30
+
+
+class MainMenuSettings:
+    class StartButton:
+        x = 1280 * 0.5 + 20
+        y = 720 * 0.6 + 30
+
+    class Options:
+        MULTI = 1.5
+        ALPHA = 180
+        x = 420
+        y = 500
+
+    class bossHealthBarIcon:
+        MULTI = 2.5
+        ALPHA = 180
+        x = 1280 / 2 - 600 / 2 + 15
+        y = 40
+
+    class Continue:
+        MULTI = 1.5
+        ALPHA = 180
+        x = 680
+        y = 550
+
+    class Bomb:
+        MULTI = 3.0
+        ALPHA = 100
+        x = 900
+        y = 200
+        frames_duration = 125
+        frame_rects = [
+            (69, 127, 21, 30),
+            (101, 127, 21, 30),
+            (133, 127, 21, 30),
+            (69, 63, 21, 30),
+            (133, 0, 21, 30),
+        ]
+
+    class Draw:
+        MULTI = 3.0
+        ALPHA = 0
+        x = 400
+        y = 100
+        frames_duration = 125
+        frame_rects = [(0, 0, 165, 156), (160, 0, 154, 156)]
+
+
+class EnemiesSettings:
+    class Fly:
+        MULTI = 1.0
+        ALPHA = 256
+        x = random.randint(350, 550)
+        y = random.randint(350, 550)
+        frames_duration = 125
+        frame_rects = [
+            (7, 8, 42, 33),
+            (71, 8, 42, 33),
+            (134, 8, 42, 33),
+            (197, 8, 42, 33),
+        ]
+        frame_rects_blood = [
+            (0, 0, 40, 35),
+            (41, 0, 30, 35),
+            (72, 0, 40, 35),
+            (112, 0, 30, 35),
+        ]
+        HP = 1
+        speed = [0.5, 0.8, 1, 1.2, 3, -0.5, -0.8, -1, -1.2, -3]
+        frame_rects_die = [
+            (0, 0, 64, 63),
+            (64, 0, 64, 63),
+            (128, 0, 64, 63),
+            (192, 0, 64, 63),
+            (0, 63, 64, 63),
+            (64, 63, 64, 63),
+            (128, 63, 64, 63),
+            (192, 63, 64, 63),
+            (0, 126, 64, 63),
+            (64, 126, 64, 63),
+            (128, 126, 64, 63),
+        ]
 
 
 class StaticMethods:
+
+    @staticmethod
+    def get_images(sheet, x, y, width, height, colorkey, scale):
+        image = pygame.Surface((width, height))
+        image.blit(sheet, (0, 0), (x, y, width, height))
+        image.set_colorkey(colorkey)
+        image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        return image
+
+    @staticmethod
+    def get_direction_vector(sprite1, x, y):
+        """
+        获取一个sprite实例相对另一个sprite实例的方向向量(单位向量形式)
+
+        参数:
+        sprite1 (pygame.sprite.Sprite): 第一个精灵实例
+        sprite2 (pygame.sprite.Sprite): 第二个精灵实例
+
+        返回:
+        tuple: 包含x方向和y方向分量的方向向量(单位向量)，例如 (dx, dy)
+        """
+        # 获取两个精灵中心的x坐标差值
+        dx = x - sprite1.rect.centerx
+        # 获取两个精灵中心的y坐标差值
+        dy = y - sprite1.rect.centery
+        # 计算两个精灵之间的距离
+        distance = math.sqrt(dx**2 + dy**2)
+        if distance > 0:  # 避免除0错误，当两个精灵重合时距离为0
+            # 将坐标差值转换为单位向量，即向量的长度归一化为1
+            dx /= distance
+            dy /= distance
+        return dx, dy
+
     # Custom spritecollide using mask collision
     @staticmethod
     def mask_spritecollide(
@@ -61,259 +527,3 @@ class StaticMethods:
                         group2.remove(sprite2)
 
         return collided
-
-
-class Events:
-    # Scene Changes
-    MAIN_TO_STARTROOM = pygame.USEREVENT + 1
-    TO_COMMONROOM = pygame.USEREVENT + 3
-    TO_SHOP = pygame.USEREVENT + 5
-    TO_TREASURE = pygame.USEREVENT + 7
-    TO_SECRET = pygame.USEREVENT + 9
-    TO_BLUEWOMB = pygame.USEREVENT + 11
-    TO_CATACOMB = pygame.USEREVENT + 13
-
-    TO_CHATBOX = pygame.USEREVENT + 19
-    EXIT_CHATBOX = pygame.USEREVENT + 20
-
-    # States
-    GAME_OVER = pygame.USEREVENT + 21
-    ROOM_CLEAR = pygame.USEREVENT + 22
-    BOMB_EXPLOSION = pygame.USEREVENT + 23
-
-
-class Scenes(Enum):
-    MAIN_MENU = 0
-    START_ROOM = 1
-    COMMON_ROOM = 2
-    SHOP = 3
-    TREASURE = 4
-    SECRET = 5
-    BLUEWOMB = 6
-    CATACOMB = 7
-    CHAT_BOX = 11
-
-
-# Files
-class ImportedImages:
-    icon = "Src/icons/64x64.ico"
-
-    # Player
-    playerImage = "Src/Textures/Play/Issac_Loot.png"
-    tearImage = "Src/Textures/Play/Tear.png"
-    tear_pop_Image = "data/textures/tears/tears_pop.png"
-    BldtearImage = "Src/Textures/Play/Tear_002.png"
-    heartImage = "Src/Textures/Play/Heart.png"
-    BombImage = "Src/Textures/Play/bomb.png"
-    ExplosionImage = "Src/Textures/Play/effect_029_explosion.png"
-
-    # Rooms
-    class RoomImages(Enum):
-        START_ROOM = "Src/Textures/Map/start_000.png"
-        COMMON_ROOM = "Src/Textures/Map/room_000.png"
-        SHOP = "Src/Textures/Map/shop.png"
-        TREASURE = "Src/Textures/Map/treasure.png"
-        SECRET = "Src/Textures/Map/secret.png"
-        BLUEWOMB = "Src/Textures/Map/bluewomb.png"
-        CATACOMB = "Src/Textures/Map/catacomb.png"  # For Boss Room ?
-
-    class OpenDoorImages(Enum):
-        OPEN_WOOD_DOOR = "Src/Textures/Map/OpenWoodDoor.png"
-        OPEN_SHOP_DOOR = "Src/Textures/Map/OpenShopDoor.png"
-        OPEN_TREASURE_DOOR = "Src/Textures/Map/OpenTreasureDoor.png"
-        OPEN_SECRET_DOOR = "Src/Textures/Map/OpenStoneDoor.png"
-        OPEN_BLUEWOMB_DOOR = "Src/Textures/Map/OpenBlueWombDoor.png"
-        OPEN_CATACOMB_DOOR = "Src/Textures/Map/OpenDevilDoor.png"
-
-    class ClosedDoorImages(Enum):
-        CLOSED_WOOD_DOOR = "Src/Textures/Map/ClosedWoodDoor.png"  # to common room
-        CLOSED_SHOP_DOOR = "Src/Textures/Map/ClosedShopDoor.png"
-        CLOSED_TREASURE_DOOR = "Src/Textures/Map/ClosedTreasureDoor.png"
-        CLOSED_SECRET_DOOR = "Src/Textures/Map/ClosedStoneDoor.png"
-        CLOSED_BLUEWOMB_DOOR = "Src/Textures/Map/ClosedBlueWombDoor.png"
-        CLOSED_CATACOMB_DOOR = "Src/Textures/Map/ClosedDevilDoor.png"
-
-    class ShitImages(Enum):
-        TYPE_0 = "Src/Textures/Play/poops/poops (1).png"
-        TYPE_1 = "Src/Textures/Play/poops/poops (2).png"
-        TYPE_2 = "Src/Textures/Play/poops/poops (3).png"
-        TYPE_3 = "Src/Textures/Play/poops/poops (4).png"
-        TYPE_4 = "Src/Textures/Play/poops/poops (5).png"
-
-    class BlockImage(Enum):
-        Rock = "Data/Textures/Room/altars.png"
-
-    # MainMenu
-    BackGround = "Src/Textures/Title/Title1.png"
-    StartButton = "Src/Textures/Title/Draw2.png"
-    Options = "Src/Textures/Title/Options.png"
-    Continues = "Src/Textures/Title/Continue.png"
-    Bomb = "Src/Textures/Play/pickup_016_bomb.png"
-    Draw = "Src/Textures/Title/Draw1.png"
-
-    # Enemies
-    Fly = "data/textures/enemies/fly_ok.png"
-    Fly_die = "data/textures/enemies/fly_rip.png"
-
-    # Friendly_NPCs
-    NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
-    chatboxImage = "Src/Textures/Play/Issac_Loot.png"
-
-
-class ImportedBGM:
-    main_theme = "Src/sounds/main_theme.mp3"
-    walk = "Src/sounds/isaac_hurt1.mp3"
-    shoot = "Src/sounds/pop1.wav"
-
-
-# Settings
-class ScreenSettings:
-    screenWidth = 1280
-    screenHeight = 720
-
-    # distance between screen frame and room frame
-    marginWidth = 150
-    marginHeight = 50
-
-    roomWidth = screenWidth - marginWidth
-    roomHeight = screenHeight - marginHeight
-
-    caption = "The Binding of Issac"
-    fps = 60
-
-
-class PlayerSettings:
-    playerWidth = 65
-    playerHeight = 90
-    playerSpeed = 3
-    PlayerAttackSpeed = 0.5
-    PlayerHP = 6
-    PlayerBuff = 0
-
-
-class TearSettings:
-    tearWidth = 100
-    tearHeight = 100
-    tearSpeed = 6
-    tear_frame_rects = [
-        (0, 0, 64, 64),
-        (64, 0, 64, 64),
-        (128, 0, 64, 64),
-        (192, 0, 64, 64),
-        (256, 0, 64, 64),
-        (320, 0, 64, 64),
-        (384, 0, 64, 64),
-        (448, 0, 64, 64),
-        (512, 0, 64, 64),
-        (576, 0, 64, 64),
-        (640, 0, 64, 64),
-        (704, 0, 64, 64),
-        (768, 0, 64, 64),
-        (832, 0, 64, 64),
-        (896, 0, 64, 64),
-        (0, 64, 64, 64),
-        (64, 64, 64, 64),
-        (128, 64, 64, 64),
-        (192, 64, 64, 64),
-        (256, 64, 64, 64),
-        (320, 64, 64, 64),
-        (384, 64, 64, 64),
-        (448, 64, 64, 64),
-        (512, 64, 64, 64),
-        (576, 64, 64, 64),
-        (640, 64, 64, 64),
-        (704, 64, 64, 64),
-        (768, 64, 64, 64),
-        (832, 64, 64, 64),
-        (896, 64, 64, 64),
-    ]
-
-class BombSettings:
-    bombWidth = 40
-    bombHeight = 42
-    bomb_frame_rects = [
-        (0, 0, 40, 42),
-        (40, 0, 40, 42),
-        (80, 0, 40, 42),
-    ]
-    affect_radius = 100
-    power = 3
-
-class ExplosionSettings:
-    explosionWidth = 96
-    explosionHeight = 96
-    explosion_frame_rects = []
-    for i in range(4):
-        for j in range(4):
-            explosion_frame_rects.append((96 * j, 96 * i, 96, 96))
-
-class MainMenuSettings:
-    class StartButton:
-        MULTI = 3.0
-        ALPHA = 200
-        x = 450
-        y = 400
-
-    class Options:
-        MULTI = 1.5
-        ALPHA = 180
-        x = 420
-        y = 500
-
-    class Continue:
-        MULTI = 1.5
-        ALPHA = 180
-        x = 680
-        y = 550
-
-    class Bomb:
-        MULTI = 3.0
-        ALPHA = 100
-        x = 900
-        y = 200
-        frames_duration = 125
-        frame_rects = [
-            (69, 127, 21, 30),
-            (101, 127, 21, 30),
-            (133, 127, 21, 30),
-            (69, 63, 21, 30),
-            (133, 0, 21, 30),
-        ]
-
-    class Draw:
-        MULTI = 3.0
-        ALPHA = 0
-        x = 400
-        y = 100
-        frames_duration = 125
-        frame_rects = [(0, 0, 165, 156), (160, 0, 154, 156)]
-
-
-class EnemiesSettings:
-    class Fly:
-        MULTI = 1.0
-        ALPHA = 256
-        x = 400
-        y = 400
-        frames_duration = 125
-        frame_rects = [
-            (7, 8, 42, 33),
-            (71, 8, 42, 33),
-            (134, 8, 42, 33),
-            (197, 8, 42, 33),
-        ]
-        HP = 1
-        speed = [1, 1, 5, -1, -1, -5]
-        frame_rects_die = [
-            (0, 0, 64, 63),
-            (64, 0, 64, 63),
-            (128, 0, 64, 63),
-            (192, 0, 64, 63),
-            (0, 63, 64, 63),
-            (64, 63, 64, 63),
-            (128, 63, 64, 63),
-            (192, 63, 64, 63),
-            (0, 126, 64, 63),
-            (64, 126, 64, 63),
-            (128, 126, 64, 63),
-        ]
