@@ -44,6 +44,7 @@ class ChatBox(pygame.sprite.Sprite):
         self.current_step = 0
         self.input_text = ""
         self.allow_input = True
+        self.messages = NPC_Original_messages.npc_message[1]    #两个npc
 
         # 定义字体和颜色
         pygame.font.init()
@@ -90,7 +91,7 @@ class ChatBox(pygame.sprite.Sprite):
                 self.chat_log.append(f"You: {self.input_text.strip()}")
 
                 # 调用 LLM_chat 函数获取回复
-                response = LLM_chat(self.input_text.strip(), messages)
+                response = LLM_chat(self.input_text.strip(), self.messages)
                 #print(response)
                 self.chat_log.append(f"NPC: {response}")
 

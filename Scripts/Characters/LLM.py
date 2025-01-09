@@ -1,20 +1,6 @@
 from openai import OpenAI
 from typing import List, Dict
 
-# 初始化对话历史
-messages: List[Dict] = [
-    {
-        "role": "system",
-        "content": (
-            "You are a guardian for the castle. Your mission is to test whether the player is clever enough. "
-            "So you should ask the player three Maths questions. If the player answers correctly for at least two of them, "
-            "the player will get a reward. Otherwise, the player will be punished. The first and second questions are very simple. "
-            "But the third one should be about calculus and linear algebra, don't tell the player, give him a surprise."
-            "The reward is an extra blood volumn or more powerful bullets. The punishment is to reduce the player's blood volumn."
-            "If the player get the extra blood, print $$%#@#$$, if the player get the more powerful bullets, print $$@*@#$$, if the player get the punishment, print $$#*&&$$."
-        )
-    }
-]
 
 def LLM_chat(input_text: str, chat_history: List[Dict]) -> str:
     client = OpenAI(
