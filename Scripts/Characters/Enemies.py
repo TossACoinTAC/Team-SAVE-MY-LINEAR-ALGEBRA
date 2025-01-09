@@ -155,7 +155,7 @@ class Fly_blood(Monster):
 class BossBody(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        
+        self.state = 'live'
         self.set_body_animation()
 
         self.set_clock()
@@ -191,6 +191,9 @@ class BossBody(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
+
+        if self.HP <= 0:
+            event.post(event.Event(Events.GAME_WIN))
 
         if self.if_beattacked == 'False':
             current_time = pygame.time.get_ticks()

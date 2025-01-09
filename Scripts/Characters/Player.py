@@ -157,7 +157,7 @@ class Player(pygame.sprite.Sprite):
 
             # deal with sound
             if not self.move_sound_played:
-                #self.bgm_player.play("ISAAC_WALK", 0)
+                self.bgm_player.play("ISAAC_WALK", 0)
                 self.move_sound_timer = pygame.time.get_ticks()
                 self.move_sound_played = True
             if pygame.time.get_ticks() - self.move_sound_timer > self.move_sound_delay:
@@ -181,7 +181,7 @@ class Player(pygame.sprite.Sprite):
                     keys[pygame.K_RIGHT] - keys[pygame.K_LEFT],
                     keys[pygame.K_DOWN] - keys[pygame.K_UP],
                 ).normalize()
-                #self.bgm_player.play("ISAAC_SHOOT", 0)
+                self.bgm_player.play("ISAAC_SHOOT", 0)
             except ValueError:
                 shooted_tear.direction = Vector2(0, 0)
 
@@ -322,7 +322,6 @@ class Bomb(pygame.sprite.Sprite):
             )
         self.image = self.frame[0]
         self.rect = self.image.get_rect(center=spawn_pos)
-        self.bgm_player = BGMPlayer()
 
         self.radius = BombSettings.affect_radius  # 伤害半径
         self.power = BombSettings.power  # 伤害值
@@ -340,7 +339,6 @@ class Bomb(pygame.sprite.Sprite):
             self.flicker_timer += 1
 
         if self.flicker_timer >= 9:
-            self.bgm_player.play("BOMB_EXPLODE", 0)
             ev.post(
                 ev.Event(
                     Events.BOMB_EXPLOSION,
