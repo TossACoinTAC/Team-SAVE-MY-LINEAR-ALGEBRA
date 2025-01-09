@@ -124,7 +124,6 @@ class ChatBox(pygame.sprite.Sprite):
                     break
 
         self.allow_input = not inputed
-        print(self.input_text, inputed)
 
 
     def render_wrapped_text(self, text, x, y, color=(255, 255, 255)):
