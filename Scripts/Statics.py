@@ -169,6 +169,12 @@ class UISettings:
         MULTI = 2.3
         ALPHA = 256
 
+    class bomb:
+        x = 30
+        y = 200
+        MULTI = 0.88
+        ALPHA = 256
+
 
 class BossSettings:
     class health_bar:

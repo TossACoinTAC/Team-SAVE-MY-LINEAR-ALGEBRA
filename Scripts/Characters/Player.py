@@ -35,6 +35,7 @@ class Player(pygame.sprite.Sprite):
         # planting bomb
         self.bomb_group = pygame.sprite.GroupSingle()
         self.explosion_group = pygame.sprite.GroupSingle()
+        self.bomb_storage = 3
 
     def set_animation(self):
 
@@ -223,7 +224,8 @@ class Player(pygame.sprite.Sprite):
             self.tear_ready.empty()
 
     def planting(self, keys):  # plant the bomb
-        if keys[pygame.K_e] and not self.bomb_group.sprites():
+        if keys[pygame.K_e] and not self.bomb_group.sprites() and self.bomb_storage > 0:
+            self.bomb_storage -= 1
             new_bomb = Bomb(self.rect.center)
             self.bomb_group.add(new_bomb)
             new_explosion = Explosion(self.rect.center)

@@ -39,7 +39,8 @@ class GameManager:
         self.UI = pygame.sprite.Group()
         self.coinsystem = coin()
         self.attacksystem = attack()
-        self.UI.add(self.coinsystem, self.attacksystem)
+        self.bombsystem = Bomb()
+        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem)
     def set_shop(self):
         self.lucky = pygame.sprite.Group()
         self._lucky = lucky()
@@ -228,6 +229,7 @@ class GameManager:
                 case Events.EXIT_CHATBOX:
                     self.active_scene = Scenes.START_ROOM
                 case Events.BOMB_EXPLOSION:
+                    self.bombsystem.bomb_num -= 1
                     pos = event.pos
                     radius = event.radius
                     for group in [
