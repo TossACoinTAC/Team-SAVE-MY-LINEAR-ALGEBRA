@@ -83,7 +83,7 @@ class GameManager:
         self,
         spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight / 2),
     ):
-        self.isaac_group = pygame.sprite.GroupSingle()
+        self.isaac_group = pygame.sprite.Group()   #Isaac may be sliced
         self.isaac = Player(spawn_pos)
         self.isaac_group.add(self.isaac)
 
@@ -211,10 +211,6 @@ class GameManager:
 
                 self.room_group.draw(self.screen)
                 self.update_sprites(self.isaac_group, self.get_keys())
-                self.update_sprites(self.npc_group, self.get_keys())
-
-                self.lucky.update()
-                self.lucky.draw(self.screen)
 
                 self.enemy_group.update()
                 self.enemy_group.draw(self.screen)
@@ -222,8 +218,6 @@ class GameManager:
                 self.isaac.explosion_group.draw(self.screen)
                 self.isaac.bomb_group.draw(self.screen)
                 self.room.get_walls().draw(self.screen)
-                self.heart.update()
-                self.heart.draw(self.screen)
 
                 self.bloodyTears.update()
                 self.bloodyTears.draw(self.screen)
@@ -241,8 +235,24 @@ class GameManager:
                 self.bosshpicon.update()
                 self.bosshpicon.draw(self.screen)
 
+                self.lucky.update()
+                self.lucky.draw(self.screen)
+
+                #UI
+                self.heart.update()
+                self.heart.draw(self.screen)
                 self.UI.update(self.screen)
                 self.UI.draw(self.screen)
+            case Scenes.TREASURE:
+                self.room_group.draw(self.screen)
+                self.update_sprites(self.isaac_group, self.get_keys())
+                self.update_sprites(self.npc_group, self.get_keys())
+            case Scenes.SECRET:
+                self.room_group.draw(self.screen)
+                self.update_sprites(self.isaac_group, self.get_keys())
+                self.lucky.update()
+                self.lucky.draw(self.screen)
+                
 
             case Scenes.CHAT_BOX:
                 self.update_sprites(self.Chatboxes, self.get_keys())
@@ -448,6 +458,8 @@ class GameManager:
         self.isaac_group.empty()
         self.npc_group.empty()
         self.enemy_group.empty()
+        self.lucky.empty()
+        self.Chatboxes.empty()
 
     async def gen_new_room(self, door_location_tag: str):
         match door_location_tag:
