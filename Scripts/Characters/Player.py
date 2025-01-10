@@ -205,7 +205,10 @@ class Player(pygame.sprite.Sprite):
             and not self.tear_ready.sprites()
         ):
             # shoot
-            shooted_tear = Tear(self.rect.center)
+            if isinstance(self, Body):
+                shooted_tear = Tear(self.rect.center, True)
+            else:
+                shooted_tear = Tear(self.rect.center)
             try:
                 shooted_tear.direction = Vector2(
                     keys[pygame.K_RIGHT] - keys[pygame.K_LEFT],
@@ -240,7 +243,10 @@ class Player(pygame.sprite.Sprite):
                 directions = [Vector2(1, 0), Vector2(1, -1), Vector2(1, 1)]
 
             for direction in directions:
-                shooted_tear = Tear(self.rect.center)
+                if isinstance(self, Body):
+                    shooted_tear = Tear(self.rect.center, True)
+                else:
+                    shooted_tear = Tear(self.rect.center)
                 try:
                     shooted_tear.direction = direction.normalize()
                 except ValueError:
