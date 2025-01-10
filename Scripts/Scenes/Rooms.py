@@ -302,7 +302,8 @@ class StartRoom(SingleRoom):
 
 class Shop(SingleRoom):
     def __init__(self):
-        super().__init__(ImportedImages.RoomImages.SHOP.value)
+        wall_type = 0
+        super().__init__(ImportedImages.RoomImages.SHOP.value, None, wall_type)
 
 
 class TreasureRoom(SingleRoom):
@@ -319,9 +320,11 @@ class SecretRoom(SingleRoom):
 
 class BlueWomb(SingleRoom):
     def __init__(self):
-        super().__init__(ImportedImages.RoomImages.BLUEWOMB.value)
+        wall_type = random.randint(1,3)
+        super().__init__(ImportedImages.RoomImages.BLUEWOMB.value, None, wall_type)
 
 
 class BossRoom(SingleRoom):
     def __init__(self):
-        super().__init__(ImportedImages.RoomImages.CATACOMB.value)
+        wall_type = random.randint(1,3)
+        super().__init__(ImportedImages.RoomImages.CATACOMB.value, None, wall_type)
