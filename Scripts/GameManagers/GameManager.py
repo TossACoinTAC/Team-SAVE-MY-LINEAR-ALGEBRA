@@ -126,7 +126,10 @@ class GameManager:
         pygame.display.flip()
 
     def update_sprites(self, sprites: sprite.Group, keys=None):
-        sprites.update(keys)
+        if not keys:
+            sprites.update()
+        else:
+            sprites.update(keys)
         sprites.draw(self.screen)
 
     def update_enemies_normal(self):
@@ -209,18 +212,14 @@ class GameManager:
                 self.update_boss_spawn_fly()
                 self.update_boss_shoot()
 
-                self.room_group.draw(self.screen)
+                self.update_sprites(self.room_group)
                 self.update_sprites(self.isaac_group, self.get_keys())
-
-                self.enemy_group.update()
-                self.enemy_group.draw(self.screen)
-                self.isaac.tears.draw(self.screen)
-                self.isaac.explosion_group.draw(self.screen)
-                self.isaac.bomb_group.draw(self.screen)
-                self.room.get_walls().draw(self.screen)
-
-                self.bloodyTears.update()
-                self.bloodyTears.draw(self.screen)
+                self.update_sprites(self.enemy_group)
+                self.update_sprites(self.isaac.tears)
+                self.update_sprites(self.isaac.explosion_group)
+                self.update_sprites(self.isaac.bomb_group)
+                self.update_sprites(self.room.get_walls())
+                self.update_sprites(self.bloodyTears)
 
                 # temp code
                 bossheart.update(
@@ -317,10 +316,10 @@ class GameManager:
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
-        self.detect_collision_tears_and_walls()
-        self.detect_collision_tears_and_enemies()
         self.detect_collision_isaac_and_npc()
         self.detect_collision_isaac_and_enemies()
+        self.detect_collision_tears_and_walls()
+        self.detect_collision_tears_and_enemies()
         self.detect_collision_bloodytear_and_frames()
         self.detect_collision_bloodytear_and_isaac()
         self.detect_collision_lucky_and_isaac()
@@ -397,6 +396,7 @@ class GameManager:
         )
         for tear, enemies in collided_tears_and_monsters.items():
             for enemy in enemies:
+                enemy: Monster
                 if tear.state == "live" and enemy.HP > 0:
                     tear.state = "die"
                     self.bgm_player.play("TEAR_HIT", 0)

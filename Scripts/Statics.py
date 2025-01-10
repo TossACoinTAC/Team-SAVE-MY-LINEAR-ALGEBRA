@@ -44,6 +44,7 @@ class Scenes(Enum):
 # Files
 class ImportedImages:
     icon = "Src/icons/64x64.ico"
+    empty_image = "Src/Textures/Empty.png"
 
     # Player
     playerImage = "Src/Textures/Play/Issac_sprite.png"
