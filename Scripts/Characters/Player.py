@@ -19,6 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.tear_ready = pygame.sprite.GroupSingle()
         self._tears = pygame.sprite.Group()
 
+        self.shoot_mode = 0
         self.shoot_timer = 0
         self.shoot_delay = 200
 
@@ -271,7 +272,12 @@ class Player(pygame.sprite.Sprite):
             self.move_Head(keys)
         else:
             self.move(keys)
-        self.triple_shoot(keys)
+
+        if self.shoot_mode == 0:
+            self.shoot(keys)
+        elif self.shoot_mode == 1:
+            self.triple_shoot(keys)
+        
         self.planting(keys)
         self._tears.update()
 

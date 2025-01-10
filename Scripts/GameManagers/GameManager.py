@@ -436,6 +436,17 @@ class GameManager:
             and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
             self.npc1.gen_chatbox(self.get_keys())
+    def detect_buff_acquirance(self):
+        for chatbox in self.Chatboxes:
+            if chatbox.buff == 1:
+                if self._heart.HP < 4:
+                    self._heart.HP += 2
+                else:
+                    self._heart.HP = PlayerSettings.PlayerHP
+            if chatbox.buff == 2:
+                self.isaac.shoot_mode = 1
+            if chatbox.buff == 3:
+                self._heart.HP -= 1
 
     async def detect_collision_isaac_and_doors(self):
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(
