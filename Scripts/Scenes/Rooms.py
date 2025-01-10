@@ -4,7 +4,7 @@ import random
 
 
 class SingleRoom(pygame.sprite.Sprite):
-    def __init__(self, roomImage=None, rect: pygame.Rect = None):
+    def __init__(self, roomImage=None, rect: pygame.Rect = None, Wall_Type = 0):
         super().__init__()
         # randomly select a room image if not specified
         if not roomImage:
@@ -26,7 +26,7 @@ class SingleRoom(pygame.sprite.Sprite):
         self.set_frame()
         self._walls = pygame.sprite.Group()
         self._walls.empty()
-        self.gen_walls()
+        self.gen_walls(Wall_Type)
         self._doors = pygame.sprite.Group()
         self._doors.empty()
         self.gen_doors()
@@ -88,8 +88,7 @@ class SingleRoom(pygame.sprite.Sprite):
             self._doors.add(door)
         self._doors.draw(self.image)  # draw on the Room's frame
 
-    def gen_walls(self):
-        mode = random.choice([1, 2, 3])  # 随机选择生成模式
+    def gen_walls(self, mode):
         if mode == 1:
             # 模式一：在整个房间生成一整列一整列的墙体
             columns = random.randint(3, 6)  # 随机生成列数
@@ -143,7 +142,9 @@ class SingleRoom(pygame.sprite.Sprite):
                     )
                     self._walls.add(wall)
 
-        num_rocks = random.randint(1, 5)
+        num_rocks = 0 
+        if mode != 0:
+            num_rocks = random.randint(1, 5)
         for _ in range(num_rocks):
             while True:
                 x = random.randint(
@@ -295,7 +296,8 @@ class Web(pygame.sprite.Sprite):
 
 class StartRoom(SingleRoom):
     def __init__(self):
-        super().__init__(ImportedImages.RoomImages.START_ROOM.value)
+        wall_type = 2
+        super().__init__(ImportedImages.RoomImages.START_ROOM.value, None, wall_type)
 
 
 class Shop(SingleRoom):
@@ -305,12 +307,14 @@ class Shop(SingleRoom):
 
 class TreasureRoom(SingleRoom):
     def __init__(self):
-        super().__init__(ImportedImages.RoomImages.TREASURE.value)
+        wall_type = 0
+        super().__init__(ImportedImages.RoomImages.TREASURE.value, None, wall_type)
 
 
 class SecretRoom(SingleRoom):
     def __init__(self):
-        super().__init__(ImportedImages.RoomImages.SECRET.value)
+        wall_type = 3
+        super().__init__(ImportedImages.RoomImages.SECRET.value, None, wall_type)
 
 
 class BlueWomb(SingleRoom):
