@@ -1,3 +1,4 @@
+import asyncio
 from pygame import *
 from GameManagers.BGMPlayer import BGMPlayer
 from Characters.Player import *
@@ -11,6 +12,19 @@ from Scenes.Heart import *
 from Scenes.bosshp import bossheart
 from Scenes.shop import *
 from Scenes.UI import *
+import time
+
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        print(f"{method.__name__} took: {te-ts} sec")
+        return result
+
+    return timed
+
 
 class GameManager:
     # just an alias
@@ -41,6 +55,7 @@ class GameManager:
         self.attacksystem = attack()
         self.bombsystem = Bomb()
         self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem)
+
     def set_shop(self):
         self.lucky = pygame.sprite.Group()
         self._lucky = lucky()
@@ -54,17 +69,16 @@ class GameManager:
         self.bosshpicon = pygame.sprite.Group()
         self.bosshpicon.add(bossHealthBarIcon())
 
-
     def set_spawn_enemies(self):
         self.enemy_group = pygame.sprite.Group()
-        self.update_enemies_normal_state = 'True'
-        self.update_enemies_boss_state = 'True'
+        self.update_enemies_normal_state = "True"
+        self.update_enemies_boss_state = "True"
 
     def set_heart(self):
         self.heart = pygame.sprite.GroupSingle()
-        self._heart = Heart() 
+        self._heart = Heart()
         self.heart.add(self._heart)
-    
+
     def set_scenes(self):
         self.active_scene = Scenes.MAIN_MENU
         self.main_menu: pygame.sprite.Group = MainMenu()
@@ -80,6 +94,8 @@ class GameManager:
     def set_issac(self):
         self.isaac_group = pygame.sprite.Group()
         self.isaac = Player(spawn_pos = (640, 600))
+        self.isaac_group = pygame.sprite.GroupSingle()
+        self.isaac = Player(spawn_pos=(640, 390))
         self.isaac_group.add(self.isaac)
 
     def set_npc(self):
@@ -92,6 +108,9 @@ class GameManager:
         self.room = StartRoom()
         self.room_group.add(self.room)
         self.new_room = None
+        self.room_transitioning = False
+        self.transition_speed_horizontal = 3
+        self.transition_speed_vertical = 10
 
     def set_chatbox(self):
         self.Chatboxes = pygame.sprite.GroupSingle()
@@ -114,70 +133,97 @@ class GameManager:
         self.update_scene(self.active_scene)
         pygame.display.flip()
 
-    def update_sprite(self, sprite: sprite.GroupSingle, keys=None):
-        sprite.update(keys)
-        sprite.draw(self.screen)
-    
+    def update_sprites(self, sprites: sprite.Group, keys=None):
+        sprites.update(keys)
+        sprites.draw(self.screen)
+
     def update_enemies_normal(self):
-        if self.update_enemies_normal_state == 'True':
+        if self.update_enemies_normal_state == "True":
             for i in range(UpdateEnemiesSettings.flyNumber):
                 self.enemy_group.add(Fly())
-        self.update_enemies_normal_state = 'False'
+        self.update_enemies_normal_state = "False"
 
     def update_enemies_boss(self):
-        if self.update_enemies_boss_state == 'True':
+        if self.update_enemies_boss_state == "True":
             for i in range(UpdateEnemiesSettings.bossNumber):
                 self.enemy_group.add(self.bossBody, self.bossAttack)
-        self.update_enemies_boss_state = 'False'
+        self.update_enemies_boss_state = "False"
 
     def update_boss_spawn_fly(self):
-        if self.bossAttack.if_spwan_fly == 'True':
-            self.bossAttack.if_spwan_fly = 'False'
+        if self.bossAttack.if_spwan_fly == "True":
+            self.bossAttack.if_spwan_fly = "False"
             for i in range(random.randint(1, 3)):
-                self.enemy_group.add(Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y))
+                self.enemy_group.add(
+                    Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
+                )
 
     def update_boss_shoot(self):
-        if self.bossAttack.if_shoot == 'True':
-            self.bossAttack.if_shoot = 'False'
-            vector_list1 = [(-1.732/2, -1/2), (-2/2, 0), (-1.732/2, 1/2), (-1/2, 1.732/2), (0, 2/2)]
-            vector_list2 = [(-1.732/2, 1/2), (-1/2, 1.732/2), (0, 2/2), (1/2, 1.732/2),(1.732/2, 1/2)]
-            vector_list3 = [(0, 2/2), (1/2, 1.732/2),(1.732/2, 1/2),(2/2, 0), (1.732/2, -1/2),(1/2, -1.732/2)]
+        if self.bossAttack.if_shoot == "True":
+            self.bossAttack.if_shoot = "False"
+            vector_list1 = [
+                (-1.732 / 2, -1 / 2),
+                (-2 / 2, 0),
+                (-1.732 / 2, 1 / 2),
+                (-1 / 2, 1.732 / 2),
+                (0, 2 / 2),
+            ]
+            vector_list2 = [
+                (-1.732 / 2, 1 / 2),
+                (-1 / 2, 1.732 / 2),
+                (0, 2 / 2),
+                (1 / 2, 1.732 / 2),
+                (1.732 / 2, 1 / 2),
+            ]
+            vector_list3 = [
+                (0, 2 / 2),
+                (1 / 2, 1.732 / 2),
+                (1.732 / 2, 1 / 2),
+                (2 / 2, 0),
+                (1.732 / 2, -1 / 2),
+                (1 / 2, -1.732 / 2),
+            ]
             if self.isaac.rect.x <= 462:
                 vector_list = vector_list1
             elif self.isaac.rect.x >= 1280 - 462:
                 vector_list = vector_list3
             else:
                 vector_list = vector_list2
-            for (direction_x, direction_y) in vector_list:
-                self.bloodyTears.add(BloodyTear(self.bossAttack.rect.x, self.bossAttack.rect.y, direction_x, direction_y))
-            
+            for direction_x, direction_y in vector_list:
+                self.bloodyTears.add(
+                    BloodyTear(
+                        self.bossAttack.rect.x,
+                        self.bossAttack.rect.y,
+                        direction_x,
+                        direction_y,
+                    )
+                )
+
     def update_scene(self, active_scene: Scenes):
         match active_scene:
 
             case Scenes.MAIN_MENU:
                 self.main_menu.update()
                 self.main_menu.draw(self.screen)
-            
+
             case Scenes.GAMEWIN:
                 self.screen.fill((0, 0, 0))
                 self.game_win.update()
                 self.game_win.draw(self.screen)
 
             case Scenes.START_ROOM:
-                #制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
+                # 制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
                 self.update_enemies_boss()
                 self.update_enemies_normal()
                 self.update_boss_spawn_fly()
                 self.update_boss_shoot()
-                
 
-                self.update_sprite(self.room_group)
-                self.update_sprite(self.isaac_group, self.get_keys())
-                self.update_sprite(self.npc_group, self.get_keys())
+                self.update_sprites(self.room_group)
+                self.update_sprites(self.isaac_group, self.get_keys())
+                self.update_sprites(self.npc_group, self.get_keys())
 
                 self.lucky.update()
                 self.lucky.draw(self.screen)
-                
+
                 self.enemy_group.update()
                 self.enemy_group.draw(self.screen)
                 self.isaac.tears.draw(self.screen)
@@ -186,12 +232,20 @@ class GameManager:
                 self.room.get_walls().draw(self.screen)
                 self.heart.update()
                 self.heart.draw(self.screen)
-                
+
                 self.bloodyTears.update()
                 self.bloodyTears.draw(self.screen)
 
-                #temp code
-                bossheart.update(self.screen, BossSettings.health_bar.x, BossSettings.health_bar.y, BossSettings.health_bar.width, BossSettings.health_bar.height, self.bossBody.HP, BossSettings.health_bar.max)
+                # temp code
+                bossheart.update(
+                    self.screen,
+                    BossSettings.health_bar.x,
+                    BossSettings.health_bar.y,
+                    BossSettings.health_bar.width,
+                    BossSettings.health_bar.height,
+                    self.bossBody.HP,
+                    BossSettings.health_bar.max,
+                )
                 self.bosshpicon.update()
                 self.bosshpicon.draw(self.screen)
 
@@ -199,10 +253,11 @@ class GameManager:
                 self.UI.draw(self.screen)
 
             case Scenes.CHAT_BOX:
-                self.update_sprite(self.Chatboxes, self.get_keys())
+                self.update_sprites(self.Chatboxes, self.get_keys())
 
     def deal_events(self):
         self.detect_collision()
+        asyncio.run(self.async_update())
         for event in pygame.event.get():
             match event.type:
                 case pygame.QUIT:
@@ -257,6 +312,7 @@ class GameManager:
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
+        self.detect_collision_isaac_and_doors()
         self.detect_collision_tears_and_walls()
         self.detect_collision_tears_and_enemies()
         self.detect_collision_isaac_and_npc()
@@ -268,60 +324,68 @@ class GameManager:
 
     def detect_collision_boss_and_isaac(self):
         collided_boss_and_isaac = StaticMethods.mask_spritecollide(
-            self.bossBody, self.isaac_group, False)
+            self.bossBody, self.isaac_group, False
+        )
         if collided_boss_and_isaac:
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_lucky_and_isaac(self):
         collided_lucky_and_isaac = StaticMethods.mask_spritecollide(
-            self.isaac, self.lucky, False)
-        
-        if self._lucky.state == 'destroy':
-            mode = random.choice(['heart', 'attack', 'coin'])
-            if mode == 'heart':
+            self.isaac, self.lucky, False
+        )
+
+        if self._lucky.state == "destroy":
+            mode = random.choice(["heart", "attack", "coin"])
+            if mode == "heart":
                 if self._heart.HP < 4:
                     self._heart.HP += 2
                 else:
                     self._heart.HP = PlayerSettings.PlayerHP
-            if mode == 'attack':
+            if mode == "attack":
                 self.isaac.attack += 1
                 self.attacksystem.attack_num += 1
-            if mode == 'coin':
+            if mode == "coin":
                 self.coinsystem.coin_num += 3
-            self._lucky.state = 'normal'
-
+            self._lucky.state = "normal"
 
         keys = pygame.key.get_pressed()
-        if self.coinsystem.coin_num >= 5 and self._lucky.state == 'normal'and keys[pygame.K_q] and pygame.sprite.spritecollide(self.isaac, self.lucky, False):
-            self._lucky.state = 'open'
+        if (
+            self.coinsystem.coin_num >= 5
+            and self._lucky.state == "normal"
+            and keys[pygame.K_q]
+            and pygame.sprite.spritecollide(self.isaac, self.lucky, False)
+        ):
+            self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
         if StaticMethods.mask_spritecollide(self.isaac, self.lucky, False):
             self.isaac.rect.move_ip(-self.isaac.movement)
-        
 
     def detect_collision_bloodytear_and_frames(self):
         collided_bloodytear_and_frames = pygame.sprite.groupcollide(
-            self.bloodyTears, self.room.get_frame(), False, False)
+            self.bloodyTears, self.room.get_frame(), False, False
+        )
         for bloodytear, frame in collided_bloodytear_and_frames.items():
             bloodytear.state = "die"
-    
+
     def detect_collision_isaac_and_enemies(self):
         collided_isaac_and_enemies = StaticMethods.mask_spritecollide(
-            self.isaac, self.enemy_group, False)
+            self.isaac, self.enemy_group, False
+        )
         if collided_isaac_and_enemies:
             for heart in self.heart:
-                heart.state = 'reduce'
+                heart.state = "reduce"
 
     def detect_collision_bloodytear_and_isaac(self):
         collided_isaac_and_bloodytear = StaticMethods.mask_spritecollide(
-            self.isaac, self.bloodyTears, False)
+            self.isaac, self.bloodyTears, False
+        )
 
         for bloodytear in collided_isaac_and_bloodytear:
 
-            if bloodytear.state == 'live':
+            if bloodytear.state == "live":
                 for heart in self.heart:
-                    heart.state = 'reduce'
-                bloodytear.state = 'die'
+                    heart.state = "reduce"
+                bloodytear.state = "die"
 
     def detect_collision_tears_and_enemies(self):
         collided_tears_and_monsters = StaticMethods.mask_groupcollide(
@@ -334,12 +398,11 @@ class GameManager:
                     if enemy.HP > 0:
                         tear.state = "die"
                     enemy.HP -= self.isaac.attack
-                    if enemy.state == 'live' and enemy.HP <= 0:
+                    if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
 
-
     def detect_collision_tears_and_walls(self):
- 
+
         collided_tears_and_walls = StaticMethods.mask_groupcollide(
             self.isaac.tears, self.room.get_walls(), False, False
         )
@@ -359,17 +422,10 @@ class GameManager:
             tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
-        if (StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
+        if (
+            StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
         ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
             self.isaac.rect.move_ip(-self.isaac.movement)
-        collided_isaac_and_doors = StaticMethods.mask_spritecollide(
-            self.isaac, self.room.get_doors(), False
-        )
-        for door in collided_isaac_and_doors:
-            door: Door
-            if door.is_open:
-                pass
-
 
     def detect_collision_isaac_and_npc(self):
         if (
@@ -377,3 +433,95 @@ class GameManager:
             and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
             self.npc1.gen_chatbox(self.get_keys())
+
+    def detect_collision_isaac_and_doors(self):
+        collided_isaac_and_doors = StaticMethods.mask_spritecollide(
+            self.isaac, self.room.get_doors(), False
+        )
+
+        for door in collided_isaac_and_doors:
+            door: Door
+
+            door.is_open = True  # in event later
+            if door.is_open:
+
+                self.isaac_group.remove(self.isaac)
+                self.isaac.kill()  # may cause gameover
+
+                self.gen_new_room(door.location_tag)
+                self.room_transitioning = True
+
+                while self.room_transitioning:
+                    self.room_transit(door.location_tag)
+
+                self.room_group.remove(self.room)
+                self.room = self.new_room
+                door.is_open = False  # in event later
+
+    def gen_new_room(self, door_location_tag: str):
+        match door_location_tag:
+            case "top":
+                self.new_room_rect = pygame.Rect(
+                    0,
+                    -ScreenSettings.screenHeight,
+                    ScreenSettings.screenWidth,
+                    ScreenSettings.screenHeight,
+                )
+            case "bottom":
+                self.new_room_rect = pygame.Rect(
+                    0,
+                    ScreenSettings.screenHeight,
+                    ScreenSettings.screenWidth,
+                    ScreenSettings.screenHeight,
+                )
+            case "left":
+                self.new_room_rect = pygame.Rect(
+                    -ScreenSettings.screenWidth,
+                    0,
+                    ScreenSettings.screenWidth,
+                    ScreenSettings.screenHeight,
+                )
+            case "right":
+                self.new_room_rect = pygame.Rect(
+                    ScreenSettings.screenWidth,
+                    0,
+                    ScreenSettings.screenWidth,
+                    ScreenSettings.screenHeight,
+                )
+        self.new_room = SingleRoom(rect=self.new_room_rect)
+        self.room_group.remove(self.room)
+        self.room_group.add(self.new_room)
+        self.room_group.add(self.room)  # reorder to keep the new room on top
+
+    @timeit
+    def room_transit(self, door_location_tag: str):
+        # self.update_sprites(self.room_group)
+        print(f"Room Y: {self.room.rect.y}, New Room Y: {self.new_room.rect.y}")
+        self.screen.blit(self.room.image, self.room.rect)
+        self.screen.blit(self.new_room.image, self.new_room.rect)
+
+        match door_location_tag:
+            case "top":
+                self.room.rect.move_ip(0, self.transition_speed_vertical)
+                self.new_room.rect.move_ip(0, self.transition_speed_vertical)
+                if self.new_room_rect.top >= 0:
+                    self.room_transitioning = False
+            case "bottom":
+                self.room.rect.move_ip(0, -self.transition_speed_vertical)
+                self.new_room.rect.move_ip(0, -self.transition_speed_vertical)
+                if self.room.rect.bottom <= 0:
+                    self.room_transitioning = False
+            case "left":
+                self.room.rect.move_ip(self.transition_speed_horizontal, 0)
+                self.new_room.rect.move_ip(self.transition_speed_horizontal, 0)
+                if self.new_room_rect.left >= 0:
+                    self.room_transitioning = False
+            case "right":
+                self.room.rect.move_ip(-self.transition_speed_horizontal, 0)
+                self.new_room.rect.move_ip(-self.transition_speed_horizontal, 0)
+                if self.room.rect.right <= 0:
+                    self.room_transitioning = False
+
+    # Coroutines
+    async def async_update(self):
+        pass

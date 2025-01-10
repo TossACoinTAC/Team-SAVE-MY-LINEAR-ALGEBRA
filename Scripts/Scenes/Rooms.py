@@ -4,16 +4,22 @@ import random
 
 
 class SingleRoom(pygame.sprite.Sprite):
-    def __init__(self, roomImage=None):
+    def __init__(self, roomImage=None, rect: pygame.Rect = None):
         super().__init__()
         # randomly select a room image if not specified
         if not roomImage:
-            roomImage = random.choice(list(ImportedImages.RoomImages)).value
-        self.image = pygame.image.load(roomImage)
+            self.image = pygame.image.load(
+                random.choice(list(ImportedImages.RoomImages)).value
+            )
+        else:
+            self.image = pygame.image.load(roomImage)
         self.image = pygame.transform.scale(
             self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
         )
-        self.rect = self.image.get_rect()
+        if not rect:
+            self.rect = self.image.get_rect()
+        else:
+            self.rect = rect
 
         self._frame = pygame.sprite.Group()
         self.set_frame()
@@ -21,10 +27,6 @@ class SingleRoom(pygame.sprite.Sprite):
         self.gen_walls()
         self._doors = pygame.sprite.Group()
         self.gen_doors()
-
-        self.roomImage = random.choice(
-            list(ImportedImages.RoomImages)
-        ).value  # random again for next initialization
 
     # property without setter
     def get_frame(self):
@@ -162,15 +164,18 @@ class Door(pygame.sprite.Sprite):
         super().__init__()
         # randomly select a door image if not specified
         if not doorImage:
-            doorImage = random.choice(list(ImportedImages.ClosedDoorImages)).value
-        self.image = pygame.image.load(doorImage)
+            self.image = pygame.image.load(
+                random.choice(list(ImportedImages.ClosedDoorImages)).value
+            )
+        else:
+            self.image = pygame.image.load(doorImage)
         self.image = pygame.transform.scale(
             self.image,
             (PlayerSettings.playerWidth * 1.5, PlayerSettings.playerHeight * 1.3),
         )
         self.rect = self.image.get_rect()
         self.location_tag = location_tag
-        self._is_open = True
+        self._is_open = False
         match doorImage:
             case ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR.value:
                 self.type_tag = "Wood"
@@ -234,7 +239,6 @@ class Shit(Wall):
                 ),
             )
             self.rect = self.image.get_rect(center=self.rect.center)
-
 
 
 class Block(Wall):

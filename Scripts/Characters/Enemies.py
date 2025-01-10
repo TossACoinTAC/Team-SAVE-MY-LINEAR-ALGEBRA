@@ -4,6 +4,7 @@ import random
 from Statics import *
 from math import *
 
+
 class Monster(pygame.sprite.Sprite):
     def __init__(
         self,
@@ -17,7 +18,6 @@ class Monster(pygame.sprite.Sprite):
         frame_duration,
         HP,
         speed,
-
     ):
         super().__init__()
         # setup_live_animation
@@ -65,21 +65,22 @@ class Monster(pygame.sprite.Sprite):
         self.update_animation()
         self.update_position()
         self.check_die()
-    
+
     def check_die(self):
         if self.HP <= 0:
-            self.state = 'die'
-    
+            self.state = "die"
+
     def detect_collision(self):
         if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
-            ScreenSettings.screenWidth - ScreenSettings.marginWidth):
+            ScreenSettings.screenWidth - ScreenSettings.marginWidth
+        ):
             self.speed_x = -self.speed_x
         if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
-            ScreenSettings.screenHeight - ScreenSettings.marginHeight):
+            ScreenSettings.screenHeight - ScreenSettings.marginHeight
+        ):
             self.speed_y = -self.speed_y
 
     def update_position(self):
-
 
         if self.move_mode == "straight":
             self.rect.x += self.speed_x
@@ -124,7 +125,6 @@ class Monster(pygame.sprite.Sprite):
             self.image = self.frames_die[self.frames_index_die]
 
 
-
 class Fly(Monster):
     def __init__(self):
         super().__init__(
@@ -137,7 +137,9 @@ class Fly(Monster):
             EnemiesSettings.Fly.MULTI,
             EnemiesSettings.Fly.frames_duration,
             EnemiesSettings.Fly.HP,
-            EnemiesSettings.Fly.speed,)
+            EnemiesSettings.Fly.speed,
+        )
+
 
 class Fly_blood(Monster):
     def __init__(self, x, y):
@@ -146,25 +148,26 @@ class Fly_blood(Monster):
             ImportedImages.Fly_die,
             EnemiesSettings.Fly.frame_rects_blood,
             EnemiesSettings.Fly.frame_rects_die,
-            x,y,
+            x,
+            y,
             EnemiesSettings.Fly.MULTI,
             EnemiesSettings.Fly.frames_duration,
             EnemiesSettings.Fly.HP,
-            EnemiesSettings.Fly.speed,)
+            EnemiesSettings.Fly.speed,
+        )
+
 
 class BossBody(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.state = 'live'
+        self.state = "live"
         self.set_body_animation()
 
         self.set_clock()
         self.set_position()
         self.set_HP()
-        self.if_beattacked = 'False'
+        self.if_beattacked = "False"
 
-
-    
     def set_HP(self):
         self.HP = BossSettings.health_bar.max
 
@@ -180,12 +183,15 @@ class BossBody(pygame.sprite.Sprite):
         self.frames = []
         self.frame_index = 0
         self.frame_rects = BossSettings.Body.frame_rects
-        
+
         sheet = pygame.image.load(ImportedImages.Boss)
         for frame_rect in self.frame_rects:
-            self.frames.append(pygame.transform.scale(
-                get_images(sheet, *frame_rect, (0, 0, 0), 1.0),
-                (int(140 * 2.2), int(120 * 2.2))))
+            self.frames.append(
+                pygame.transform.scale(
+                    get_images(sheet, *frame_rect, (0, 0, 0), 1.0),
+                    (int(140 * 2.2), int(120 * 2.2)),
+                )
+            )
 
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
@@ -195,7 +201,7 @@ class BossBody(pygame.sprite.Sprite):
         if self.HP <= 0:
             event.post(event.Event(Events.GAME_WIN))
 
-        if self.if_beattacked == 'False':
+        if self.if_beattacked == "False":
             current_time = pygame.time.get_ticks()
             if self.animation_timer == 0:
                 self.animation_timer = current_time
@@ -205,6 +211,7 @@ class BossBody(pygame.sprite.Sprite):
                 self.animation_timer = current_time
             self.image = self.frames[self.frame_index]
 
+
 class BossAttack(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -212,9 +219,9 @@ class BossAttack(pygame.sprite.Sprite):
         self.set_Attack_animation()
         self.set_clock()
         self.set_position()
-        self.state = 'sleep'
-        self.if_shoot = 'False'
-        self.if_spwan_fly = 'False'
+        self.state = "sleep"
+        self.if_shoot = "False"
+        self.if_spwan_fly = "False"
 
     def set_position(self):
         self.rect.centerx = 0.5 * ScreenSettings.screenWidth
@@ -228,18 +235,21 @@ class BossAttack(pygame.sprite.Sprite):
         self.frames = []
         self.frame_index = 0
         self.frame_rects = BossSettings.attack.frame_rects
-        
+
         sheet = pygame.image.load(ImportedImages.Boss)
         for frame_rect in self.frame_rects:
-            self.frames.append(pygame.transform.scale(
-                get_images(sheet, *frame_rect, (0, 0, 0), 1.0),
-                (int(frame_rect[2] * 2.2), int(frame_rect[3] * 2.2))))
+            self.frames.append(
+                pygame.transform.scale(
+                    get_images(sheet, *frame_rect, (0, 0, 0), 1.0),
+                    (int(frame_rect[2] * 2.2), int(frame_rect[3] * 2.2)),
+                )
+            )
 
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
 
     def update(self):
-        if self.state == 'awake':
+        if self.state == "awake":
             duration = [125, 125, 125, 400, 400, 400, 125, 125]
             self.current_time = pygame.time.get_ticks()
             if self.timer == 0:
@@ -248,19 +258,18 @@ class BossAttack(pygame.sprite.Sprite):
                 self.frame_index += 1
                 self.timer = self.current_time
                 if self.frame_index == 4:
-                    self.if_shoot = 'True'
+                    self.if_shoot = "True"
                 if self.frame_index == 5:
-                    self.if_spwan_fly = 'True'
+                    self.if_spwan_fly = "True"
             self.image = self.frames[self.frame_index]
             if self.frame_index == len(self.frame_rects) - 1:
-                self.state = 'sleep'
+                self.state = "sleep"
                 self.frame_index = 0
-        if self.state == 'sleep':
+        if self.state == "sleep":
             self.current_time = pygame.time.get_ticks()
             if self.current_time - self.timer > random.randint(1000, 3000):
-                self.state = 'awake'
-        
-        
+                self.state = "awake"
+
 
 class BloodyTear(pygame.sprite.Sprite):
     def __init__(self, x, y, direction_x, direction_y):
@@ -282,15 +291,16 @@ class BloodyTear(pygame.sprite.Sprite):
         self.frame_index = 0
         self.frame_rects = TearSettings.tear_frame_rects
         self.sheet = pygame.image.load(ImportedImages.tear_pop_Image)
-        for i in range(len(self.frame_rects)//2):
-            self.frame.append(pygame.transform.scale(
-                get_images(self.sheet, *self.frame_rects[i + 15], (0, 0, 0), 1.0),
-                (TearSettings.tearWidth, TearSettings.tearHeight)))
-
+        for i in range(len(self.frame_rects) // 2):
+            self.frame.append(
+                pygame.transform.scale(
+                    get_images(self.sheet, *self.frame_rects[i + 15], (0, 0, 0), 1.0),
+                    (TearSettings.tearWidth, TearSettings.tearHeight),
+                )
+            )
 
     def update(self):
         self.rect.move_ip(self.direction * self.speed)
-
 
         if self.state == "die":
             self.speed = 0
@@ -307,5 +317,3 @@ class BloodyTear(pygame.sprite.Sprite):
 
         if self.frame_index >= 14:
             self.kill()
-
-
