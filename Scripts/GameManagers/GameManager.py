@@ -41,7 +41,8 @@ class GameManager:
         self.UI = pygame.sprite.Group()
         self.coinsystem = coin()
         self.attacksystem = attack()
-        self.UI.add(self.coinsystem, self.attacksystem)
+        self.bombsystem = Bomb()
+        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem)
 
     def set_shop(self):
         self.lucky = pygame.sprite.Group()
@@ -269,17 +270,25 @@ class GameManager:
                 case Events.EXIT_CHATBOX:
                     self.active_scene = Scenes.START_ROOM
                 case Events.BOMB_EXPLOSION:
+                    self.bombsystem.bomb_num -= 1
                     pos = event.pos
                     radius = event.radius
                     for group in [
                         self.enemy_group,
                         self.npc_group,
                         self.room.get_walls(),
-                        self.isaac_group,
                     ]:
                         for entity in group:
                             if Vector2(entity.rect.center).distance_to(pos) <= radius:
-                                entity.kill()
+                                entity.HP -= 3
+                                if isinstance(entity, Wall):
+                                    entity.destroyed()
+                                else:
+                                    entity.update()
+                    for entity in self.isaac_group:
+                        if Vector2(entity.rect.center).distance_to(pos) <= radius:
+                            for heart in self.heart:
+                                heart.state = "reduce"
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
@@ -364,6 +373,7 @@ class GameManager:
         )
         for tear, enemies in collided_tears_and_monsters.items():
             for enemy in enemies:
+                self.bgm_player.play("TEAR_HIT", 0)
                 if tear.state == "live":
                     if enemy.HP > 0:
                         tear.state = "die"
@@ -380,6 +390,8 @@ class GameManager:
             tear: Tear  # once for all below, sweet
             for wall in walls:
                 if tear.state == "live" and isinstance(wall, Shit):
+                    wall.HP -= 1
+                    self.bgm_player.play("TEAR_HIT", 0)
                     wall.destroyed()
             tear.state = "die"
 

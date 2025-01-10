@@ -44,6 +44,7 @@ class ChatBox(pygame.sprite.Sprite):
         self.current_step = 0
         self.input_text = ""
         self.allow_input = True
+        self.messages = NPC_Original_messages.npc_message[0]    #两个npc
 
         # 定义字体和颜色
         pygame.font.init()
@@ -59,6 +60,8 @@ class ChatBox(pygame.sprite.Sprite):
 
         self.linenumber = 2
         self.y_offset = 20
+
+        self.buff = 0
 
     def render_text(self, text, x, y, color=(255, 255, 255)):
         text_surface = self.FONT.render(text, True, color)
@@ -90,7 +93,7 @@ class ChatBox(pygame.sprite.Sprite):
                 self.chat_log.append(f"You: {self.input_text.strip()}")
 
                 # 调用 LLM_chat 函数获取回复
-                response = LLM_chat(self.input_text.strip(), messages)
+                response = LLM_chat(self.input_text.strip(), self.messages)
                 #print(response)
                 self.chat_log.append(f"NPC: {response}")
 
@@ -100,18 +103,26 @@ class ChatBox(pygame.sprite.Sprite):
                             sprite.kill()
                     ev.post(ev.Event(Events.EXIT_CHATBOX))
                     #self.kill()
+
+                if "%#@#" in response:
+                    self.buff = 1
+                if "@*@#" in response:
+                    self.buff = 2
+                if "#*&&" in response:
+                    self.buff = 3
+                print(self.buff)
                 
                 self.input_text = ""
             inputed = True
 
 
         elif keys[pygame.K_BACKSPACE]:
-            if self.input_text:
+            if self.input_text and self.allow_input:
                 self.input_text = self.input_text[:-1]
             inputed = True
 
         elif keys[pygame.K_SPACE]:
-            if self.input_text:
+            if self.input_text and self.allow_input:
                 self.input_text += " "
             inputed = True
 

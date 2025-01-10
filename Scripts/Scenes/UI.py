@@ -1,10 +1,11 @@
 import pygame
 from Statics import *
+from TmpTools.tools import *
 
 class StaticState(pygame.sprite.Sprite):
     def __init__(self, importImage, x, y, MULTI, ALPHA):
         super().__init__()
-        self.image = pygame.image.load(importImage)
+        self.image = importImage
         self.image.set_alpha(ALPHA)
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -16,7 +17,7 @@ class StaticState(pygame.sprite.Sprite):
 class coin(StaticState):
     def __init__(self):
         super().__init__(
-            ImportedImages.UI.coin,
+            pygame.image.load(ImportedImages.UI.coin),
             UISettings.coin.x,
             UISettings.coin.y,
             UISettings.coin.MULTI,
@@ -31,7 +32,7 @@ class coin(StaticState):
 class attack(StaticState):
     def __init__(self):
         super().__init__(
-            ImportedImages.UI.attack,
+            pygame.image.load(ImportedImages.UI.attack),
             UISettings.attack.x,
             UISettings.attack.y,
             UISettings.attack.MULTI,
@@ -41,3 +42,18 @@ class attack(StaticState):
         fonts = pygame.font.Font('Src/fonts/IsaacGame.ttf', 48) #"Src/fonts/prices.psd"
         attack_text = fonts.render(f"{self.attack_num}", True, (225, 225, 225))
         screen.blit(attack_text, (UISettings.attack.x + 55, UISettings.attack.y + 10))
+
+class Bomb(StaticState):
+    def __init__(self):
+        Image = get_images(pygame.image.load(ImportedImages.Bomb), 0,0,35,38, (0, 0, 0), 3.0)
+        super().__init__(
+            Image,
+            UISettings.bomb.x,
+            UISettings.bomb.y,
+            UISettings.bomb.MULTI,
+            UISettings.bomb.ALPHA)
+        self.bomb_num = 3
+    def update(self, screen):
+        fonts = pygame.font.Font('Src/fonts/IsaacGame.ttf', 48) #"Src/fonts/prices.psd"
+        bomb_text = fonts.render(f"{self.bomb_num}", True, (225, 225, 225))
+        screen.blit(bomb_text, (UISettings.bomb.x + 70, UISettings.bomb.y + 15))

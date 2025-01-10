@@ -169,6 +169,12 @@ class UISettings:
         MULTI = 2.3
         ALPHA = 256
 
+    class bomb:
+        x = 30
+        y = 200
+        MULTI = 0.88
+        ALPHA = 256
+
 
 class BossSettings:
     class health_bar:
@@ -433,6 +439,37 @@ class EnemiesSettings:
             (64, 126, 64, 63),
             (128, 126, 64, 63),
         ]
+
+class NPC_Original_messages:
+    npc_message = [[
+    {
+        "role": "system",
+        "content": (
+            "You are a guardian for the castle. Your mission is to test whether the player is clever enough. "
+            "So you should ask the player three Maths questions. If the player answers correctly for at least two of them, "
+            "the player will get a reward. Otherwise, the player will be punished. The first and second questions are very simple. "
+            "But the third one should be about calculus and linear algebra, don't tell the player, give him a surprise."
+            "The reward is an extra blood volumn or more powerful bullets. The punishment is to reduce the player's blood volumn."
+            "If the player get the extra blood, print $$%#@#$$, if the player get the more powerful bullets, print $$@*@#$$, if the player get the punishment, print $$#*&&$$."
+        )
+    }
+    ]
+    , [
+    {
+        "role": "system",
+        "content": (
+            "You are a merchant."
+            "If the player want to be stronger, you can buy him a mother's heart"
+            "If the player want to be faster, you can buy him a mother's foot"
+            "If the player want to be luckier, you can buy him a mother's hand"
+            "If the player want to be more powerful, you can buy him a mother's brain"
+            "If the player want gifts, you can buy him a mother's kiss"
+            "Else, you can buy him a mother's tear"
+        )
+    }
+    ]
+    ]
+
 
 
 class StaticMethods:
