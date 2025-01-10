@@ -45,6 +45,7 @@ class ChatBox(pygame.sprite.Sprite):
         self.input_text = ""
         self.allow_input = True
         self.messages = NPC_Original_messages.npc_message[0]    #两个npc
+        self.messages = NPC_Original_messages.npc_message[0]    #两个npc
 
         # 定义字体和颜色
         pygame.font.init()
@@ -60,6 +61,8 @@ class ChatBox(pygame.sprite.Sprite):
 
         self.linenumber = 2
         self.y_offset = 20
+
+        self.buff = 0
 
         self.buff = 0
 
@@ -103,6 +106,14 @@ class ChatBox(pygame.sprite.Sprite):
                             sprite.kill()
                     ev.post(ev.Event(Events.EXIT_CHATBOX))
                     #self.kill()
+
+                if "%#@#" in response:
+                    self.buff = 1
+                if "@*@#" in response:
+                    self.buff = 2
+                if "#*&&" in response:
+                    self.buff = 3
+                print(self.buff)
 
                 if "%#@#" in response:
                     self.buff = 1
