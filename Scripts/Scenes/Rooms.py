@@ -231,7 +231,6 @@ class Shit(Wall):
             self.kill()
         else:
             new_image_key = f"TYPE_{int(5 - self.HP)}"
-            # pygame.draw.rect(img, (0, 0, 0, 0), self.rect)  # 用黑色覆盖旧位置
             self.image = pygame.image.load(
                 ImportedImages.ShitImages[new_image_key].value
             )
@@ -254,11 +253,11 @@ class Block(Wall):
             self.kill()
 
 
-def divide_image(img):
+def divide_image(img, index):
     image_width, image_height = img.get_size()
-    part_width = image_width // 3
+    part_width = image_width // index
     elements = []
-    for i in range(3):
+    for i in range(index):
         rect = pygame.Rect(i * part_width, 0, part_width, image_height)
         part = img.subsurface(rect).copy()
         elements.append(part)
@@ -268,7 +267,7 @@ def divide_image(img):
 class Rock(Block):
     def __init__(self):
         self.image = divide_image(
-            pygame.image.load(ImportedImages.BlockImage.Rock.value)
+            pygame.image.load(ImportedImages.BlockImage.Rock.value), 3
         )[0]
         super().__init__(self.image)
 
@@ -276,7 +275,7 @@ class Rock(Block):
 class Black_Treasure_Box(Block):
     def __init__(self):
         self.image = divide_image(
-            pygame.image.load(ImportedImages.BlockImage.Rock.value)
+            pygame.image.load(ImportedImages.BlockImage.Rock.value), 3
         )[1]
         super().__init__(self.image)
 
@@ -284,10 +283,15 @@ class Black_Treasure_Box(Block):
 class Gold_Treasure_Box(Block):
     def __init__(self):
         self.image = divide_image(
-            pygame.image.load(ImportedImages.BlockImage.Rock.value)
+            pygame.image.load(ImportedImages.BlockImage.Rock.value), 3
         )[2]
         super().__init__(self.image)
 
+class Web(pygame.sprite.Sprite):
+    def __init__(self):
+        self.image = divide_image(
+            pygame.image.load(ImportedImages.BlockImage.Rock.value), 4
+        )[0]
 
 class StartRoom(SingleRoom):
     def __init__(self):

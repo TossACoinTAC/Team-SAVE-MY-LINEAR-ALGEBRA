@@ -261,48 +261,83 @@ class Player(pygame.sprite.Sprite):
             self.explosion_group.add(new_explosion)
 
     def update(self, keys):
-        self.move(keys)
+        if isinstance(self, Head):
+            self.move_Head(keys)
+        else:
+            self.move(keys)
         self.triple_shoot(keys)
         self.planting(keys)
         self._tears.update()
 
         self.bomb_group.update()
         self.explosion_group.update()
-        self.update_animation(keys)
+        if isinstance(self, Body):
+            self.update_animation_body(keys)
+        elif isinstance(self, Head):
+            self.update_animation_head()
+        else:
+            self.update_animation(keys)
+
+class Body(Player):
+    def update_animation_body(self, keys):
+        m = PlayerSettings.MULTI
+        head_height = self.head_frames_rects[0][3] * m
+        dx = (self.head_frames_rects[0][2] - self.body_down_frames_rects[0][2]) * m // 2
+        complete_width = self.head_frames_rects[0][2] * m
+        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
+        
+        current_time = time.get_ticks()
+        if self.timer == 0:
+            self.timer = current_time
+        elif current_time - self.timer > 125:
+            self.timer = current_time
+            self.frame_index += 1
+            self.frame_index %= 10
 
 
-# class Heart(pygame.sprite.Sprite):
-#     def __init__(self):
-#         super().__init__()
-#         self.frame = []
-#         self.frame_index = 0
-#         self.frame_rects = PlayerSettings.heart_frame_rects
-#         self.sheet = pygame.image.load(ImportedImages.heartImage)
-#         for i in range(len(self.frame_rects)):
-#             tmp_image = get_images(self.sheet, *self.frame_rects[i], (0, 0, 0), 3.0)
-#             self.frame.append(
-#                 pygame.transform.scale(
-#                     tmp_image, (PlayerSettings.heartWidth, PlayerSettings.heartHeight)
-#                 )
-#             )
-#         self.image = self.frame[0]
-#         self.rect = self.image.get_rect()
-#         self.rect.x = ScreenSettings.marginWidth
-#         self.rect.y = ScreenSettings.marginHeight
-#         self.HP = PlayerSettings.PlayerHP
-#         self.timer = 0
+        if keys[K_s]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_down_frames[self.frame_index], (dx, head_height - 10))
+            self.image = complete_image
+            
+        if keys[K_d]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_right_frames[self.frame_index], (dx, head_height - 10))
+            self.image = complete_image
+         
+        if keys[K_a]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_left_frames[self.frame_index], (dx, head_height - 10))
+            self.image = complete_image
+           
+        if keys[K_w]:
+            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+            complete_image.blit(self.body_up_frames[self.frame_index], (dx, head_height - 10))
+            self.image = complete_image
 
-#     def update(self):
-#         current_time = pygame.time.get_ticks()
-#         if current_time - self.timer > 1000:
-#             self.HP -= 1
-#             self.timer = current_time
+class Head(Player):
+    def move_Head(self, keys):
+        try:
+            self.movement = (
+                self.speed * 5
+                        * Vector2(
+                            random.randint(-1,1),
+                            random.randint(-1,1),
+                        ).normalize()
+            )
+        except ValueError:
+            self.movement = Vector2(0, 0)
+        self.rect.move_ip(self.movement)
 
-#         if self.HP == 0:
+    def update_animation_head(self):
+        m = PlayerSettings.MULTI
+        complete_width = self.head_frames_rects[0][2] * m
+        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
+        
+        complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+        complete_image.blit(self.head_frames[0], (0, 0))
+        self.image = complete_image
 
-#             event.post(event.Event(Events.GAME_OVER))
-#             # 触发事件游戏结束
-#         self.image = self.frame[6 - self.HP]
 
 
 class Tear(pygame.sprite.Sprite):

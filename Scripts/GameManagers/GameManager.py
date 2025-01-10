@@ -292,8 +292,14 @@ class GameManager:
                                     entity.update()
                     for entity in self.isaac_group:
                         if Vector2(entity.rect.center).distance_to(pos) <= radius:
-                            for heart in self.heart:
-                                heart.state = "reduce"
+                            ev.post(ev.Event(Events.SLICE_ISAAC))
+                case Events.SLICE_ISAAC:
+                    self.Isaac_Body = Body(spawn_pos=self.isaac.rect.center)
+                    self.Isaac_Head = Head(spawn_pos=self.isaac.rect.center)
+                    self.isaac_group.empty()
+                    self.isaac = self.Isaac_Body
+                    self.isaac_group.add(self.isaac)
+                    self.isaac_group.add(self.Isaac_Head)
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
