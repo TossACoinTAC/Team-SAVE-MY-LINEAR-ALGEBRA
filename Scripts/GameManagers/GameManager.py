@@ -26,7 +26,6 @@ class GameManager:
         self.set_room()
         self.set_issac()
         self.set_npc()
-        self.set_spawn_enemies()
         self.set_bgm()
         self.set_scenes()
         self.set_clock()
@@ -35,6 +34,9 @@ class GameManager:
         self.set_boss()
         self.set_shop()
         self.set_UI()
+        self.enemy_group = pygame.sprite.Group()
+        self.boss_group = pygame.sprite.Group()
+        self.room_clear_posted = False
 
     # SET
     def set_UI(self):
@@ -56,11 +58,6 @@ class GameManager:
         self.bloodyTears = pygame.sprite.Group()
         self.bosshpicon = pygame.sprite.Group()
         self.bosshpicon.add(bossHealthBarIcon())
-
-    def set_spawn_enemies(self):
-        self.enemy_group = pygame.sprite.Group()
-        self.update_enemies_normal_state = "True"
-        self.update_enemies_boss_state = "True"
 
     def set_heart(self):
         self.heart = pygame.sprite.GroupSingle()
@@ -117,6 +114,18 @@ class GameManager:
         icon = pygame.image.load(ImportedImages.icon).convert_alpha()
         pygame.display.set_icon(icon)
 
+    def spawn_enemies(self):
+        for i in range(UpdateEnemiesSettings.flyNumber):
+            self.enemy_group.add(Fly())
+
+    def spawn_boss(self):
+        for i in range(UpdateEnemiesSettings.bossNumber):
+            self.boss_group.add(self.bossBody, self.bossAttack)
+        for i in range(random.randint(1, 3)):
+            self.boss_group.add(
+                Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
+            )
+
     # Update()
     def update(self):
         self.clock.tick(ScreenSettings.fps)
@@ -132,25 +141,72 @@ class GameManager:
             sprites.update(keys)
         sprites.draw(self.screen)
 
-    def update_enemies_normal(self):
-        if self.update_enemies_normal_state == "True":
-            for i in range(UpdateEnemiesSettings.flyNumber):
-                self.enemy_group.add(Fly())
-        self.update_enemies_normal_state = "False"
+    def common_scene_updates(self):
+        self.update_sprites(self.room_group)
+        self.update_sprites(self.room.get_walls())
+        self.update_sprites(self.isaac_group, self.get_keys())
+        self.update_sprites(self.isaac.explosion_group)
+        self.update_sprites(self.isaac.bomb_group)
+        self.update_sprites(self.isaac.tears)
 
-    def update_enemies_boss(self):
-        if self.update_enemies_boss_state == "True":
-            for i in range(UpdateEnemiesSettings.bossNumber):
-                self.enemy_group.add(self.bossBody, self.bossAttack)
-        self.update_enemies_boss_state = "False"
+        # UI
+        self.heart.update()
+        self.heart.draw(self.screen)
+        self.UI.update(self.screen)
+        self.UI.draw(self.screen)
 
-    def update_boss_spawn_fly(self):
-        if self.bossAttack.if_spwan_fly == "True":
-            self.bossAttack.if_spwan_fly = "False"
-            for i in range(random.randint(1, 3)):
-                self.enemy_group.add(
-                    Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
+    def update_scene(self, active_scene: Scenes):
+        match active_scene:
+
+            case Scenes.MAIN_MENU:
+                self.main_menu.update()
+                self.main_menu.draw(self.screen)
+
+            case Scenes.GAMEWIN:
+                self.screen.fill((0, 0, 0))
+                self.game_win.update()
+                self.game_win.draw(self.screen)
+
+            # 制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
+            case Scenes.START_ROOM:
+                self.common_scene_updates()
+                if not self.room_clear_posted:
+                    ev.post(ev.Event(Events.ROOM_CLEAR))
+
+            case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
+                self.common_scene_updates()
+                self.update_sprites(self.enemy_group)
+                if len(self.enemy_group) == 0 and not self.room_clear_posted:
+                    ev.post(ev.Event(Events.ROOM_CLEAR))
+
+            case Scenes.TREASURE:
+                self.common_scene_updates()
+                self.update_sprites(self.npc_group, self.get_keys())
+
+            case Scenes.SHOP:
+                self.common_scene_updates()
+                self.update_sprites(self.lucky)
+
+            # BossRoom
+            case Scenes.CATACOMB:
+                self.room_group.draw(self.screen)
+                self.update_sprites(self.isaac_group, self.get_keys())
+                self.update_boss_shoot()
+                self.update_sprites(self.bloodyTears)
+                bossheart.update(
+                    self.screen,
+                    BossSettings.health_bar.x,
+                    BossSettings.health_bar.y,
+                    BossSettings.health_bar.width,
+                    BossSettings.health_bar.height,
+                    self.bossBody.HP,
+                    BossSettings.health_bar.max,
                 )
+                self.bosshpicon.update()
+                self.bosshpicon.draw(self.screen)
+
+            case Scenes.CHAT_BOX:
+                self.update_sprites(self.Chatboxes, self.get_keys())
 
     def update_boss_shoot(self):
         if self.bossAttack.if_shoot == "True":
@@ -193,68 +249,6 @@ class GameManager:
                     )
                 )
 
-    def update_scene(self, active_scene: Scenes):
-        match active_scene:
-
-            case Scenes.MAIN_MENU:
-                self.main_menu.update()
-                self.main_menu.draw(self.screen)
-
-            case Scenes.GAMEWIN:
-                self.screen.fill((0, 0, 0))
-                self.game_win.update()
-                self.game_win.draw(self.screen)
-
-            case Scenes.START_ROOM:
-                # 制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
-                self.update_enemies_boss()
-                self.update_enemies_normal()
-                self.update_boss_spawn_fly()
-                self.update_boss_shoot()
-
-                self.update_sprites(self.room_group)
-                self.update_sprites(self.isaac_group, self.get_keys())
-                self.update_sprites(self.enemy_group)
-                self.update_sprites(self.isaac.tears)
-                self.update_sprites(self.isaac.explosion_group)
-                self.update_sprites(self.isaac.bomb_group)
-                self.update_sprites(self.room.get_walls())
-                self.update_sprites(self.bloodyTears)
-
-                # temp code
-                bossheart.update(
-                    self.screen,
-                    BossSettings.health_bar.x,
-                    BossSettings.health_bar.y,
-                    BossSettings.health_bar.width,
-                    BossSettings.health_bar.height,
-                    self.bossBody.HP,
-                    BossSettings.health_bar.max,
-                )
-                self.bosshpicon.update()
-                self.bosshpicon.draw(self.screen)
-
-                self.lucky.update()
-                self.lucky.draw(self.screen)
-
-                # UI
-                self.heart.update()
-                self.heart.draw(self.screen)
-                self.UI.update(self.screen)
-                self.UI.draw(self.screen)
-            case Scenes.TREASURE:
-                self.room_group.draw(self.screen)
-                self.update_sprites(self.isaac_group, self.get_keys())
-                self.update_sprites(self.npc_group, self.get_keys())
-            case Scenes.SECRET:
-                self.room_group.draw(self.screen)
-                self.update_sprites(self.isaac_group, self.get_keys())
-                self.lucky.update()
-                self.lucky.draw(self.screen)
-
-            case Scenes.CHAT_BOX:
-                self.update_sprites(self.Chatboxes, self.get_keys())
-
     def deal_events(self):
         self.detect_collision()
         for event in pygame.event.get():
@@ -267,25 +261,31 @@ class GameManager:
                     exit()
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
+
                 case Events.TO_MAIN:
-                    self.bossBody.HP = 10
                     self.active_scene = Scenes.MAIN_MENU
-                case Events.ROOM_CLEAR:
-                    self.room.open_doors()
-                    self.bgm_player.play("DOOR_OPEN", 0)
+
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
+
+                case Events.ROOM_CLEAR:
+                    self.room.open_doors()
+                    self.bgm_player.play("DOOR_OPEN", 0)
+                    self.room_clear_posted = True
+
                 case Events.TO_CHATBOX:
                     self.active_scene = Scenes.CHAT_BOX
                 case Events.EXIT_CHATBOX:
-                    self.active_scene = Scenes.START_ROOM
+                    self.active_scene = Scenes.TREASURE
+
                 case Events.BOMB_EXPLOSION:
                     self.bombsystem.bomb_num -= 1
                     pos = event.pos
                     radius = event.radius
                     for group in [
                         self.enemy_group,
+                        self.boss_group,
                         self.npc_group,
                         self.room.get_walls(),
                     ]:
@@ -374,7 +374,10 @@ class GameManager:
         collided_isaac_and_enemies = StaticMethods.mask_spritecollide(
             self.isaac, self.enemy_group, False
         )
-        if collided_isaac_and_enemies:
+        collided_isaac_and_boss = StaticMethods.mask_spritecollide(
+            self.isaac, self.boss_group, False
+        )
+        if collided_isaac_and_enemies or collided_isaac_and_boss:
             for heart in self.heart:
                 heart.state = "reduce"
 
@@ -391,8 +394,13 @@ class GameManager:
                 bloodytear.state = "die"
 
     def detect_collision_tears_and_enemies(self):
-        collided_tears_and_monsters = StaticMethods.mask_groupcollide(
+        collided_tears_and_monsters: dict = StaticMethods.mask_groupcollide(
             self.isaac.tears, self.enemy_group, False, False
+        )
+        collided_tears_and_monsters.update(
+            StaticMethods.mask_groupcollide(
+                self.isaac.tears, self.boss_group, False, False
+            )
         )
         for tear, enemies in collided_tears_and_monsters.items():
             for enemy in enemies:
@@ -403,6 +411,7 @@ class GameManager:
                     enemy.HP -= self.isaac.attack
                     if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
+                        enemy.state = "die"
 
     def detect_collision_tears_and_walls(self):
         collided_tears_and_walls = StaticMethods.mask_groupcollide(
@@ -512,16 +521,22 @@ class GameManager:
         match door_type:
             case "Wood":
                 self.new_room = CommonRoom(rect=self.new_room_rect)
-            case "Shop":
-                self.new_room = Shop(rect=self.new_room_rect)
-            case "Treasure":
-                self.new_room = TreasureRoom(rect=self.new_room_rect)
-            case "Secret":
-                self.new_room = SecretRoom(rect=self.new_room_rect)
+                self.active_scene = Scenes.COMMON_ROOM
             case "BlueWomb":
                 self.new_room = BlueWomb(rect=self.new_room_rect)
+                self.active_scene = Scenes.BLUEWOMB
+            case "Shop":
+                self.new_room = Shop(rect=self.new_room_rect)
+                self.active_scene = Scenes.SHOP
+            case "Treasure":
+                self.new_room = TreasureRoom(rect=self.new_room_rect)
+                self.active_scene = Scenes.TREASURE
+            case "Secret":
+                self.new_room = SecretRoom(rect=self.new_room_rect)
+                self.active_scene = Scenes.SECRET
             case "Catacomb":
                 self.new_room = BossRoom(rect=self.new_room_rect)
+                self.active_scene = Scenes.CATACOMB
         self.room_group.add(self.new_room)
 
     async def room_transit(self, door_location_tag: str):
@@ -574,8 +589,16 @@ class GameManager:
         self.room = self.new_room
         self.room_group.add(self.room)
         self.set_issac(isaac_spawn_pos)
-        self.set_npc()
-        self.set_spawn_enemies()
+        match self.active_scene:
+            case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
+                self.spawn_enemies()
+            case Scenes.CATACOMB:
+                self.spawn_boss()
+            case Scenes.SHOP:
+                self.set_shop()
+            case Scenes.TREASURE:
+                self.set_npc()
+        self.room_clear_posted = False
 
     # Coroutines
     async def async_update(self):
