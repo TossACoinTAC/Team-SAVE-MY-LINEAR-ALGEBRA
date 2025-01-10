@@ -24,6 +24,9 @@ class Events:
     ROOM_CLEAR = pygame.USEREVENT + 22
     BOMB_EXPLOSION = pygame.USEREVENT + 23
 
+    # Others
+    SLICE_ISAAC = pygame.USEREVENT + 26
+
 
 class Scenes(Enum):
     MAIN_MENU = 0
