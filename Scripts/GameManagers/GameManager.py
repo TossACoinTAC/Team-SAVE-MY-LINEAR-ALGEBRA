@@ -78,7 +78,7 @@ class GameManager:
         self.bgm_player.play("MAIN_THEME", -1)
 
     def set_issac(self):
-        self.isaac_group = pygame.sprite.GroupSingle()
+        self.isaac_group = pygame.sprite.Group()
         self.isaac = Player(spawn_pos = (640, 600))
         self.isaac_group.add(self.isaac)
 
@@ -246,8 +246,14 @@ class GameManager:
                                     entity.update()
                     for entity in self.isaac_group:
                         if Vector2(entity.rect.center).distance_to(pos) <= radius:
-                            for heart in self.heart:
-                                heart.state = 'reduce'
+                            ev.post(ev.Event(Events.SLICE_ISAAC))
+                case Events.SLICE_ISAAC:
+                    self.Isaac_Body = Body(spawn_pos = self.isaac.rect.center)
+                    self.Isaac_Head = Head(spawn_pos = self.isaac.rect.center)
+                    self.isaac_group.empty()
+                    self.isaac = self.Isaac_Body
+                    self.isaac_group.add(self.isaac)
+                    self.isaac_group.add(self.Isaac_Head)
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
@@ -356,7 +362,6 @@ class GameManager:
         if (StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
         ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
             self.isaac.rect.move_ip(-self.isaac.movement)
-
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(
             self.isaac, self.room.get_doors(), False
         )
