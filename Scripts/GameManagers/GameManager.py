@@ -294,7 +294,11 @@ class GameManager:
                         self.room.get_walls(),
                     ]:
                         for entity in group:
-                            if Vector2(entity.rect.center).distance_to(pos) <= radius:
+                            if isinstance(entity, BossBody):
+                                if Vector2(entity.rect.center).distance_to(pos) <= radius*2:
+                                    entity.HP -= 10
+                                    entity.update()
+                            elif Vector2(entity.rect.center).distance_to(pos) <= radius:
                                 entity.HP -= 3
                                 if isinstance(entity, Wall):
                                     entity.destroyed()
