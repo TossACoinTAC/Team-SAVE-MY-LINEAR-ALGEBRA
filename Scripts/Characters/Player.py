@@ -24,9 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.shoot_delay = 200
 
         self.bgm_player = BGMPlayer()
-        self.move_sound_timer = 0
-        self.move_sound_delay = 600
-        self.move_sound_played = False
+        self.move_sound_interval = 600
 
         # resource system : HP
         # self.heart = pygame.sprite.GroupSingle()
@@ -187,12 +185,9 @@ class Player(pygame.sprite.Sprite):
             self.rect.move_ip(self.movement)
 
             # deal with sound
-            if not self.move_sound_played:
-                # self.bgm_player.play("ISAAC_WALK", 0)
-                self.move_sound_timer = pygame.time.get_ticks()
-                self.move_sound_played = True
-            if pygame.time.get_ticks() - self.move_sound_timer > self.move_sound_delay:
-                self.move_sound_played = False
+            StaticMethods.play_sound_effect_once_with_interval(
+                self.bgm_player, "ISAAC_WALK", self.move_sound_interval
+            )
 
     def shoot(self, keys):
         if (
@@ -215,7 +210,7 @@ class Player(pygame.sprite.Sprite):
                     keys[pygame.K_RIGHT] - keys[pygame.K_LEFT],
                     keys[pygame.K_DOWN] - keys[pygame.K_UP],
                 ).normalize()
-                # self.bgm_player.play("ISAAC_SHOOT", 0)
+                self.bgm_player.play("ISAAC_SHOOT", 0)
             except ValueError:
                 shooted_tear.direction = Vector2(0, 0)
 
@@ -277,7 +272,7 @@ class Player(pygame.sprite.Sprite):
             self.shoot(keys)
         elif self.shoot_mode == 1:
             self.triple_shoot(keys)
-        
+
         self.planting(keys)
         self._tears.update()
 
@@ -290,14 +285,17 @@ class Player(pygame.sprite.Sprite):
         else:
             self.update_animation(keys)
 
+
 class Body(Player):
     def update_animation_body(self, keys):
         m = PlayerSettings.MULTI
         head_height = self.head_frames_rects[0][3] * m
         dx = (self.head_frames_rects[0][2] - self.body_down_frames_rects[0][2]) * m // 2
         complete_width = self.head_frames_rects[0][2] * m
-        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
-        
+        complete_height = (
+            self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]
+        ) * m
+
         current_time = time.get_ticks()
         if self.timer == 0:
             self.timer = current_time
@@ -306,36 +304,45 @@ class Body(Player):
             self.frame_index += 1
             self.frame_index %= 10
 
-
         if keys[K_s]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_down_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_down_frames[self.frame_index], (dx, head_height - 10)
+            )
             self.image = complete_image
-            
+
         if keys[K_d]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_right_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_right_frames[self.frame_index], (dx, head_height - 10)
+            )
             self.image = complete_image
-         
+
         if keys[K_a]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_left_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_left_frames[self.frame_index], (dx, head_height - 10)
+            )
             self.image = complete_image
-           
+
         if keys[K_w]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_up_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_up_frames[self.frame_index], (dx, head_height - 10)
+            )
             self.image = complete_image
+
 
 class Head(Player):
     def move_Head(self, keys):
         try:
             self.movement = (
-                self.speed * 5
-                        * Vector2(
-                            random.randint(-1,1),
-                            random.randint(-1,1),
-                        ).normalize()
+                self.speed
+                * 5
+                * Vector2(
+                    random.randint(-1, 1),
+                    random.randint(-1, 1),
+                ).normalize()
             )
         except ValueError:
             self.movement = Vector2(0, 0)
@@ -344,12 +351,13 @@ class Head(Player):
     def update_animation_head(self):
         m = PlayerSettings.MULTI
         complete_width = self.head_frames_rects[0][2] * m
-        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
-        
-        complete_image = Surface((complete_width, complete_height), SRCALPHA) 
+        complete_height = (
+            self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]
+        ) * m
+
+        complete_image = Surface((complete_width, complete_height), SRCALPHA)
         complete_image.blit(self.head_frames[0], (0, 0))
         self.image = complete_image
-
 
 
 class Tear(pygame.sprite.Sprite):

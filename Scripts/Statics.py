@@ -135,6 +135,7 @@ class ImportedBGM:
     hurt = "data/sounds/isaac_hurt1.mp3"
     explosion = "data/sounds/explosion1.mp3"
     tear_impact = "data/sounds/tear_impact1.mp3"
+    door_open = "data/sounds/door_open.wav"
 
 
 # Settings
@@ -573,3 +574,17 @@ class StaticMethods:
                         group2.remove(sprite2)
 
         return collided
+
+    sound_played = False
+    timer = 0
+
+    @staticmethod
+    def play_sound_effect_once_with_interval(
+        bgm_player, sound_effect: str, interval: int
+    ):
+        if not StaticMethods.sound_played:
+            bgm_player.play(sound_effect, 0)
+            StaticMethods.sound_played = True
+            StaticMethods.timer = pygame.time.get_ticks()
+        if pygame.time.get_ticks() - StaticMethods.timer > interval:
+            StaticMethods.sound_played = False

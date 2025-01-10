@@ -272,13 +272,11 @@ class GameManager:
                     self.bossBody.HP = 10
                     self.active_scene = Scenes.MAIN_MENU
                 case Events.ROOM_CLEAR:
-                    for door in self.room.get_doors():
-                        door: Door
-                        self.room.open_doors()
+                    self.room.open_doors()
+                    self.bgm_player.play("DOOR_OPEN", 0)
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
-                    # self.bgm_player.play("STARTROOM", -1)    # need bgm here , can be a common bgm for all rooms
                 case Events.TO_CHATBOX:
                     self.active_scene = Scenes.CHAT_BOX
                 case Events.EXIT_CHATBOX:
@@ -399,10 +397,9 @@ class GameManager:
         )
         for tear, enemies in collided_tears_and_monsters.items():
             for enemy in enemies:
-                self.bgm_player.play("TEAR_HIT", 0)
-                if tear.state == "live":
-                    if enemy.HP > 0:
-                        tear.state = "die"
+                if tear.state == "live" and enemy.HP > 0:
+                    tear.state = "die"
+                    self.bgm_player.play("TEAR_HIT", 0)
                     enemy.HP -= self.isaac.attack
                     if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
@@ -413,18 +410,21 @@ class GameManager:
         )
         for tear, walls in collided_tears_and_walls.items():
             tear: Tear  # once for all below, sweet
+            if tear.state == "live":
+                self.bgm_player.play("TEAR_HIT", 0)
+                tear.state = "die"
             for wall in walls:
-                if tear.state == "live" and isinstance(wall, Shit):
+                if isinstance(wall, Shit):
                     wall.HP -= 1
-                    self.bgm_player.play("TEAR_HIT", 0)
                     wall.destroyed()
-            tear.state = "die"
 
         collided_tears_and_frames = pygame.sprite.groupcollide(
             self.isaac.tears, self.room.get_frame(), False, False
         )
         for tear, frame in collided_tears_and_frames.items():
-            tear.state = "die"
+            if tear.state == "live":
+                self.bgm_player.play("TEAR_HIT", 0)
+                tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
         if (
