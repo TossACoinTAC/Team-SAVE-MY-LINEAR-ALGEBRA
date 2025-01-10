@@ -22,7 +22,9 @@ class Events:
     GAME_OVER = pygame.USEREVENT + 21
     GAME_WIN = pygame.USEREVENT + 24
     ROOM_CLEAR = pygame.USEREVENT + 22
-    BOMB_EXPLOSION = pygame.USEREVENT + 23
+
+    BOMB_EXPLOSION = pygame.USEREVENT + 30
+    SLICE_ISAAC = pygame.USEREVENT + 31
 
 
 class Scenes(Enum):
@@ -86,6 +88,9 @@ class ImportedImages:
 
     class BlockImage(Enum):
         Rock = "Data/Textures/Room/altars.png"
+
+    class Web(Enum):
+        Web = "Data/Textures/Room/web.png"
 
     class shop:
         lucky_1 = "Src/Textures/Play/slot_001_machine.png"
