@@ -83,7 +83,7 @@ class GameManager:
         self,
         spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight / 2),
     ):
-        self.isaac_group = pygame.sprite.Group()   #Isaac may be sliced
+        self.isaac_group = pygame.sprite.Group()  # Isaac may be sliced
         self.isaac = Player(spawn_pos)
         self.isaac_group.add(self.isaac)
 
@@ -238,7 +238,7 @@ class GameManager:
                 self.lucky.update()
                 self.lucky.draw(self.screen)
 
-                #UI
+                # UI
                 self.heart.update()
                 self.heart.draw(self.screen)
                 self.UI.update(self.screen)
@@ -252,7 +252,6 @@ class GameManager:
                 self.update_sprites(self.isaac_group, self.get_keys())
                 self.lucky.update()
                 self.lucky.draw(self.screen)
-                
 
             case Scenes.CHAT_BOX:
                 self.update_sprites(self.Chatboxes, self.get_keys())
@@ -275,7 +274,7 @@ class GameManager:
                 case Events.ROOM_CLEAR:
                     for door in self.room.get_doors():
                         door: Door
-                        door.is_open = True
+                        self.room.open_doors()
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
@@ -295,7 +294,10 @@ class GameManager:
                     ]:
                         for entity in group:
                             if isinstance(entity, BossBody):
-                                if Vector2(entity.rect.center).distance_to(pos) <= radius*2:
+                                if (
+                                    Vector2(entity.rect.center).distance_to(pos)
+                                    <= radius * 2
+                                ):
                                     entity.HP -= 10
                                     entity.update()
                             elif Vector2(entity.rect.center).distance_to(pos) <= radius:
@@ -436,6 +438,7 @@ class GameManager:
             and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
             self.npc1.gen_chatbox(self.get_keys())
+
     def detect_buff_acquirance(self):
         for chatbox in self.Chatboxes:
             if chatbox.buff == 1:
@@ -457,10 +460,10 @@ class GameManager:
             door: Door
 
             door_location_tag = door.location_tag
+            door_type = door.type_tag
             # door.is_open = True  # in event later
             if door.is_open:
-
-                await self.gen_new_room(door.location_tag)
+                await self.gen_new_room(door.location_tag, door_type)
                 await self.clear_old_room()
                 self.room_transitioning = True
                 door.is_open = False
@@ -476,7 +479,7 @@ class GameManager:
         self.lucky.empty()
         self.Chatboxes.empty()
 
-    async def gen_new_room(self, door_location_tag: str):
+    async def gen_new_room(self, door_location_tag: str, door_type: str):
         match door_location_tag:
             case "top":
                 self.new_room_rect = pygame.Rect(
@@ -506,7 +509,19 @@ class GameManager:
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
-        self.new_room = SingleRoom(rect=self.new_room_rect)
+        match door_type:
+            case "Wood":
+                self.new_room = CommonRoom(rect=self.new_room_rect)
+            case "Shop":
+                self.new_room = Shop(rect=self.new_room_rect)
+            case "Treasure":
+                self.new_room = TreasureRoom(rect=self.new_room_rect)
+            case "Secret":
+                self.new_room = SecretRoom(rect=self.new_room_rect)
+            case "BlueWomb":
+                self.new_room = BlueWomb(rect=self.new_room_rect)
+            case "Catacomb":
+                self.new_room = BossRoom(rect=self.new_room_rect)
         self.room_group.add(self.new_room)
 
     async def room_transit(self, door_location_tag: str):

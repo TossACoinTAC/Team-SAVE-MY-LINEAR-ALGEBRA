@@ -184,7 +184,7 @@ class UISettings:
 
 class BossSettings:
     class health_bar:
-        max = 100
+        max = 10
         width = 600
         height = 30
         x = 1280 / 2 - 600 / 2 + 50
