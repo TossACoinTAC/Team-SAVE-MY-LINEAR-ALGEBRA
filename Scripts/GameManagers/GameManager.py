@@ -12,6 +12,18 @@ from Scenes.Heart import *
 from Scenes.bosshp import bossheart
 from Scenes.shop import *
 from Scenes.UI import *
+import time
+
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        print(f"{method.__name__} took: {te-ts} sec")
+        return result
+
+    return timed
 
 
 class GameManager:
@@ -95,8 +107,8 @@ class GameManager:
         self.room_group.add(self.room)
         self.new_room = None
         self.room_transitioning = False
-        self.transition_speed_horizontal = 20
-        self.transition_speed_vertical = 15
+        self.transition_speed_horizontal = 3
+        self.transition_speed_vertical = 10
 
     def set_chatbox(self):
         self.Chatboxes = pygame.sprite.GroupSingle()
@@ -425,11 +437,11 @@ class GameManager:
             door.is_open = True  # in event later
             if door.is_open:
 
+                self.isaac_group.remove(self.isaac)
+                self.isaac.kill()  # may cause gameover
+
                 self.gen_new_room(door.location_tag)
                 self.room_transitioning = True
-
-                # self.isaac.kill()  # may cause gameover
-                self.isaac_group.remove(self.isaac)
 
                 while self.room_transitioning:
                     self.room_transit(door.location_tag)
@@ -449,22 +461,22 @@ class GameManager:
                 )
             case "bottom":
                 self.new_room_rect = pygame.Rect(
-                    self.room.rect.left,
-                    self.room.rect.top + ScreenSettings.screenHeight,
+                    0,
+                    ScreenSettings.screenHeight,
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
             case "left":
                 self.new_room_rect = pygame.Rect(
-                    self.room.rect.left - ScreenSettings.screenWidth,
-                    self.room.rect.top,
+                    -ScreenSettings.screenWidth,
+                    0,
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
             case "right":
                 self.new_room_rect = pygame.Rect(
-                    self.room.rect.left + ScreenSettings.screenWidth,
-                    self.room.rect.top,
+                    ScreenSettings.screenWidth,
+                    0,
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
@@ -473,31 +485,34 @@ class GameManager:
         self.room_group.add(self.new_room)
         self.room_group.add(self.room)  # reorder to keep the new room on top
 
+    @timeit
     def room_transit(self, door_location_tag: str):
+        # self.update_sprites(self.room_group)
+        print(f"Room Y: {self.room.rect.y}, New Room Y: {self.new_room.rect.y}")
+        self.screen.blit(self.room.image, self.room.rect)
+        self.screen.blit(self.new_room.image, self.new_room.rect)
 
         match door_location_tag:
             case "top":
                 self.room.rect.move_ip(0, self.transition_speed_vertical)
                 self.new_room.rect.move_ip(0, self.transition_speed_vertical)
-                if self.new_room_rect.top == 0:
+                if self.new_room_rect.top >= 0:
                     self.room_transitioning = False
             case "bottom":
                 self.room.rect.move_ip(0, -self.transition_speed_vertical)
                 self.new_room.rect.move_ip(0, -self.transition_speed_vertical)
-                if self.room.rect.bottom == 0:
+                if self.room.rect.bottom <= 0:
                     self.room_transitioning = False
-                    print(1)
             case "left":
                 self.room.rect.move_ip(self.transition_speed_horizontal, 0)
                 self.new_room.rect.move_ip(self.transition_speed_horizontal, 0)
-                if self.new_room_rect.left == 0:
+                if self.new_room_rect.left >= 0:
                     self.room_transitioning = False
             case "right":
                 self.room.rect.move_ip(-self.transition_speed_horizontal, 0)
                 self.new_room.rect.move_ip(-self.transition_speed_horizontal, 0)
-                if self.room.rect.right == 0:
+                if self.room.rect.right <= 0:
                     self.room_transitioning = False
-        self.update_sprites(self.room_group)
 
     # Coroutines
     async def async_update(self):
