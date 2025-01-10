@@ -12,18 +12,6 @@ from Scenes.Heart import *
 from Scenes.bosshp import bossheart
 from Scenes.shop import *
 from Scenes.UI import *
-import time
-
-
-def timeit(method):
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-        print(f"{method.__name__} took: {te-ts} sec")
-        return result
-
-    return timed
 
 
 class GameManager:
@@ -91,11 +79,12 @@ class GameManager:
         self.bgm_player = BGMPlayer()
         self.bgm_player.play("MAIN_THEME", -1)
 
-    def set_issac(self):
-        self.isaac_group = pygame.sprite.Group()
-        self.isaac = Player(spawn_pos = (640, 600))
+    def set_issac(
+        self,
+        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight / 2),
+    ):
         self.isaac_group = pygame.sprite.GroupSingle()
-        self.isaac = Player(spawn_pos=(640, 390))
+        self.isaac = Player(spawn_pos)
         self.isaac_group.add(self.isaac)
 
     def set_npc(self):
@@ -108,8 +97,9 @@ class GameManager:
         self.room = StartRoom()
         self.room_group.add(self.room)
         self.new_room = None
+        self.new_room_rect: pygame.Rect = None
         self.room_transitioning = False
-        self.transition_speed_horizontal = 3
+        self.transition_speed_horizontal = 15
         self.transition_speed_vertical = 10
 
     def set_chatbox(self):
@@ -128,8 +118,10 @@ class GameManager:
         pygame.display.set_icon(icon)
 
     # Update()
-    def render_screen(self):
+    def update(self):
         self.clock.tick(ScreenSettings.fps)
+        asyncio.run(self.async_update())
+        self.deal_events()
         self.update_scene(self.active_scene)
         pygame.display.flip()
 
@@ -217,7 +209,7 @@ class GameManager:
                 self.update_boss_spawn_fly()
                 self.update_boss_shoot()
 
-                self.update_sprites(self.room_group)
+                self.room_group.draw(self.screen)
                 self.update_sprites(self.isaac_group, self.get_keys())
                 self.update_sprites(self.npc_group, self.get_keys())
 
@@ -257,7 +249,6 @@ class GameManager:
 
     def deal_events(self):
         self.detect_collision()
-        asyncio.run(self.async_update())
         for event in pygame.event.get():
             match event.type:
                 case pygame.QUIT:
@@ -303,8 +294,8 @@ class GameManager:
                         if Vector2(entity.rect.center).distance_to(pos) <= radius:
                             ev.post(ev.Event(Events.SLICE_ISAAC))
                 case Events.SLICE_ISAAC:
-                    self.Isaac_Body = Body(spawn_pos = self.isaac.rect.center)
-                    self.Isaac_Head = Head(spawn_pos = self.isaac.rect.center)
+                    self.Isaac_Body = Body(spawn_pos=self.isaac.rect.center)
+                    self.Isaac_Head = Head(spawn_pos=self.isaac.rect.center)
                     self.isaac_group.empty()
                     self.isaac = self.Isaac_Body
                     self.isaac_group.add(self.isaac)
@@ -312,7 +303,6 @@ class GameManager:
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
-        self.detect_collision_isaac_and_doors()
         self.detect_collision_tears_and_walls()
         self.detect_collision_tears_and_enemies()
         self.detect_collision_isaac_and_npc()
@@ -402,7 +392,6 @@ class GameManager:
                         self.coinsystem.coin_num += 1
 
     def detect_collision_tears_and_walls(self):
-
         collided_tears_and_walls = StaticMethods.mask_groupcollide(
             self.isaac.tears, self.room.get_walls(), False, False
         )
@@ -434,31 +423,33 @@ class GameManager:
         ):
             self.npc1.gen_chatbox(self.get_keys())
 
-    def detect_collision_isaac_and_doors(self):
+    async def detect_collision_isaac_and_doors(self):
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(
             self.isaac, self.room.get_doors(), False
         )
-
+        door_location_tag = None
         for door in collided_isaac_and_doors:
             door: Door
 
-            door.is_open = True  # in event later
+            door_location_tag = door.location_tag
+            # door.is_open = True  # in event later
             if door.is_open:
 
-                self.isaac_group.remove(self.isaac)
-                self.isaac.kill()  # may cause gameover
-
-                self.gen_new_room(door.location_tag)
+                await self.gen_new_room(door.location_tag)
+                await self.clear_old_room()
                 self.room_transitioning = True
+                door.is_open = False
 
-                while self.room_transitioning:
-                    self.room_transit(door.location_tag)
+        if self.room_transitioning:
+            await self.room_transit(door_location_tag)
 
-                self.room_group.remove(self.room)
-                self.room = self.new_room
-                door.is_open = False  # in event later
+    async def clear_old_room(self):
+        self.room.get_walls().empty()
+        self.isaac_group.empty()
+        self.npc_group.empty()
+        self.enemy_group.empty()
 
-    def gen_new_room(self, door_location_tag: str):
+    async def gen_new_room(self, door_location_tag: str):
         match door_location_tag:
             case "top":
                 self.new_room_rect = pygame.Rect(
@@ -489,39 +480,61 @@ class GameManager:
                     ScreenSettings.screenHeight,
                 )
         self.new_room = SingleRoom(rect=self.new_room_rect)
-        self.room_group.remove(self.room)
         self.room_group.add(self.new_room)
-        self.room_group.add(self.room)  # reorder to keep the new room on top
 
-    @timeit
-    def room_transit(self, door_location_tag: str):
-        # self.update_sprites(self.room_group)
-        print(f"Room Y: {self.room.rect.y}, New Room Y: {self.new_room.rect.y}")
-        self.screen.blit(self.room.image, self.room.rect)
-        self.screen.blit(self.new_room.image, self.new_room.rect)
+    async def room_transit(self, door_location_tag: str):
+
+        self.screen.fill((0, 0, 0))  # clear screen
 
         match door_location_tag:
             case "top":
                 self.room.rect.move_ip(0, self.transition_speed_vertical)
                 self.new_room.rect.move_ip(0, self.transition_speed_vertical)
                 if self.new_room_rect.top >= 0:
-                    self.room_transitioning = False
+                    self.new_room_rect.top = 0
+                    isaac_spawn_pos = (
+                        ScreenSettings.screenWidth / 2,
+                        ScreenSettings.screenHeight - 150,
+                    )
+                    await self.stop_transition(isaac_spawn_pos)
+
             case "bottom":
                 self.room.rect.move_ip(0, -self.transition_speed_vertical)
                 self.new_room.rect.move_ip(0, -self.transition_speed_vertical)
-                if self.room.rect.bottom <= 0:
-                    self.room_transitioning = False
+                if self.new_room_rect.top <= 0:
+                    self.new_room_rect.top = 0
+                    isaac_spawn_pos = (ScreenSettings.screenWidth / 2, 150)
+                    await self.stop_transition(isaac_spawn_pos)
+
             case "left":
                 self.room.rect.move_ip(self.transition_speed_horizontal, 0)
                 self.new_room.rect.move_ip(self.transition_speed_horizontal, 0)
                 if self.new_room_rect.left >= 0:
-                    self.room_transitioning = False
+                    self.new_room_rect.left = 0
+                    isaac_spawn_pos = (
+                        ScreenSettings.screenWidth - 300,
+                        ScreenSettings.screenHeight / 2,
+                    )
+                    await self.stop_transition(isaac_spawn_pos)
+
             case "right":
                 self.room.rect.move_ip(-self.transition_speed_horizontal, 0)
                 self.new_room.rect.move_ip(-self.transition_speed_horizontal, 0)
-                if self.room.rect.right <= 0:
-                    self.room_transitioning = False
+                if self.new_room_rect.left <= 0:
+                    self.new_room_rect.left = 0
+                    isaac_spawn_pos = (300, ScreenSettings.screenHeight / 2)
+                    await self.stop_transition(isaac_spawn_pos)
+
+    async def stop_transition(self, isaac_spawn_pos):
+        self.room_transitioning = False
+        self.room_group.remove(self.room)
+        self.room_group.remove(self.new_room)
+        self.room = self.new_room
+        self.room_group.add(self.room)
+        self.set_issac(isaac_spawn_pos)
+        self.set_npc()
+        self.set_spawn_enemies()
 
     # Coroutines
     async def async_update(self):
-        pass
+        await self.detect_collision_isaac_and_doors()

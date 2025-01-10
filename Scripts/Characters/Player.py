@@ -10,7 +10,6 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.set_animation()
         self.attack = 1
-        
 
         self.rect = self.image.get_rect(center=spawn_pos)
 
@@ -44,54 +43,77 @@ class Player(pygame.sprite.Sprite):
         m = PlayerSettings.MULTI
         sheet = pygame.image.load(ImportedImages.playerImage)
 
-
-        #set_head_animation
+        # set_head_animation
         self.head_frames = []
         self.head_frames_rects = PlayerSettings.head_frame_rects
         for i in range(len(PlayerSettings.head_frame_rects)):
-            self.head_frames.append(StaticMethods.get_images(sheet, *self.head_frames_rects[i], (0, 0, 0), m))
-        
-        #set_body_animation
+            self.head_frames.append(
+                StaticMethods.get_images(
+                    sheet, *self.head_frames_rects[i], (0, 0, 0), m
+                )
+            )
+
+        # set_body_animation
         self.body_right_frames = []
         self.body_right_frames_rects = PlayerSettings.body_right_frame_rects
         for i in range(len(PlayerSettings.body_right_frame_rects)):
-            self.body_right_frames.append(StaticMethods.get_images(sheet, *self.body_right_frames_rects[i], (0, 0, 0), m))
-        
+            self.body_right_frames.append(
+                StaticMethods.get_images(
+                    sheet, *self.body_right_frames_rects[i], (0, 0, 0), m
+                )
+            )
+
         self.body_left_frames = []
         self.body_left_frames_rects = PlayerSettings.body_left_frame_rects
         for i in range(len(PlayerSettings.body_left_frame_rects)):
-            self.body_left_frames.append(StaticMethods.get_images(sheet, *self.body_left_frames_rects[i], (0, 0, 0), m))
-        
+            self.body_left_frames.append(
+                StaticMethods.get_images(
+                    sheet, *self.body_left_frames_rects[i], (0, 0, 0), m
+                )
+            )
+
         self.body_up_frames = []
         self.body_up_frames_rects = PlayerSettings.body_up_frame_rects
         for i in range(len(PlayerSettings.body_up_frame_rects)):
-            self.body_up_frames.append(StaticMethods.get_images(sheet, *self.body_up_frames_rects[i], (0, 0, 0), m))
-        
+            self.body_up_frames.append(
+                StaticMethods.get_images(
+                    sheet, *self.body_up_frames_rects[i], (0, 0, 0), m
+                )
+            )
+
         self.body_down_frames = []
         self.body_down_frames_rects = PlayerSettings.body_down_frame_rects
         for i in range(len(PlayerSettings.body_down_frame_rects)):
-            self.body_down_frames.append(StaticMethods.get_images(sheet, *self.body_down_frames_rects[i], (0, 0, 0), m))
+            self.body_down_frames.append(
+                StaticMethods.get_images(
+                    sheet, *self.body_down_frames_rects[i], (0, 0, 0), m
+                )
+            )
 
         m = PlayerSettings.MULTI
         head_height = self.head_frames_rects[0][3] * m
         dx = (self.head_frames_rects[0][2] - self.body_down_frames_rects[0][2]) * m // 2
         complete_width = self.head_frames_rects[0][2] * m
-        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
-        complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-        complete_image.blit(self.body_down_frames[self.frame_index], (dx, head_height - 10))
+        complete_height = (
+            self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]
+        ) * m
+        complete_image = Surface((complete_width, complete_height), SRCALPHA)
+        complete_image.blit(
+            self.body_down_frames[self.frame_index], (dx, head_height - 10)
+        )
         complete_image.blit(self.head_frames[0], (0, 0))
         self.image = complete_image
 
-
     def update_animation(self, keys):
-
 
         m = PlayerSettings.MULTI
         head_height = self.head_frames_rects[0][3] * m
         dx = (self.head_frames_rects[0][2] - self.body_down_frames_rects[0][2]) * m // 2
         complete_width = self.head_frames_rects[0][2] * m
-        complete_height = (self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]) * m
-        
+        complete_height = (
+            self.head_frames_rects[0][3] + self.body_down_frames_rects[0][3]
+        ) * m
+
         current_time = time.get_ticks()
         if self.timer == 0:
             self.timer = current_time
@@ -100,28 +122,35 @@ class Player(pygame.sprite.Sprite):
             self.frame_index += 1
             self.frame_index %= 10
 
-
         if keys[K_s]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_down_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_down_frames[self.frame_index], (dx, head_height - 10)
+            )
             complete_image.blit(self.head_frames[0], (0, 0))
             self.image = complete_image
-            
+
         if keys[K_d]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_right_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_right_frames[self.frame_index], (dx, head_height - 10)
+            )
             complete_image.blit(self.head_frames[1], (0, 0))
             self.image = complete_image
-         
+
         if keys[K_a]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_left_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_left_frames[self.frame_index], (dx, head_height - 10)
+            )
             complete_image.blit(self.head_frames[2], (0, 0))
             self.image = complete_image
-           
+
         if keys[K_w]:
-            complete_image = Surface((complete_width, complete_height), SRCALPHA) 
-            complete_image.blit(self.body_up_frames[self.frame_index], (dx, head_height - 10))
+            complete_image = Surface((complete_width, complete_height), SRCALPHA)
+            complete_image.blit(
+                self.body_up_frames[self.frame_index], (dx, head_height - 10)
+            )
             complete_image.blit(self.head_frames[3], (0, 0))
             self.image = complete_image
 
@@ -158,7 +187,7 @@ class Player(pygame.sprite.Sprite):
 
             # deal with sound
             if not self.move_sound_played:
-                #self.bgm_player.play("ISAAC_WALK", 0)
+                # self.bgm_player.play("ISAAC_WALK", 0)
                 self.move_sound_timer = pygame.time.get_ticks()
                 self.move_sound_played = True
             if pygame.time.get_ticks() - self.move_sound_timer > self.move_sound_delay:
@@ -182,7 +211,7 @@ class Player(pygame.sprite.Sprite):
                     keys[pygame.K_RIGHT] - keys[pygame.K_LEFT],
                     keys[pygame.K_DOWN] - keys[pygame.K_UP],
                 ).normalize()
-                #self.bgm_player.play("ISAAC_SHOOT", 0)
+                # self.bgm_player.play("ISAAC_SHOOT", 0)
             except ValueError:
                 shooted_tear.direction = Vector2(0, 0)
 
@@ -390,7 +419,7 @@ class Bomb(pygame.sprite.Sprite):
         self.image = self.frame[0]
         self.rect = self.image.get_rect(center=spawn_pos)
         self.bgm_player = BGMPlayer()
-        
+
         self.radius = BombSettings.affect_radius  # 伤害半径
         self.power = BombSettings.power  # 伤害值
 

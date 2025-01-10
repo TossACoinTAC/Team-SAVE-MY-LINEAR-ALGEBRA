@@ -8,8 +8,7 @@ def main():
     game_manager: GameManager = GameManager()
 
     while True:
-        game_manager.deal_events()
-        game_manager.render_screen()
+        game_manager.update()
 
 
 if __name__ == "__main__":
