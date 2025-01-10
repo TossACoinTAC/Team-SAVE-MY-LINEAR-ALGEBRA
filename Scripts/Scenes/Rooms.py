@@ -22,10 +22,13 @@ class SingleRoom(pygame.sprite.Sprite):
             self.rect = rect
 
         self._frame = pygame.sprite.Group()
+        self._frame.empty()
         self.set_frame()
         self._walls = pygame.sprite.Group()
+        self._walls.empty()
         self.gen_walls()
         self._doors = pygame.sprite.Group()
+        self._doors.empty()
         self.gen_doors()
 
     # property without setter
@@ -41,26 +44,26 @@ class SingleRoom(pygame.sprite.Sprite):
     def set_frame(self):
         edge_thickness = 10
         self.top_edge = pygame.Rect(
-            self.rect.left,
-            self.rect.top + ScreenSettings.marginHeight,
+            ScreenSettings.marginWidth,
+            ScreenSettings.marginHeight,
             self.rect.width,
             edge_thickness,
         )
         self.bottom_edge = pygame.Rect(
-            self.rect.left,
-            self.rect.bottom - ScreenSettings.marginHeight,
+            ScreenSettings.marginWidth,
+            ScreenSettings.roomHeight,
             self.rect.width,
             edge_thickness,
         )
         self.left_edge = pygame.Rect(
-            self.rect.left + ScreenSettings.marginWidth,
-            self.rect.top,
+            ScreenSettings.marginWidth,
+            ScreenSettings.marginHeight,
             edge_thickness,
             self.rect.height,
         )
         self.right_edge = pygame.Rect(
-            self.rect.right - ScreenSettings.marginWidth,
-            self.rect.top,
+            ScreenSettings.roomWidth,
+            ScreenSettings.marginHeight,
             edge_thickness,
             self.rect.height,
         )
@@ -70,18 +73,18 @@ class SingleRoom(pygame.sprite.Sprite):
 
     def gen_doors(self):
         # generate four random doors
-        door_locations = [
-            (self.rect.width / 2, ScreenSettings.marginHeight + 10),  # top
-            (ScreenSettings.marginWidth - 25, self.rect.height / 2),  # left
-            (self.rect.width / 2, ScreenSettings.roomHeight - 10),  # bottom
-            (ScreenSettings.roomWidth + 10, self.rect.height / 2),  # right
-        ]
+        door_locations = {
+            "top": (self.rect.width / 2, ScreenSettings.marginHeight + 10),
+            "left": (ScreenSettings.marginWidth - 25, self.rect.height / 2),
+            "bottom": (self.rect.width / 2, ScreenSettings.roomHeight - 10),
+            "right": (ScreenSettings.roomWidth + 10, self.rect.height / 2),
+        }
         door_location_tags = ["top", "left", "bottom", "right"]
 
         for i in range(4):
             door = Door(door_location_tags[i])
             door.image = pygame.transform.rotate(door.image, 90 * i)
-            door.rect.center = door_locations[i]
+            door.rect.center = door_locations[door_location_tags[i]]
             self._doors.add(door)
         self._doors.draw(self.image)  # draw on the Room's frame
 

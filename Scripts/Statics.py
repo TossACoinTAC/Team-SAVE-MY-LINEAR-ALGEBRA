@@ -107,9 +107,9 @@ class ImportedImages:
     Draw = "Src/Textures/Title/Draw1.png"
     bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar_full.png"
 
-    #GAMEWIN
+    # GAMEWIN
     ReplayButton = "Src/backselectwidget.png"
-    deathPortraits =  "Src/death portraits.png"
+    deathPortraits = "Src/death portraits.png"
 
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
@@ -349,11 +349,13 @@ class ShopSettings:
         x = 800
         y = 480
 
+
 class GameWinSettings:
     class death:
         x = 1280 * 0.2
         y = 5
         MULTI = 3.0
+
     class ReplayButton:
         x = 1280 * 0.5 + 350
         y = 720 * 0.6 + 30
@@ -440,36 +442,37 @@ class EnemiesSettings:
             (128, 126, 64, 63),
         ]
 
-class NPC_Original_messages:
-    npc_message = [[
-    {
-        "role": "system",
-        "content": (
-            "You are a guardian for the castle. Your mission is to test whether the player is clever enough. "
-            "So you should ask the player three Maths questions. If the player answers correctly for at least two of them, "
-            "the player will get a reward. Otherwise, the player will be punished. The first and second questions are very simple. "
-            "But the third one should be about calculus and linear algebra, don't tell the player, give him a surprise."
-            "The reward is an extra blood volumn or more powerful bullets. The punishment is to reduce the player's blood volumn."
-            "If the player get the extra blood, print $$%#@#$$, if the player get the more powerful bullets, print $$@*@#$$, if the player get the punishment, print $$#*&&$$."
-        )
-    }
-    ]
-    , [
-    {
-        "role": "system",
-        "content": (
-            "You are a merchant."
-            "If the player want to be stronger, you can buy him a mother's heart"
-            "If the player want to be faster, you can buy him a mother's foot"
-            "If the player want to be luckier, you can buy him a mother's hand"
-            "If the player want to be more powerful, you can buy him a mother's brain"
-            "If the player want gifts, you can buy him a mother's kiss"
-            "Else, you can buy him a mother's tear"
-        )
-    }
-    ]
-    ]
 
+class NPC_Original_messages:
+    npc_message = [
+        [
+            {
+                "role": "system",
+                "content": (
+                    "You are a guardian for the castle. Your mission is to test whether the player is clever enough. "
+                    "So you should ask the player three Maths questions. If the player answers correctly for at least two of them, "
+                    "the player will get a reward. Otherwise, the player will be punished. The first and second questions are very simple. "
+                    "But the third one should be about calculus and linear algebra, don't tell the player, give him a surprise."
+                    "The reward is an extra blood volumn or more powerful bullets. The punishment is to reduce the player's blood volumn."
+                    "If the player get the extra blood, print $$%#@#$$, if the player get the more powerful bullets, print $$@*@#$$, if the player get the punishment, print $$#*&&$$."
+                ),
+            }
+        ],
+        [
+            {
+                "role": "system",
+                "content": (
+                    "You are a merchant."
+                    "If the player want to be stronger, you can buy him a mother's heart"
+                    "If the player want to be faster, you can buy him a mother's foot"
+                    "If the player want to be luckier, you can buy him a mother's hand"
+                    "If the player want to be more powerful, you can buy him a mother's brain"
+                    "If the player want gifts, you can buy him a mother's kiss"
+                    "Else, you can buy him a mother's tear"
+                ),
+            }
+        ],
+    ]
 
 
 class StaticMethods:

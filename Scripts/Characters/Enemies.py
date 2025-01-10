@@ -167,6 +167,7 @@ class BossBody(pygame.sprite.Sprite):
         self.set_position()
         self.set_HP()
         self.if_beattacked = "False"
+        self.posted = False  # temp, delete later
 
     def set_HP(self):
         self.HP = BossSettings.health_bar.max
@@ -198,8 +199,10 @@ class BossBody(pygame.sprite.Sprite):
 
     def update(self):
 
-        if self.HP <= 0:
-            event.post(event.Event(Events.GAME_WIN))
+        if self.HP <= 0 and not self.posted:
+            # event.post(event.Event(Events.GAME_WIN))
+            event.post(event.Event(Events.ROOM_CLEAR))
+            self.posted = True
 
         if self.if_beattacked == "False":
             current_time = pygame.time.get_ticks()
