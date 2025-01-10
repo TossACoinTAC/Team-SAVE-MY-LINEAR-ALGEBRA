@@ -22,9 +22,7 @@ class Events:
     GAME_OVER = pygame.USEREVENT + 21
     GAME_WIN = pygame.USEREVENT + 24
     ROOM_CLEAR = pygame.USEREVENT + 22
-
-    BOMB_EXPLOSION = pygame.USEREVENT + 30
-    SLICE_ISAAC = pygame.USEREVENT + 31
+    BOMB_EXPLOSION = pygame.USEREVENT + 23
 
     # Others
     SLICE_ISAAC = pygame.USEREVENT + 26

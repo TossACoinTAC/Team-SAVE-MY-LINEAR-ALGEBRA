@@ -64,8 +64,6 @@ class ChatBox(pygame.sprite.Sprite):
 
         self.buff = 0
 
-        self.buff = 0
-
     def render_text(self, text, x, y, color=(255, 255, 255)):
         text_surface = self.FONT.render(text, True, color)
         self.image.blit(text_surface, (x, y))
@@ -106,14 +104,6 @@ class ChatBox(pygame.sprite.Sprite):
                             sprite.kill()
                     ev.post(ev.Event(Events.EXIT_CHATBOX))
                     #self.kill()
-
-                if "%#@#" in response:
-                    self.buff = 1
-                if "@*@#" in response:
-                    self.buff = 2
-                if "#*&&" in response:
-                    self.buff = 3
-                print(self.buff)
 
                 if "%#@#" in response:
                     self.buff = 1
