@@ -51,7 +51,9 @@ class GameManager:
         self.attacksystem = attack()
         self.bombsystem = Bomb()
         self.Room_hint_system = Room_hint(BossRoom_location, 1)
-        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem, self.Room_hint_system)
+        self.UI.add(
+            self.coinsystem, self.attacksystem, self.bombsystem, self.Room_hint_system
+        )
 
     def set_shop(self):
         self._lucky = lucky()
@@ -81,7 +83,7 @@ class GameManager:
 
     def set_bgm(self):
         self.bgm_player = BGMPlayer()
-        self.bgm_player.play("MAIN_THEME", -1)
+        self.bgm_player.switch_BGM("MAIN_THEME")
 
     def set_issac(
         self,
@@ -283,17 +285,16 @@ class GameManager:
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
                 case Events.RESTART:
-                    self.bgm_player.stop()
+                    self.bgm_player.stop_BGM()
                     self.__init__()
 
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
-                    self.bgm_player.stop()
-                    self.bgm_player.play("COMMON", 0)
+                    self.bgm_player.switch_BGM("COMMON")
 
                 case Events.ROOM_CLEAR:
                     self.room.open_doors()
-                    self.bgm_player.play("DOOR_OPEN", 0)
+                    self.bgm_player.play_sound_effect("DOOR_OPEN")
                     self.room_clear_posted = True
 
                 case Events.TO_CHATBOX:
@@ -450,7 +451,7 @@ class GameManager:
                 enemy: Monster
                 if tear.state == "live" and enemy.HP > 0:
                     tear.state = "die"
-                    self.bgm_player.play("TEAR_HIT", 0)
+                    self.bgm_player.play_sound_effect("TEAR_HIT")
                     enemy.HP -= self.isaac.attack
                     if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
@@ -466,7 +467,7 @@ class GameManager:
         for tear, walls in collided_tears_and_walls.items():
             tear: Tear  # once for all below, sweet
             if tear.state == "live":
-                self.bgm_player.play("TEAR_HIT", 0)
+                self.bgm_player.play_sound_effect("TEAR_HIT")
                 tear.state = "die"
                 for wall in walls:
                     if isinstance(wall, Shit):
@@ -478,7 +479,7 @@ class GameManager:
         )
         for tear, frame in collided_tears_and_frames.items():
             if tear.state == "live":
-                self.bgm_player.play("TEAR_HIT", 0)
+                self.bgm_player.play_sound_effect("TEAR_HIT")
                 tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
