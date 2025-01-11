@@ -34,6 +34,7 @@ class GameManager:
         self.set_boss()
         self.set_UI()
         self.lucky = pygame.sprite.Group()
+        self._lucky = lucky()
         self.enemy_group = pygame.sprite.Group()
         self.bugs = pygame.sprite.Group()
         self.boss_group = pygame.sprite.Group()
@@ -339,6 +340,7 @@ class GameManager:
                 self.detect_collision_bloodytear_and_frames()
                 self.detect_collision_bloodytear_and_isaac()
                 self.detect_collision_boss_and_isaac()
+                self.detect_collision_tears_and_enemies()
 
     def detect_collision_bug_and_wall(self):
         collided_bug_and_wall = StaticMethods.mask_groupcollide(
