@@ -346,7 +346,12 @@ class GameManager:
         for bug, walls in collided_bug_and_wall.items():
             if bug.move_direction == 'left':
                 bug.move_direction = 'right'
-                
+            elif bug.move_direction == 'right':
+                bug.move_direction = 'left'
+            elif bug.move_direction == 'up':
+                bug.move_direction = 'down'
+            elif bug.move_direction == 'down':
+                bug.move_direction = 'up'
             
         
 
