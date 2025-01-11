@@ -1,5 +1,4 @@
 import pygame
-from Statics import *
 import random
 
 class MapTree:
@@ -12,34 +11,72 @@ class MapTree:
 
 RoomTree = []  #记录房间关系
 
-scene_choices = ["COMMON_ROOM","SHOP","TREASURE","SECRET","BLUEWOMB","CATACOMB"]
+scene_choices = ["COMMON_ROOM","SHOP","TREASURE","SECRET","BLUEWOMB"]
 root = "START_ROOM"
     
 
 def add_children(node, depth, shop_added, treasure_added, catacomb_added):
-    if depth == 4:
+    max_depth = 3
+    if depth == max_depth:
         RoomTree.append(node)
         return
 
     choices = scene_choices.copy()
-    if shop_added:
-        choices.remove("SHOP")
-    if treasure_added:
-        choices.remove("TREASURE")
-    if catacomb_added:
-        choices.remove("CATACOMB")
 
     if choices:
-        node.left = MapTree(node.id * 2, random.choice(choices))
+        leftson = random.choice(choices)
+        if leftson == "SHOP":
+            choices.remove("SHOP")
+        if leftson == "TREASURE":
+            choices.remove("TREASURE")
+        if leftson == "CATACOMB":
+            choices.remove("CATACOMB")
+        rightson = random.choice(choices)
+        if rightson == "SHOP":
+            choices.remove("SHOP")
+        if rightson == "TREASURE":
+            choices.remove("TREASURE")
+        if rightson == "CATACOMB":
+            choices.remove("CATACOMB")
+        if node.id == 2**(max_depth-1)-1:
+            leftson = "CATACOMB"
+
+        node.left = MapTree(node.id * 2, leftson)
         node.left.father = node
-        node.right = MapTree(node.id * 2 + 1, random.choice(choices))
+        node.right = MapTree(node.id * 2 + 1, rightson)
         node.right.father = node
         RoomTree.append(node)
 
+
     if node.left:
-        add_children(node.left, depth + 1, node.left in ["SHOP"], node.left in ["TREASURE"], node.left in ["CATACOMB"])
+        add_children(
+            node.left, 
+            depth + 1, 
+            node.left in ["SHOP"] or shop_added,
+            node.left in ["TREASURE"] or treasure_added,
+            node.left in ["CATACOMB"] or catacomb_added
+            )
     if node.right:
-        add_children(node.right, depth + 1, node.right in ["SHOP"], node.right in ["TREASURE"], node.right in ["CATACOMB"])
+        add_children(
+            node.right, 
+            depth + 1, 
+            node.right in ["SHOP"] or shop_added,
+            node.right in ["TREASURE"] or treasure_added,
+            node.right in ["CATACOMB"] or catacomb_added
+        )
 
 root_node = MapTree(1, root)
 add_children(root_node, 1, False, False, False)
+RoomTree.append(MapTree(
+    value = "None",
+    id = 0
+))
+RoomTree.sort(key=lambda room: room.id)
+for room in RoomTree:
+    l = room.left
+    r = room.right
+    f = room.father
+    print(room.value, room.id, 
+          l.value if l else None, 
+          r.value if r else None, 
+          f.value if f else None)

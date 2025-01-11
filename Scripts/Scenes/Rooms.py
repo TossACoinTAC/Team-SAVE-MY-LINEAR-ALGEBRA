@@ -8,12 +8,13 @@ class SingleRoom(pygame.sprite.Sprite):
     def __init__(self, RoomID, roomImage=None, rect: pygame.Rect = None, Wall_Type=0):
         super().__init__()
         # randomly select a room image if not specified
-        if not roomImage:
-            self.image = pygame.image.load(
-                random.choice(list(ImportedImages.RoomImages)).value
-            )
-        else:
-            self.image = pygame.image.load(roomImage)
+        print(RoomID)
+        # if not roomImage:
+        #     self.image = pygame.image.load(
+        #         random.choice(list(ImportedImages.RoomImages)).value
+        #     )
+        # else:
+        self.image = pygame.image.load(roomImage)
         self.image = pygame.transform.scale(
             self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
         )
@@ -83,12 +84,22 @@ class SingleRoom(pygame.sprite.Sprite):
             "right": (ScreenSettings.roomWidth + 10, self.rect.height / 2),
         }
         door_location_tags = ["top", "left", "bottom", "right"]
-
-        for i in range(2,4):
-            door = Door(door_location_tags[i], self.RoomID)
-            door.image = pygame.transform.rotate(door.image, 90 * i)
-            door.rect.center = door_locations[door_location_tags[i]]
+        if self.RoomID % 2 == 1 and self.RoomID > 1:    #从左边进来
+            door = Door(door_location_tags[1], self.RoomID)
+            door.image = pygame.transform.rotate(door.image, 90 * 1)
+            door.rect.center = door_locations[door_location_tags[1]]
             self._doors.add(door)
+        if self.RoomID % 2 == 0:    #从上边进来
+            door = Door(door_location_tags[0], self.RoomID)
+            door.image = pygame.transform.rotate(door.image, 90 * 0)
+            door.rect.center = door_locations[door_location_tags[0]]
+            self._doors.add(door)
+        for i in range(2,4):
+            if RoomTree[self.RoomID].left:
+                door = Door(door_location_tags[i], self.RoomID)
+                door.image = pygame.transform.rotate(door.image, 90 * i)
+                door.rect.center = door_locations[door_location_tags[i]]
+                self._doors.add(door)
         self._doors.draw(self.image)  # draw on the Room's frame
 
     def gen_walls(self, mode):
@@ -217,10 +228,14 @@ class Door(pygame.sprite.Sprite):
         #         list(ImportedImages.ClosedDoorImages)
         #     ).value
         match location_tag:
+            case "left":
+                DoorType = RoomTree[roomID].father         
+            case "top":
+                DoorType = RoomTree[roomID].father
             case "right":
-                DoorType = RoomTree[roomID].left
-            case "bottom":
                 DoorType = RoomTree[roomID].right
+            case "bottom":
+                DoorType = RoomTree[roomID].left
         
         self._image_path = random.choice(list(ImportedImages.ClosedDoorImages)).value
         match DoorType:
@@ -236,6 +251,8 @@ class Door(pygame.sprite.Sprite):
                 self._image_path = ImportedImages.ClosedDoorImages.CLOSED_CATACOMB_DOOR
             case "SECRET":
                 self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SECRET_DOOR
+            case "START_ROOM":
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR
 
         self.image = pygame.image.load(self._image_path)
         self.image = pygame.transform.scale(
