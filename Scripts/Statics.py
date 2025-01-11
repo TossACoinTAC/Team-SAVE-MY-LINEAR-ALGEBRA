@@ -97,13 +97,13 @@ class ImportedImages:
     class UI:
         coin = "Src/Textures/Play/coin.png"
         attack = "Src/Textures/Play/collectibles_705_darkarts.png"
+        Bomb = "Src/Textures/Play/pickup_016_bomb.png"
 
     # MainMenu
     BackGround = "Src/Textures/Title/Title1.png"
     StartButton = "Src/Textures/Title/Draw2.png"
     Options = "Src/Textures/Title/Options.png"
     Continues = "Src/Textures/Title/Continue.png"
-    Bomb = "Src/Textures/Play/pickup_016_bomb.png"
     Draw = "Src/Textures/Title/Draw1.png"
     bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar_full.png"
 

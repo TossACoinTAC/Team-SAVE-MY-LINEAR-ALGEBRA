@@ -45,7 +45,7 @@ class attack(StaticState):
 
 class Bomb(StaticState):
     def __init__(self):
-        Image = get_images(pygame.image.load(ImportedImages.Bomb), 0,0,35,38, (0, 0, 0), 3.0)
+        Image = get_images(pygame.image.load(ImportedImages.UI.Bomb), 0,0,26,25, (0, 0, 0), 3.0)
         super().__init__(
             Image,
             UISettings.bomb.x,
