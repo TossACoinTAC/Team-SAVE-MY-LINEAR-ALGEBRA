@@ -340,6 +340,7 @@ class GameManager:
                 self.detect_collision_bloodytear_and_frames()
                 self.detect_collision_bloodytear_and_isaac()
                 self.detect_collision_boss_and_isaac()
+                self.detect_collision_tears_and_enemies()
 
     def detect_collision_bug_and_wall(self):
         collided_bug_and_wall = StaticMethods.mask_groupcollide(
