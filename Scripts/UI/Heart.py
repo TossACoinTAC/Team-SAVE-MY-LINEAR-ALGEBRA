@@ -27,8 +27,9 @@ class Heart(pygame.sprite.Sprite):
 
         current_time = pygame.time.get_ticks()
         if self.state == 'reduce' and current_time - self.timer > 1000:
-            #self.HP -= 1
+            self.HP -= 1
             self.timer = current_time
+        else:
             self.state = 'normal'
 
         if self.HP == 0:
