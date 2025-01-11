@@ -348,7 +348,7 @@ class Web(pygame.sprite.Sprite):
 
 class StartRoom(SingleRoom):
     def __init__(self):
-        wall_type = 2
+        wall_type = 0
         super().__init__(ImportedImages.RoomImages.START_ROOM.value, None, wall_type)
 
 
