@@ -32,16 +32,12 @@ class GameManager:
         self.set_heart()
         self.set_chatbox()
         self.set_boss()
-        self.set_shop()
         self.set_UI()
+        self.lucky = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
+        self.bugs = pygame.sprite.Group()
         self.boss_group = pygame.sprite.Group()
         self.room_clear_posted = False
-        ##############测试用的code
-        self.bugs = pygame.sprite.Group()
-        self.bug = bug()
-        self.bugs.add(self.bug)
-        ##############测试用的code
 
     # SET
     def set_UI(self):
@@ -52,7 +48,6 @@ class GameManager:
         self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem)
 
     def set_shop(self):
-        self.lucky = pygame.sprite.Group()
         self._lucky = lucky()
         self._price = price()
         self.lucky.add(self._lucky, self._price)
@@ -83,7 +78,7 @@ class GameManager:
 
     def set_issac(
         self,
-        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight / 2),
+        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight * 0.75),
     ):
         self.isaac_group = pygame.sprite.Group()  # Isaac may be sliced
         self.isaac = Player(spawn_pos)
@@ -120,6 +115,9 @@ class GameManager:
         pygame.display.set_icon(icon)
 
     def spawn_enemies(self):
+        self.bug = bug()
+        self.enemy_group.add(self.bug)
+        self.bugs.add(self.bug)
         for i in range(UpdateEnemiesSettings.flyNumber):
             self.enemy_group.add(Fly())
 
@@ -160,8 +158,6 @@ class GameManager:
         self.UI.update(self.screen)
         self.UI.draw(self.screen)
 
-        self.update_sprites(self.bugs)
-
     def update_scene(self, active_scene: Scenes):
         match active_scene:
 
@@ -183,6 +179,7 @@ class GameManager:
             case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
                 self.common_scene_updates()
                 self.update_sprites(self.enemy_group)
+                self.update_sprites(self.bugs)
                 if len(self.enemy_group) == 0 and not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -327,16 +324,21 @@ class GameManager:
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
-        self.detect_collision_isaac_and_npc()
-        self.detect_collision_isaac_and_enemies()
-        self.detect_collision_tears_and_enemies()
-        self.detect_collision_bloodytear_and_frames()
-        self.detect_collision_bloodytear_and_isaac()
-        self.detect_collision_lucky_and_isaac()
-        self.detect_collision_boss_and_isaac()
         self.detect_collision_tears_and_walls()
-        self.detect_buff_acquirance()
-        self.detect_collision_bug_and_wall()
+        match self.active_scene:
+            case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
+                self.detect_collision_isaac_and_enemies()
+                self.detect_collision_tears_and_enemies()
+                self.detect_collision_bug_and_wall()
+            case Scenes.SHOP:
+                self.detect_collision_lucky_and_isaac()
+            case Scenes.TREASURE:
+                self.detect_collision_isaac_and_npc()
+                self.detect_buff_acquirance()
+            case Scenes.CATACOMB:
+                self.detect_collision_bloodytear_and_frames()
+                self.detect_collision_bloodytear_and_isaac()
+                self.detect_collision_boss_and_isaac()
 
     def detect_collision_bug_and_wall(self):
         collided_bug_and_wall = StaticMethods.mask_groupcollide(
