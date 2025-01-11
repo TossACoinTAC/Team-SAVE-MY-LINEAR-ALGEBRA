@@ -33,8 +33,8 @@ class BGMPlayer:
             self.channel = self.tear_hit_BGM.play(loops=loop)
         if sound == "DOOR_OPEN":
             self.channel = self.door_open_BGM.play(loops=loop)
+        self.channel.set_volume(1)
 
     def stop(self):
         if self.channel:
-            print(1)
-            self.channel.stop()
+            self.channel.set_volume(0)

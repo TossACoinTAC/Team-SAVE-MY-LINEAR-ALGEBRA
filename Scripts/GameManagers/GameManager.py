@@ -270,15 +270,15 @@ class GameManager:
                     exit()
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
-                    self.bgm_player.stop()
 
                 case Events.RESTART:
+                    self.bgm_player.stop()
                     self.__init__()
 
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
-                    self.bgm_player.play("COMMON", -1)
+                    self.bgm_player.play("COMMON", 0)
 
                 case Events.ROOM_CLEAR:
                     self.room.open_doors()
@@ -287,6 +287,7 @@ class GameManager:
 
                 case Events.TO_CHATBOX:
                     self.active_scene = Scenes.CHAT_BOX
+
                 case Events.EXIT_CHATBOX:
                     self.active_scene = Scenes.TREASURE
 
@@ -549,7 +550,7 @@ class GameManager:
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
-                roomID = int((roomID-1)/2)
+                roomID = int((roomID - 1) / 2)
             case "right":
                 self.new_room_rect = pygame.Rect(
                     ScreenSettings.screenWidth,
@@ -561,10 +562,10 @@ class GameManager:
         match door_type:
             case "Wood":
                 if roomID == 1:
-                    self.new_room = StartRoom(RoomID = roomID,rect=self.new_room_rect)
+                    self.new_room = StartRoom(RoomID=roomID, rect=self.new_room_rect)
                     self.active_scene = Scenes.START_ROOM
                 else:
-                    self.new_room = CommonRoom(RoomID = roomID,rect=self.new_room_rect)
+                    self.new_room = CommonRoom(RoomID=roomID, rect=self.new_room_rect)
                     self.active_scene = Scenes.COMMON_ROOM
             case "BlueWomb":
                 self.new_room = BlueWomb(RoomID=roomID, rect=self.new_room_rect)
