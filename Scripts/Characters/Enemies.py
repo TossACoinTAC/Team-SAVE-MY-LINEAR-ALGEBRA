@@ -199,18 +199,18 @@ class Monster(pygame.sprite.Sprite):
         #     ScreenSettings.screenHeight - ScreenSettings.marginHeight
         # ):
         #     self.speed_y = -self.speed_y
-        if self.rect.left <= ScreenSettings.marginWidth:
+        if self.rect.left <= ScreenSettings.marginWidth + 20:
             self.speed_x = -self.speed_x
-            self.rect.left = ScreenSettings.marginWidth + 1
-        if self.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth:
+            self.rect.left = ScreenSettings.marginWidth + 21
+        if self.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth - 20:
             self.speed_x = -self.speed_x
-            self.rect.right = ScreenSettings.screenWidth - ScreenSettings.marginWidth - 1
-        if self.rect.top <= ScreenSettings.marginHeight:
+            self.rect.right = ScreenSettings.screenWidth - ScreenSettings.marginWidth - 21
+        if self.rect.top <= ScreenSettings.marginHeight + 20:
             self.speed_y = -self.speed_y
-            self.rect.top = ScreenSettings.marginHeight + 1
-        if self.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight:
+            self.rect.top = ScreenSettings.marginHeight + 21
+        if self.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight - 20:
             self.speed_y = -self.speed_y
-            self.rect.bottom = ScreenSettings.screenHeight - ScreenSettings.marginHeight - 1
+            self.rect.bottom = ScreenSettings.screenHeight - ScreenSettings.marginHeight - 21
 
     def update_position(self):
 

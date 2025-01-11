@@ -384,7 +384,8 @@ class GameManager:
             self.coinsystem.coin_num >= 5
             and self._lucky.state == "normal"
             and keys[pygame.K_q]
-            and StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
+            and pygame.sprite.spritecollide(self.issac, self.lucky, False)
+            # and StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
@@ -479,6 +480,7 @@ class GameManager:
     def detect_collision_isaac_and_trainer(self):
         if StaticMethods.mask_spritecollide(self.isaac, self.trainer_group, False):
             self.isaac.rect.move_ip(-self.isaac.movement)
+        if pygame.sprite.spritecollide(self.isaac, self.trainer_group, False):
             if self.get_keys()[pygame.K_q]:
                 ev.post(ev.Event(Events.TO_CHATBOX))
 

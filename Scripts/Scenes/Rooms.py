@@ -129,7 +129,7 @@ class SingleRoom(pygame.sprite.Sprite):
         elif mode == 3:
             # 模式三：在房间的中心生成 4x4 的墙体
             center_x = (ScreenSettings.marginWidth + ScreenSettings.roomWidth) // 2
-            center_y = (ScreenSettings.marginHeight + ScreenSettings.roomHeight) // 2
+            center_y = (ScreenSettings.marginHeight + ScreenSettings.roomHeight) // 2 + 100
             wall_width = Shit().image.get_width()
             wall_height = Shit().image.get_height()
 
