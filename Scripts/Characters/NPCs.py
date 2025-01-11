@@ -2,6 +2,8 @@ from pygame import *
 from Statics import *
 from Characters.LLM import *
 import pygame.event as ev
+from markdown import Markdown
+from bs4 import BeautifulSoup
 
 
 class NPC(pygame.sprite.Sprite):
@@ -63,18 +65,76 @@ class ChatBox(pygame.sprite.Sprite):
         # 初始文本内容
         if self.npc_type == "Trainer":
             self.INIT_TEXTS = (
-                "Welcome, brave adventurer! I sense that you are seeking a challenge worthy of your mettle."
+                "Type 'exit' or 'quit' to end the chat.                                                                                                     "
+                "Trainer:Welcome, brave adventurer! I sense that you are seeking a challenge worthy of your mettle."
                 "As the guardian of this fortress, it is my duty to test your wits and abilities."
-                "Type 'exit' or 'quit' to end the chat."
             )
         elif self.npc_type == "Merchant":
-            self.INIT_TEXTS = "Type 'exit' or 'quit' to end the chat."
+            self.INIT_TEXTS = (
+                "Type 'exit' or 'quit' to end the chat.                                                                                                     "
+                "Merchant:Welcome, mortal! I am the merchant of this fortress."
+                "I have all wares you need, but you know the rules. If you want it..."
+            )
         self.chat_log.append(self.INIT_TEXTS)
 
         self.linenumber = 2
         self.y_offset = 20
 
-        self.buff = 0
+        self._buff = 0
+
+        self._costed_coins = 0
+        self._costed_HP = 0
+        self._atk_boost = 0
+        self._shoot_delay_shorten = 0
+        self._bomb_gained = 0
+
+    @property
+    def buff(self):
+        return self._buff
+
+    @buff.setter
+    def buff(self, value: int):
+        self._buff = value
+
+    @property
+    def costed_coins(self):
+        return self._costed_coins
+
+    @costed_coins.setter
+    def costed_coins(self, value: int):
+        self._costed_coins = value
+
+    @property
+    def costed_HP(self):
+        return self._costed_HP
+
+    @costed_HP.setter
+    def costed_HP(self, value: int):
+        self._costed_HP = value
+
+    @property
+    def atk_boost(self):
+        return self._atk_boost
+
+    @atk_boost.setter
+    def atk_boost(self, value: int):
+        self._atk_boost = value
+
+    @property
+    def shoot_delay_shorten(self):
+        return self._shoot_delay_shorten
+
+    @shoot_delay_shorten.setter
+    def shoot_delay_shorten(self, value: int):
+        self._shoot_delay_shorten = value
+
+    @property
+    def bomb_gained(self):
+        return self._bomb_gained
+
+    @bomb_gained.setter
+    def bomb_gained(self, value: int):
+        self._bomb_gained = value
 
     def render_text(self, text, x, y, color=(255, 255, 255)):
         text_surface = self.FONT.render(text, True, color)
@@ -105,10 +165,20 @@ class ChatBox(pygame.sprite.Sprite):
                 # 添加玩家输入到聊天日志
                 self.chat_log.append(f"You: {self.input_text.strip()}")
 
+                # update current player state
+                for state_type, state_value in player_state.items():
+                    self.messages[0]["content"] += f"\n {state_type}: {state_value}"
+
                 # 调用 LLM_chat 函数获取回复
                 response = LLM_chat(self.input_text.strip(), self.messages)
-                # print(response)
-                self.chat_log.append(f"NPC: {response}")
+
+                # parse AI's markdown text to plain text
+                response = response.replace(
+                    "\n", "  "
+                )  # replace newline with 2 spaces, because newline is not parsed in plain text
+                html_rendered = Markdown().convert(response)
+                soup = BeautifulSoup(html_rendered, "html.parser")
+                response = soup.get_text()
 
                 if (
                     "quit" in self.input_text.strip()
@@ -118,15 +188,30 @@ class ChatBox(pygame.sprite.Sprite):
                         if isinstance(sprite, ChatBox):
                             sprite.kill()
                     ev.post(ev.Event(Events.EXIT_CHATBOX))
-                    # self.kill()
 
-                if "EXTRA BLOOD" in response:
-                    self.buff = 1
-                if "MORE BULLETS" in response:
-                    self.buff = 2
-                if "PUNISHMENT" in response:
-                    self.buff = 3
-
+                if self.npc_type == "Trainer":
+                    # add to history
+                    self.chat_log.append(f"Trainer: {response}")
+                    if "HEAL" in response:
+                        self._buff = 1
+                    if "MORE BULLETS" in response:
+                        self._buff = 2
+                    if "PUNISHMENT" in response:
+                        self._buff = 3
+                elif self.npc_type == "Merchant":
+                    self.chat_log.append(f"Merchant: {response}")
+                    if "HEAL" in response:
+                        self._costed_coins += 3
+                        self._costed_HP -= 1
+                    if "BATTLE" in response:
+                        self._atk_boost += 1
+                        self._costed_HP += 1
+                    if "FIERCE TEAR" in response:
+                        self._shoot_delay_shorten += 25
+                        self._costed_HP += 1
+                    if "BOMB" in response:
+                        self._costed_coins += 2
+                        self._bomb_gained += 1
                 self.input_text = ""
             inputed = True
 

@@ -237,10 +237,11 @@ class GameManager:
 
             case Scenes.CHAT_BOX:
                 player_state = {
-                    "hp": self._heart.HP,
-                    "atk": self.attacksystem.attack_num,
-                    "bomb_num": self.bombsystem.bomb_num,
-                    "coin_num": self.coinsystem.coin_num,
+                    "HP": str(self._heart.HP),
+                    "ATK": str(self.attacksystem.attack_num),
+                    "Shoot_Delay": str(self.isaac.shoot_delay),
+                    "Bombs": str(self.bombsystem.bomb_num),
+                    "Coins": str(self.coinsystem.coin_num),
                 }
                 if self.active_npc == self.trainer:
                     self.chatbox_group.add(self.chatbox_trainer)
@@ -541,6 +542,7 @@ class GameManager:
                 ev.post(ev.Event(Events.TO_CHATBOX, **{"NPC": npc}))
 
     def detect_buff_acquirance(self):
+        # Trainer
         match self.chatbox_trainer.buff:
             case 1:
                 if self._heart.HP < 4:
@@ -552,9 +554,18 @@ class GameManager:
             case 3:
                 self._heart.HP -= 1
         self.chatbox_trainer.buff = 0
-        match self.chatbox_merchant.buff:
-            case 1:
-                pass
+
+        # Merchant
+        self.attacksystem.attack_num += self.chatbox_merchant.atk_boost
+        self.isaac.shoot_delay -= self.chatbox_merchant.shoot_delay_shorten
+        self._heart.HP -= self.chatbox_merchant.costed_HP
+        self.coinsystem.coin_num -= self.chatbox_merchant.costed_coins
+        self.bombsystem.bomb_num += self.chatbox_merchant.bomb_gained
+        self.chatbox_merchant.atk_boost = 0
+        self.chatbox_merchant.shoot_delay_shorten = 0
+        self.chatbox_merchant.costed_HP = 0
+        self.chatbox_merchant.costed_coins = 0
+        self.chatbox_merchant.bomb_gained = 0
 
     async def detect_collision_isaac_and_doors(self):
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(

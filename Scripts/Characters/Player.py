@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
 
         self.shoot_mode = 0
         self.shoot_timer = 0
-        self.shoot_delay = 200
+        self._shoot_delay = 200
 
         self.bgm_player = BGMPlayer()
         self.move_sound_interval = 600
@@ -34,6 +34,14 @@ class Player(pygame.sprite.Sprite):
         self.bomb_group = pygame.sprite.GroupSingle()
         self.explosion_group = pygame.sprite.GroupSingle()
         self.bomb_storage = 3
+
+    @property
+    def shoot_delay(self):
+        return self._shoot_delay
+
+    @shoot_delay.setter
+    def shoot_delay(self, value: int):
+        self._shoot_delay = value
 
     def set_animation(self):
 
@@ -218,7 +226,7 @@ class Player(pygame.sprite.Sprite):
             self._tears.add(shooted_tear)
 
             self.shoot_timer = pygame.time.get_ticks()
-        if pygame.time.get_ticks() - self.shoot_timer > self.shoot_delay:
+        if pygame.time.get_ticks() - self.shoot_timer > self._shoot_delay:
             self.tear_ready.empty()
 
     def triple_shoot(self, keys):
@@ -251,7 +259,7 @@ class Player(pygame.sprite.Sprite):
                 self._tears.add(shooted_tear)
 
             self.shoot_timer = pygame.time.get_ticks()
-        if pygame.time.get_ticks() - self.shoot_timer > self.shoot_delay:
+        if pygame.time.get_ticks() - self.shoot_timer > self._shoot_delay:
             self.tear_ready.empty()
 
     def planting(self, keys):  # plant the bomb
