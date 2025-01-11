@@ -387,7 +387,7 @@ class GameManager:
             self.coinsystem.coin_num >= 5
             and self._lucky.state == "normal"
             and keys[pygame.K_q]
-            and StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
+            and pygame.sprite.spritecollide(self.isaac, self.lucky, False)
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
