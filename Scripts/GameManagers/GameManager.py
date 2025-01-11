@@ -9,6 +9,7 @@ from Scenes.shop import *
 from Scenes.MainMenu import MainMenu
 from Scenes.MainMenu import bossHealthBarIcon
 from Scenes.GameWin import GameWin
+from Scenes.GameOver import GameOver
 from UI.UI import *
 from UI.Heart import *
 from UI.bosshp import bossheart
@@ -73,6 +74,7 @@ class GameManager:
         self.active_scene = Scenes.MAIN_MENU
         self.main_menu: pygame.sprite.Group = MainMenu()
         self.game_win: pygame.sprite.Group = GameWin()
+        self.game_over: pygame.sprite.Group = GameOver()
 
     def set_clock(self):
         self.clock = pygame.time.Clock()
@@ -170,6 +172,11 @@ class GameManager:
             case Scenes.MAIN_MENU:
                 self.main_menu.update()
                 self.main_menu.draw(self.screen)
+
+            case Scenes.GAMEOVER:
+                self.screen.fill((0, 0, 0))
+                self.game_over.update()
+                self.game_over.draw(self.screen)
 
             case Scenes.GAMEWIN:
                 self.screen.fill((0, 0, 0))
@@ -272,7 +279,7 @@ class GameManager:
                     pygame.quit()
                     exit()
                 case Events.GAME_OVER:
-                    self.active_scene = Scenes.GAMEWIN
+                    self.active_scene = Scenes.GAMEOVER
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
                 case Events.RESTART:
