@@ -15,7 +15,7 @@ class NPC(pygame.sprite.Sprite):
             self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
         )
         self.rect = self.image.get_rect()
-        self.rect.center = (500, 500)  # 随便设的地方，有商店了可以让他再商店里生成
+        self.rect.center = (0.5*ScreenSettings.screenWidth, 0.5*ScreenSettings.screenHeight)  # 随便设的地方，有商店了可以让他再商店里生成
         self.HP = 0x3f3f3f3f  # 无敌
 
     def gen_chatbox(self, keys):
@@ -44,7 +44,6 @@ class ChatBox(pygame.sprite.Sprite):
         self.current_step = 0
         self.input_text = ""
         self.allow_input = True
-        self.messages = NPC_Original_messages.npc_message[0]    #两个npc
         self.messages = NPC_Original_messages.npc_message[0]    #两个npc
 
         # 定义字体和颜色
@@ -105,13 +104,12 @@ class ChatBox(pygame.sprite.Sprite):
                     ev.post(ev.Event(Events.EXIT_CHATBOX))
                     #self.kill()
 
-                if "%#@#" in response:
+                if "EXTRA BLOOD" in response:
                     self.buff = 1
-                if "@*@#" in response:
+                if "MORE BULLETS" in response:
                     self.buff = 2
-                if "#*&&" in response:
+                if "PUNISHMENT" in response:
                     self.buff = 3
-                print(self.buff)
                 
                 self.input_text = ""
             inputed = True
@@ -159,110 +157,3 @@ class ChatBox(pygame.sprite.Sprite):
         if current_line:
             self.render_text(" ".join(current_line), x, y, color)
 
-
-'''
-pygame.init()
-screen = pygame.display.set_mode((ScreenSettings.screenWidth, ScreenSettings.screenHeight))
-pygame.display.set_caption("ChatBox Game")
-
-chatbox = ChatBox()
-all_sprites = pygame.sprite.Group(chatbox)
-
-# 主游戏循环
-run_game = True
-while run_game:
-    screen.fill((30,30,30))
-    # 更新并渲染聊天框
-    all_sprites.update()
-    all_sprites.draw(screen)
-    # 事件处理
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            run_game = False
-        chatbox.handle_input(event)
-
-
-    # 更新显示
-    pygame.display.flip()
-
-# 退出游戏
-pygame.quit()
-
-
-# 初始化 Pygame
-pygame.init()
-
-# 设置窗口
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("ChatBox Game")
-
-# 定义字体和颜色
-FONT = pygame.font.Font(None, 36)
-BG_COLOR = (30, 30, 30)
-TEXT_COLOR = (255, 255, 255)
-INPUT_COLOR = (50, 50, 50)
-
-# 游戏文本内容
-GAME_TEXTS = [
-    "Welcome, adventurer! You find yourself in a dark forest. What will you do?",
-    "You hear a rustling noise behind you. It's getting closer. What is your next move?",
-    "A mysterious figure steps out of the shadows. They speak to you: 'Who are you?'"
-]
-
-# 初始化变量
-chat_log = []
-current_step = 0
-input_text = ""
-run_game = True
-
-# 定义渲染文本函数
-def render_text(text, x, y, color=TEXT_COLOR):
-    text_surface = FONT.render(text, True, color)
-    screen.blit(text_surface, (x, y))
-
-# 主游戏循环
-while run_game:
-    screen.fill(BG_COLOR)
-
-    # 显示聊天日志
-    y_offset = 20
-    for line in chat_log[-10:]:  # 显示最后 10 条记录
-        render_text(line, 20, y_offset)
-        y_offset += 40
-
-    # 显示输入框
-    pygame.draw.rect(screen, INPUT_COLOR, (20, HEIGHT - 60, WIDTH - 40, 40))
-    render_text(input_text, 30, HEIGHT - 50)
-
-    # 事件处理
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            run_game = False
-
-        elif event.type == KEYDOWN:
-            if event.key == K_RETURN:
-                if input_text.strip():
-                    # 添加玩家输入到聊天日志
-                    chat_log.append(f"You: {input_text.strip()}")
-
-                    # 添加游戏生成内容
-                    if current_step < len(GAME_TEXTS):
-                        chat_log.append(GAME_TEXTS[current_step])
-                        current_step += 1
-                    else:
-                        chat_log.append("The game has ended. Thank you for playing!")
-
-                    input_text = ""
-
-            elif event.key == K_BACKSPACE:
-                input_text = input_text[:-1]
-            else:
-                input_text += event.unicode
-
-    # 更新显示
-    pygame.display.flip()
-
-# 退出游戏
-pygame.quit()
-'''
