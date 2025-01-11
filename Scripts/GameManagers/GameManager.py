@@ -2,16 +2,16 @@ import asyncio
 from pygame import *
 from GameManagers.BGMPlayer import BGMPlayer
 from Characters.Player import *
-from Characters.NPC import *
+from Characters.Trainer import *
 from Characters.Enemies import *
 from Scenes.Rooms import *
+from Scenes.shop import *
 from Scenes.MainMenu import MainMenu
 from Scenes.MainMenu import bossHealthBarIcon
 from Scenes.GameWin import GameWin
-from Scenes.Heart import *
-from Scenes.bosshp import bossheart
-from Scenes.shop import *
-from Scenes.UI import *
+from UI.UI import *
+from UI.Heart import *
+from UI.bosshp import bossheart
 
 
 class GameManager:
@@ -25,7 +25,7 @@ class GameManager:
         self.set_icon()
         self.set_room()
         self.set_issac()
-        self.set_npc()
+        self.set_trainer()
         self.set_bgm()
         self.set_scenes()
         self.set_clock()
@@ -79,16 +79,16 @@ class GameManager:
 
     def set_issac(
         self,
-        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight * 0.75),
+        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight / 2),
     ):
         self.isaac_group = pygame.sprite.Group()  # Isaac may be sliced
         self.isaac = Player(spawn_pos)
         self.isaac_group.add(self.isaac)
 
-    def set_npc(self):
+    def set_trainer(self):
         self.trainer_group = pygame.sprite.Group()
-        self.npc1 = NPC()
-        self.trainer_group.add(self.npc1)
+        self.trainer = Trainer()
+        self.trainer_group.add(self.trainer)
 
     def set_room(self):
         self.room_group = pygame.sprite.Group()
@@ -296,7 +296,6 @@ class GameManager:
                         self.enemy_group,
                         self.boss_group,
                         self.trainer_group,
-                        self.trainer_group,
                         self.room.get_walls(),
                     ]:
                         for entity in group:
@@ -335,7 +334,7 @@ class GameManager:
             case Scenes.SHOP:
                 self.detect_collision_lucky_and_isaac()
             case Scenes.TREASURE:
-                self.detect_collision_isaac_and_npc()
+                self.detect_collision_isaac_and_trainer()
                 self.detect_buff_acquirance()
             case Scenes.CATACOMB:
                 self.detect_collision_bloodytear_and_frames()
@@ -366,7 +365,7 @@ class GameManager:
 
     def detect_collision_lucky_and_isaac(self):
 
-        if self.lucky.state == "destroy":
+        if self._lucky.state == "destroy":
             mode = random.choice(["heart", "attack", "coin"])
             if mode == "heart":
                 if self._heart.HP < 4:
@@ -385,15 +384,11 @@ class GameManager:
             self.coinsystem.coin_num >= 5
             and self._lucky.state == "normal"
             and keys[pygame.K_q]
-            and pygame.sprite.spritecollide(self.isaac, self.lucky, False)
-            and Scenes.SHOP
+            and StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
-        if (
-            StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
-            and Scenes.SHOP
-        ):
+        if StaticMethods.mask_spritecollide(self.isaac, self.lucky, False):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_bloodytear_and_frames(self):
@@ -481,12 +476,11 @@ class GameManager:
         ):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
-    def detect_collision_isaac_and_npc(self):
-        if (
-            abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
-            and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
-        ):
-            self.npc1.gen_chatbox(self.get_keys())
+    def detect_collision_isaac_and_trainer(self):
+        if StaticMethods.mask_spritecollide(self.isaac, self.trainer_group, False):
+            self.isaac.rect.move_ip(-self.isaac.movement)
+            if self.get_keys()[pygame.K_q]:
+                ev.post(ev.Event(Events.TO_CHATBOX))
 
     def detect_buff_acquirance(self):
         for chatbox in self.Chatboxes:
@@ -639,7 +633,7 @@ class GameManager:
             case Scenes.SHOP:
                 self.set_shop()
             case Scenes.TREASURE:
-                self.set_npc()
+                self.set_trainer()
         self.room_clear_posted = False
 
     # Coroutines
