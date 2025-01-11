@@ -125,9 +125,10 @@ class GameManager:
         pygame.display.set_icon(icon)
 
     def spawn_enemies(self):
-        self.bug = bug()
-        self.enemy_group.add(self.bug)
-        self.bugs.add(self.bug)
+        self.bug1 = bug()
+        self.bug2 = bug()
+        self.enemy_group.add(self.bug1, self.bug2)
+        self.bugs.add(self.bug1, self.bug2)
         for i in range(UpdateEnemiesSettings.flyNumber):
             self.enemy_group.add(Fly())
 
@@ -235,6 +236,7 @@ class GameManager:
 
     def update_boss_shoot(self):
         if self.bossAttack.if_shoot == "True":
+            self.enemy_group.add(Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y))
             self.bossAttack.if_shoot = "False"
             vector_list1 = [
                 (-1.732 / 2, -1 / 2),
@@ -423,7 +425,13 @@ class GameManager:
         collided_isaac_and_boss = StaticMethods.mask_spritecollide(
             self.isaac, self.boss_group, False
         )
-        if collided_isaac_and_enemies or collided_isaac_and_boss:
+        for enemy in collided_isaac_and_enemies:
+
+            if enemy.state == 'live':
+                for heart in self.heart:
+                    heart.state = "reduce"
+
+        if self.bossBody.state == 'live' and collided_isaac_and_boss:
             for heart in self.heart:
                 heart.state = "reduce"
 
@@ -458,9 +466,9 @@ class GameManager:
                     if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
                         num = random.choice([0, 1, 2, 3, 4, 5])
-                        print(num)
                         self.bloods.add(blood(enemy.rect.x, enemy.rect.y, num))
                         enemy.state = "die"
+                        print(enemy.HP)
 
     def detect_collision_tears_and_walls(self):
         collided_tears_and_walls = StaticMethods.mask_groupcollide(
@@ -637,7 +645,7 @@ class GameManager:
                 if self.new_room_rect.left >= 0:
                     self.new_room_rect.left = 0
                     isaac_spawn_pos = (
-                        ScreenSettings.screenWidth - 300 - 10,
+                        ScreenSettings.screenWidth - 300,
                         ScreenSettings.screenHeight / 2,
                     )
                     await self.stop_transition(isaac_spawn_pos)
@@ -647,7 +655,7 @@ class GameManager:
                 self.new_room.rect.move_ip(-self.transition_speed_horizontal, 0)
                 if self.new_room_rect.left <= 0:
                     self.new_room_rect.left = 0
-                    isaac_spawn_pos = (300 + 10, ScreenSettings.screenHeight / 2)
+                    isaac_spawn_pos = (300, ScreenSettings.screenHeight / 2)
                     await self.stop_transition(isaac_spawn_pos)
 
     async def stop_transition(self, isaac_spawn_pos):

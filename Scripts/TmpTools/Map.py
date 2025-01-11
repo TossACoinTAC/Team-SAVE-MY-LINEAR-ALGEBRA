@@ -76,6 +76,6 @@ RoomTree.append(MapTree(
 RoomTree.sort(key=lambda room: room.id)
 BossRoom_location = 1
 for room in RoomTree:
-    print(room.value)
+
     if room.value == "CATACOMB":
         BossRoom_location = room.id

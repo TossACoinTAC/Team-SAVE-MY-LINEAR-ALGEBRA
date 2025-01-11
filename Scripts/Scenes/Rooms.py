@@ -104,7 +104,7 @@ class SingleRoom(pygame.sprite.Sprite):
     def gen_walls(self, mode):
         if mode == 1:
             # 模式一：在整个房间生成一整列一整列的墙体
-            columns = random.randint(3, 6)  # 随机生成列数
+            columns = random.randint(3, 4)  # 随机生成列数
             spacing = (
                 ScreenSettings.roomWidth - ScreenSettings.marginWidth * 2
             ) // columns
@@ -161,12 +161,12 @@ class SingleRoom(pygame.sprite.Sprite):
         for _ in range(num_rocks):
             while True:
                 x = random.randint(
-                    ScreenSettings.marginWidth + 100,
-                    ScreenSettings.roomWidth - ScreenSettings.marginWidth - 100,
+                    ScreenSettings.marginWidth + 150,
+                    ScreenSettings.roomWidth - ScreenSettings.marginWidth - 150,
                 )
                 y = random.randint(
-                    ScreenSettings.marginHeight + 100,
-                    ScreenSettings.roomHeight - ScreenSettings.marginHeight - 100,
+                    ScreenSettings.marginHeight + 150,
+                    ScreenSettings.roomHeight - ScreenSettings.marginHeight - 150,
                 )
                 rock = Rock()
                 rock.rect.center = (x, y)
