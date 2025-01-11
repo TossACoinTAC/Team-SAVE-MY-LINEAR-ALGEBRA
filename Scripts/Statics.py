@@ -123,6 +123,7 @@ class ImportedImages:
     Fly_die = "data/textures/enemies/fly_rip.png"
     Fly_blood = "Src/Textures/enemies/fly_ne_ok.png"
     Boss = "Src/Textures/enemies/gurdy.png"
+    bug = "Src/Textures/Play/monster_113_charger.png"
 
     # Friendly_NPCs
     NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
@@ -416,6 +417,28 @@ class MainMenuSettings:
 
 
 class EnemiesSettings:
+
+    class bug:
+        frames_rects_right_or_left = [
+            (0, 0, 32, 32),
+            (32, 0, 32, 32),
+            (64, 0, 32, 32),
+            (96, 0, 32, 32)]
+        frames_rects_up = [
+            (0, 32, 32, 32),
+            (32, 32, 32, 32),
+            (64, 32, 32, 32),
+            (96, 32, 32, 32)]
+        frames_rects_down = [
+            (0, 64, 32, 32),
+            (32, 64, 32, 32),
+            (64, 64, 32, 32),
+            (96, 64, 32, 32)]
+        frames_rects_run = [
+            (0, 96, 32, 32),
+            (32, 96, 32, 32),
+            (64, 96, 32, 32)]
+
     class Fly:
         MULTI = 1.0
         ALPHA = 256
