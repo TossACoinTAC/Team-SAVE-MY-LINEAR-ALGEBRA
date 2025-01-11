@@ -27,20 +27,10 @@ class BGMPlayer:
         self.current_BGM = BGM_file  # Keep track of the current track
 
     def play_BGM(self):
-        try:
-            pygame.mixer_music.load(self.current_BGM)  # Load the music file
-            pygame.mixer_music.play(start=self.BGM_position / 1000)  # Play the music
-            print(f"Playing {self.current_BGM}")
-            if pygame.mixer.music.get_busy():
-                print("Music is playing.")
-            else:
-                print("Music is not playing.")
-        except pygame.error as e:
-            print(f"Error loading or playing music: {e}")
-        # if self.current_BGM:
-        #     pygame.mixer_music.play(
-        #         -1, start=self.BGM_position / 1000
-        #     )  # in seconds, why conflict??
+        if self.current_BGM:
+            pygame.mixer_music.play(
+                -1, start=self.BGM_position / 1000
+            )  # in seconds, why conflict??
 
     def switch_BGM(self, BGM_type: str):
         match BGM_type:
