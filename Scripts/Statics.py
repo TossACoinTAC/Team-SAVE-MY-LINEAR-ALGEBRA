@@ -7,20 +7,13 @@ import math
 class Events:
     # Scene Changes
     MAIN_TO_STARTROOM = pygame.USEREVENT + 1
-    TO_COMMONROOM = pygame.USEREVENT + 3
-    TO_SHOP = pygame.USEREVENT + 5
-    TO_TREASURE = pygame.USEREVENT + 7
-    TO_SECRET = pygame.USEREVENT + 9
-    TO_BLUEWOMB = pygame.USEREVENT + 11
-    TO_CATACOMB = pygame.USEREVENT + 13
-    TO_MAIN = pygame.USEREVENT + 25
-
     TO_CHATBOX = pygame.USEREVENT + 19
     EXIT_CHATBOX = pygame.USEREVENT + 20
 
     # States
     GAME_OVER = pygame.USEREVENT + 21
     GAME_WIN = pygame.USEREVENT + 24
+    RESTART = pygame.USEREVENT + 25
     ROOM_CLEAR = pygame.USEREVENT + 22
     BOMB_EXPLOSION = pygame.USEREVENT + 23
 
@@ -354,10 +347,9 @@ class ShopSettings:
         x = 0.5 * ScreenSettings.screenWidth
         y = 0.5 * ScreenSettings.screenHeight - 30
 
-
     class lucky:
         x = 0.5 * ScreenSettings.screenWidth
-        y = 0.5 * ScreenSettings.screenHeight 
+        y = 0.5 * ScreenSettings.screenHeight
 
 
 class GameWinSettings:
@@ -426,21 +418,21 @@ class EnemiesSettings:
             (0, 0, 32, 32),
             (32, 0, 32, 32),
             (64, 0, 32, 32),
-            (96, 0, 32, 32)]
+            (96, 0, 32, 32),
+        ]
         frames_rects_up = [
             (0, 32, 32, 32),
             (32, 32, 32, 32),
             (64, 32, 32, 32),
-            (96, 32, 32, 32)]
+            (96, 32, 32, 32),
+        ]
         frames_rects_down = [
             (0, 64, 32, 32),
             (32, 64, 32, 32),
             (64, 64, 32, 32),
-            (96, 64, 32, 32)]
-        frames_rects_run = [
-            (0, 96, 32, 32),
-            (32, 96, 32, 32),
-            (64, 96, 32, 32)]
+            (96, 64, 32, 32),
+        ]
+        frames_rects_run = [(0, 96, 32, 32), (32, 96, 32, 32), (64, 96, 32, 32)]
 
     class Fly:
         MULTI = 1.0

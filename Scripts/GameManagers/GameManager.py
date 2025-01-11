@@ -92,7 +92,7 @@ class GameManager:
 
     def set_room(self):
         self.room_group = pygame.sprite.Group()
-        self.room = StartRoom(RoomID = 1)
+        self.room = StartRoom(RoomID=1)
         self.room_group.add(self.room)
         self.new_room = None
         self.new_room_rect: pygame.Rect = None
@@ -270,8 +270,9 @@ class GameManager:
                     exit()
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
-                case Events.TO_MAIN:
-                    self.active_scene = Scenes.MAIN_MENU
+
+                case Events.RESTART:
+                    self.__init__()
 
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
@@ -468,16 +469,21 @@ class GameManager:
                 tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
-        if (StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)):
+        if StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False):
             self.isaac.rect.move_ip(-self.isaac.movement)
-        if self.isaac.rect.left <= ScreenSettings.marginWidth + 10 \
-            or self.isaac.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth - 10 \
-            or self.isaac.rect.top <= ScreenSettings.marginHeight + 10 \
-            or self.isaac.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight - 10:
+        if (
+            self.isaac.rect.left <= ScreenSettings.marginWidth + 10
+            or self.isaac.rect.right
+            >= ScreenSettings.screenWidth - ScreenSettings.marginWidth - 10
+            or self.isaac.rect.top <= ScreenSettings.marginHeight + 10
+            or self.isaac.rect.bottom
+            >= ScreenSettings.screenHeight - ScreenSettings.marginHeight - 10
+        ):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_isaac_and_npc(self):
-        if (abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
+        if (
+            abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
             and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
             self.npc1.gen_chatbox(self.get_keys())
@@ -522,7 +528,7 @@ class GameManager:
         self.boss_group.empty()
         self.lucky.empty()
 
-    async def gen_new_room(self, roomID: int,door_location_tag: str, door_type: str):
+    async def gen_new_room(self, roomID: int, door_location_tag: str, door_type: str):
         match door_location_tag:
             case "top":
                 self.new_room_rect = pygame.Rect(
@@ -537,7 +543,7 @@ class GameManager:
                     ScreenSettings.screenHeight,
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
-                ) 
+                )
                 roomID = roomID * 2
             case "left":
                 self.new_room_rect = pygame.Rect(
@@ -553,25 +559,25 @@ class GameManager:
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
-                roomID = roomID *2 +1
+                roomID = roomID * 2 + 1
         match door_type:
             case "Wood":
-                self.new_room = CommonRoom(RoomID = roomID,rect=self.new_room_rect)
+                self.new_room = CommonRoom(RoomID=roomID, rect=self.new_room_rect)
                 self.active_scene = Scenes.COMMON_ROOM
             case "BlueWomb":
-                self.new_room = BlueWomb(RoomID = roomID,rect=self.new_room_rect)
+                self.new_room = BlueWomb(RoomID=roomID, rect=self.new_room_rect)
                 self.active_scene = Scenes.BLUEWOMB
             case "Shop":
-                self.new_room = Shop(RoomID = roomID,rect=self.new_room_rect)
+                self.new_room = Shop(RoomID=roomID, rect=self.new_room_rect)
                 self.active_scene = Scenes.SHOP
             case "Treasure":
-                self.new_room = TreasureRoom(RoomID = roomID,rect=self.new_room_rect)
+                self.new_room = TreasureRoom(RoomID=roomID, rect=self.new_room_rect)
                 self.active_scene = Scenes.TREASURE
             case "Secret":
-                self.new_room = SecretRoom(RoomID = roomID,rect=self.new_room_rect)
+                self.new_room = SecretRoom(RoomID=roomID, rect=self.new_room_rect)
                 self.active_scene = Scenes.SECRET
             case "Catacomb":
-                self.new_room = BossRoom(RoomID = roomID,rect=self.new_room_rect)
+                self.new_room = BossRoom(RoomID=roomID, rect=self.new_room_rect)
                 self.active_scene = Scenes.CATACOMB
         self.room_group.add(self.new_room)
 
