@@ -419,6 +419,8 @@ class MainMenuSettings:
 class EnemiesSettings:
 
     class bug:
+        HP = 3
+        speed = 2
         frames_rects_right_or_left = [
             (0, 0, 32, 32),
             (32, 0, 32, 32),
