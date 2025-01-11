@@ -1,2 +1,4 @@
 pygame==2.6.1
 openai==1.58.1
+
+Reading readme.md requires installation: Markdown Preview Mermaid Support
