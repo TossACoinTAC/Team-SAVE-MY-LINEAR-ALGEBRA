@@ -182,15 +182,18 @@ class GameManager:
             case Scenes.TREASURE:
                 self.common_scene_updates()
                 self.update_sprites(self.npc_group, self.get_keys())
+                if not self.room_clear_posted:
+                    ev.post(ev.Event(Events.ROOM_CLEAR))
 
             case Scenes.SHOP:
                 self.common_scene_updates()
                 self.update_sprites(self.lucky)
+                if not self.room_clear_posted:
+                    ev.post(ev.Event(Events.ROOM_CLEAR))
 
             # BossRoom
             case Scenes.CATACOMB:
-                self.room_group.draw(self.screen)
-                self.update_sprites(self.isaac_group, self.get_keys())
+                self.common_scene_updates()
                 self.update_boss_shoot()
                 self.update_sprites(self.bloodyTears)
                 bossheart.update(
@@ -260,8 +263,7 @@ class GameManager:
                     pygame.quit()
                     exit()
                 case Events.GAME_WIN:
-                    self.active_scene = Scenes.GAMEWIN
-
+                    self.active_scene = Scenes.GAMEWIN                    
                 case Events.TO_MAIN:
                     self.active_scene = Scenes.MAIN_MENU
 
@@ -327,7 +329,7 @@ class GameManager:
 
     def detect_collision_boss_and_isaac(self):
         collided_boss_and_isaac = StaticMethods.mask_spritecollide(
-            self.bossBody, self.isaac_group, False
+            self.isaac, self.boss_group, False
         )
         if collided_boss_and_isaac:
             self.isaac.rect.move_ip(-self.isaac.movement)
@@ -422,10 +424,10 @@ class GameManager:
             if tear.state == "live":
                 self.bgm_player.play("TEAR_HIT", 0)
                 tear.state = "die"
-            for wall in walls:
-                if isinstance(wall, Shit):
-                    wall.HP -= 1
-                    wall.destroyed()
+                for wall in walls:
+                    if isinstance(wall, Shit):
+                        wall.HP -= 1
+                        wall.destroyed()
 
         collided_tears_and_frames = pygame.sprite.groupcollide(
             self.isaac.tears, self.room.get_frame(), False, False
@@ -470,7 +472,7 @@ class GameManager:
 
             door_location_tag = door.location_tag
             door_type = door.type_tag
-            # door.is_open = True  # in event later
+            #door.is_open = True  # in event later
             if door.is_open:
                 await self.gen_new_room(door.location_tag, door_type)
                 await self.clear_old_room()
@@ -485,8 +487,8 @@ class GameManager:
         self.isaac_group.empty()
         self.npc_group.empty()
         self.enemy_group.empty()
+        self.boss_group.empty()
         self.lucky.empty()
-        self.Chatboxes.empty()
 
     async def gen_new_room(self, door_location_tag: str, door_type: str):
         match door_location_tag:
