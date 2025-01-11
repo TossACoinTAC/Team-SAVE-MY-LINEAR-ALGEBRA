@@ -71,14 +71,26 @@ class Monster(pygame.sprite.Sprite):
             self.state = "die"
 
     def detect_collision(self):
-        if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
-            ScreenSettings.screenWidth - ScreenSettings.marginWidth
-        ):
+        # if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
+        #     ScreenSettings.screenWidth - ScreenSettings.marginWidth
+        # ):
+        #     self.speed_x = -self.speed_x
+        # if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
+        #     ScreenSettings.screenHeight - ScreenSettings.marginHeight
+        # ):
+        #     self.speed_y = -self.speed_y
+        if self.rect.left <= ScreenSettings.marginWidth:
             self.speed_x = -self.speed_x
-        if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
-            ScreenSettings.screenHeight - ScreenSettings.marginHeight
-        ):
+            self.rect.left = ScreenSettings.marginWidth + 1
+        if self.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth:
+            self.speed_x = -self.speed_x
+            self.rect.right = ScreenSettings.screenWidth - ScreenSettings.marginWidth - 1
+        if self.rect.top <= ScreenSettings.marginHeight:
             self.speed_y = -self.speed_y
+            self.rect.top = ScreenSettings.marginHeight + 1
+        if self.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight:
+            self.speed_y = -self.speed_y
+            self.rect.bottom = ScreenSettings.screenHeight - ScreenSettings.marginHeight - 1
 
     def update_position(self):
 

@@ -45,24 +45,24 @@ class SingleRoom(pygame.sprite.Sprite):
         edge_thickness = 10
         self.top_edge = pygame.Rect(
             ScreenSettings.marginWidth,
-            ScreenSettings.marginHeight,
+            ScreenSettings.marginHeight - edge_thickness,
             self.rect.width,
             edge_thickness,
         )
         self.bottom_edge = pygame.Rect(
             ScreenSettings.marginWidth,
-            ScreenSettings.roomHeight,
+            ScreenSettings.roomHeight - edge_thickness,
             self.rect.width,
             edge_thickness,
         )
         self.left_edge = pygame.Rect(
-            ScreenSettings.marginWidth,
+            ScreenSettings.marginWidth - edge_thickness,
             ScreenSettings.marginHeight,
             edge_thickness,
             self.rect.height,
         )
         self.right_edge = pygame.Rect(
-            ScreenSettings.roomWidth,
+            ScreenSettings.roomWidth - edge_thickness,
             ScreenSettings.marginHeight,
             edge_thickness,
             self.rect.height,

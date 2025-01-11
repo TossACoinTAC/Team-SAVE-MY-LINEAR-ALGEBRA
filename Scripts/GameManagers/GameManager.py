@@ -325,12 +325,12 @@ class GameManager:
         self.detect_collision_isaac_and_walls()
         self.detect_collision_isaac_and_npc()
         self.detect_collision_isaac_and_enemies()
-        self.detect_collision_tears_and_walls()
         self.detect_collision_tears_and_enemies()
         self.detect_collision_bloodytear_and_frames()
         self.detect_collision_bloodytear_and_isaac()
         self.detect_collision_lucky_and_isaac()
         self.detect_collision_boss_and_isaac()
+        self.detect_collision_tears_and_walls()
 
     def detect_collision_boss_and_isaac(self):
         collided_boss_and_isaac = StaticMethods.mask_spritecollide(
@@ -488,7 +488,7 @@ class GameManager:
     async def clear_old_room(self):
         self.room.get_walls().empty()
         self.isaac_group.empty()
-        self.npc_group.empty()
+        #self.npc_group.empty()
         self.enemy_group.empty()
         self.boss_group.empty()
         self.lucky.empty()
