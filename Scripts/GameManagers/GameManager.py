@@ -49,7 +49,8 @@ class GameManager:
         self.coinsystem = coin()
         self.attacksystem = attack()
         self.bombsystem = Bomb()
-        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem)
+        self.Room_hint_system = Room_hint(BossRoom_location, 1)
+        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem, self.Room_hint_system)
 
     def set_shop(self):
         self._lucky = lucky()
@@ -277,11 +278,13 @@ class GameManager:
                     self.active_scene = Scenes.GAMEWIN
 
                 case Events.RESTART:
+                    self.bgm_player.stop()
                     self.__init__()
 
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
+                    self.bgm_player.play("COMMON", 0)
 
                 case Events.ROOM_CLEAR:
                     self.room.open_doors()
@@ -290,6 +293,7 @@ class GameManager:
 
                 case Events.TO_CHATBOX:
                     self.active_scene = Scenes.CHAT_BOX
+
                 case Events.EXIT_CHATBOX:
                     self.active_scene = Scenes.TREASURE
 
@@ -389,8 +393,12 @@ class GameManager:
             self.coinsystem.coin_num >= 5
             and self._lucky.state == "normal"
             and keys[pygame.K_q]
+<<<<<<< HEAD
             and pygame.sprite.spritecollide(self.issac, self.lucky, False)
             # and StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
+=======
+            and pygame.sprite.spritecollide(self.isaac, self.lucky, False)
+>>>>>>> af891e643b24d1e50b49670d12c5ede696710545
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
@@ -557,7 +565,7 @@ class GameManager:
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
-                roomID = int((roomID-1)/2)
+                roomID = int((roomID - 1) / 2)
             case "right":
                 self.new_room_rect = pygame.Rect(
                     ScreenSettings.screenWidth,
@@ -566,13 +574,16 @@ class GameManager:
                     ScreenSettings.screenHeight,
                 )
                 roomID = roomID * 2 + 1
+
+        self.Room_hint_system.current_room = roomID
+
         match door_type:
             case "Wood":
                 if roomID == 1:
-                    self.new_room = StartRoom(RoomID = roomID,rect=self.new_room_rect)
+                    self.new_room = StartRoom(RoomID=roomID, rect=self.new_room_rect)
                     self.active_scene = Scenes.START_ROOM
                 else:
-                    self.new_room = CommonRoom(RoomID = roomID,rect=self.new_room_rect)
+                    self.new_room = CommonRoom(RoomID=roomID, rect=self.new_room_rect)
                     self.active_scene = Scenes.COMMON_ROOM
             case "BlueWomb":
                 self.new_room = BlueWomb(RoomID=roomID, rect=self.new_room_rect)
