@@ -38,8 +38,9 @@ class GameManager:
         self.boss_group = pygame.sprite.Group()
         self.room_clear_posted = False
         ##############测试用的code
-        self.test = pygame.sprite.Group()
-        self.test.add(bug(), bug())
+        self.bugs = pygame.sprite.Group()
+        self.bug = bug()
+        self.bugs.add(self.bug, self.bug)
         ##############测试用的code
 
 
@@ -176,7 +177,7 @@ class GameManager:
             case Scenes.START_ROOM:
                 self.common_scene_updates()
                 ##############测试用的code
-                self.update_sprites(self.test)
+                self.update_sprites(self.bugs)
                 ##############测试用的code
                 
                 # if not self.room_clear_posted:
@@ -337,6 +338,17 @@ class GameManager:
         self.detect_collision_boss_and_isaac()
         self.detect_collision_tears_and_walls()
         self.detect_buff_acquirance()
+        self.detect_collision_bug_and_wall()
+
+    def detect_collision_bug_and_wall(self):
+        collided_bug_and_wall = StaticMethods.mask_groupcollide(
+            self.bugs, self.room.get_walls(), False, False)
+        for bug, walls in collided_bug_and_wall.items():
+            if bug.move_direction == 'left':
+                bug.move_direction = 'right'
+                
+            
+        
 
     def detect_collision_boss_and_isaac(self):
         collided_boss_and_isaac = StaticMethods.mask_spritecollide(
