@@ -321,12 +321,12 @@ class GameManager:
         self.detect_collision_isaac_and_walls()
         self.detect_collision_isaac_and_npc()
         self.detect_collision_isaac_and_enemies()
-        self.detect_collision_tears_and_walls()
         self.detect_collision_tears_and_enemies()
         self.detect_collision_bloodytear_and_frames()
         self.detect_collision_bloodytear_and_isaac()
         self.detect_collision_lucky_and_isaac()
         self.detect_collision_boss_and_isaac()
+        self.detect_collision_tears_and_walls()
         self.detect_buff_acquirance()
 
     def detect_collision_boss_and_isaac(self):
