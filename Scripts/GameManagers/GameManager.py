@@ -43,7 +43,6 @@ class GameManager:
         self.bugs.add(self.bug, self.bug)
         ##############测试用的code
 
-
     # SET
     def set_UI(self):
         self.UI = pygame.sprite.Group()
@@ -179,7 +178,7 @@ class GameManager:
                 ##############测试用的code
                 self.update_sprites(self.bugs)
                 ##############测试用的code
-                
+
                 # if not self.room_clear_posted:
                 #     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -204,6 +203,7 @@ class GameManager:
             # BossRoom
             case Scenes.CATACOMB:
                 self.common_scene_updates()
+                self.update_sprites(self.boss_group)
                 self.update_boss_shoot()
                 self.update_sprites(self.bloodyTears)
                 bossheart.update(
@@ -273,7 +273,7 @@ class GameManager:
                     pygame.quit()
                     exit()
                 case Events.GAME_WIN:
-                    self.active_scene = Scenes.GAMEWIN                    
+                    self.active_scene = Scenes.GAMEWIN
                 case Events.TO_MAIN:
                     self.active_scene = Scenes.MAIN_MENU
 
@@ -342,13 +342,11 @@ class GameManager:
 
     def detect_collision_bug_and_wall(self):
         collided_bug_and_wall = StaticMethods.mask_groupcollide(
-            self.bugs, self.room.get_walls(), False, False)
+            self.bugs, self.room.get_walls(), False, False
+        )
         for bug, walls in collided_bug_and_wall.items():
-            if bug.move_direction == 'left':
-                bug.move_direction = 'right'
-                
-            
-        
+            if bug.move_direction == "left":
+                bug.move_direction = "right"
 
     def detect_collision_boss_and_isaac(self):
         collided_boss_and_isaac = StaticMethods.mask_spritecollide(
@@ -383,7 +381,10 @@ class GameManager:
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
-        if StaticMethods.mask_spritecollide(self.isaac, self.lucky, False) and Scenes.SHOP:
+        if (
+            StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
+            and Scenes.SHOP
+        ):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_bloodytear_and_frames(self):
@@ -494,7 +495,7 @@ class GameManager:
 
             door_location_tag = door.location_tag
             door_type = door.type_tag
-            #door.is_open = True  # in event later
+            # door.is_open = True  # in event later
             if door.is_open:
                 await self.gen_new_room(door.location_tag, door_type)
                 await self.clear_old_room()
