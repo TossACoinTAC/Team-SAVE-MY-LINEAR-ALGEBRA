@@ -34,6 +34,7 @@ class GameManager:
         self.set_boss()
         self.set_UI()
         self.lucky = pygame.sprite.Group()
+        self._lucky = lucky()
         self.enemy_group = pygame.sprite.Group()
         self.bugs = pygame.sprite.Group()
         self.boss_group = pygame.sprite.Group()
