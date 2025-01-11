@@ -40,7 +40,7 @@ class GameManager:
         ##############测试用的code
         self.bugs = pygame.sprite.Group()
         self.bug = bug()
-        self.bugs.add(self.bug, self.bug)
+        self.bugs.add(self.bug)
         ##############测试用的code
 
 
@@ -161,6 +161,8 @@ class GameManager:
         self.UI.update(self.screen)
         self.UI.draw(self.screen)
 
+        self.update_sprites(self.bugs)
+
     def update_scene(self, active_scene: Scenes):
         match active_scene:
 
@@ -176,12 +178,8 @@ class GameManager:
             # 制作每一关的刷怪时,注意调整图层关系(update顺序,让小怪在boss上面显示)
             case Scenes.START_ROOM:
                 self.common_scene_updates()
-                ##############测试用的code
-                self.update_sprites(self.bugs)
-                ##############测试用的code
-                
-                # if not self.room_clear_posted:
-                #     ev.post(ev.Event(Events.ROOM_CLEAR))
+                if not self.room_clear_posted:
+                    ev.post(ev.Event(Events.ROOM_CLEAR))
 
             case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
                 self.common_scene_updates()
