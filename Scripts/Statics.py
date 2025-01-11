@@ -178,6 +178,12 @@ class UISettings:
         MULTI = 0.88
         ALPHA = 256
 
+    class room_hint:
+        x = 850
+        y = 50
+        MULTI = 1
+        ALPHA = 256
+
 
 class BossSettings:
     class health_bar:
