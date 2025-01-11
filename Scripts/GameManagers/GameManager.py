@@ -533,6 +533,7 @@ class GameManager:
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
+                roomID = int(roomID / 2)
             case "bottom":
                 self.new_room_rect = pygame.Rect(
                     0,
@@ -548,6 +549,7 @@ class GameManager:
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
+                roomID = int((roomID-1)/2)
             case "right":
                 self.new_room_rect = pygame.Rect(
                     ScreenSettings.screenWidth,
@@ -558,8 +560,12 @@ class GameManager:
                 roomID = roomID * 2 + 1
         match door_type:
             case "Wood":
-                self.new_room = CommonRoom(RoomID=roomID, rect=self.new_room_rect)
-                self.active_scene = Scenes.COMMON_ROOM
+                if roomID == 1:
+                    self.new_room = StartRoom(RoomID = roomID,rect=self.new_room_rect)
+                    self.active_scene = Scenes.START_ROOM
+                else:
+                    self.new_room = CommonRoom(RoomID = roomID,rect=self.new_room_rect)
+                    self.active_scene = Scenes.COMMON_ROOM
             case "BlueWomb":
                 self.new_room = BlueWomb(RoomID=roomID, rect=self.new_room_rect)
                 self.active_scene = Scenes.BLUEWOMB
