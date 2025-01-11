@@ -85,9 +85,12 @@ class GameManager:
         self.isaac_group.add(self.isaac)
 
     def set_npc(self):
-        self.npc_group = pygame.sprite.Group()
+        self.trainer_group = pygame.sprite.Group()
+        self.trader_group = pygame.sprite.Group()
         self.npc1 = NPC()
-        self.npc_group.add(self.npc1)
+        self.trainer_group.add(self.npc1)
+        self.npc2 = NPC()
+        self.trader_group.add(self.npc2)
 
     def set_room(self):
         self.room_group = pygame.sprite.Group()
@@ -181,13 +184,14 @@ class GameManager:
 
             case Scenes.TREASURE:
                 self.common_scene_updates()
-                self.update_sprites(self.npc_group, self.get_keys())
+                self.update_sprites(self.trainer_group, self.get_keys())
                 if not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
             case Scenes.SHOP:
                 self.common_scene_updates()
                 self.update_sprites(self.lucky)
+                self.update_sprites(self.trader_group, self.get_keys())
                 if not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -288,7 +292,8 @@ class GameManager:
                     for group in [
                         self.enemy_group,
                         self.boss_group,
-                        self.npc_group,
+                        self.trader_group,
+                        self.trainer_group,
                         self.room.get_walls(),
                     ]:
                         for entity in group:
@@ -335,9 +340,6 @@ class GameManager:
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_lucky_and_isaac(self):
-        collided_lucky_and_isaac = StaticMethods.mask_spritecollide(
-            self.isaac, self.lucky, False
-        )
 
         if self._lucky.state == "destroy":
             mode = random.choice(["heart", "attack", "coin"])
@@ -359,10 +361,11 @@ class GameManager:
             and self._lucky.state == "normal"
             and keys[pygame.K_q]
             and pygame.sprite.spritecollide(self.isaac, self.lucky, False)
+            and Scenes.SHOP
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
-        if StaticMethods.mask_spritecollide(self.isaac, self.lucky, False):
+        if StaticMethods.mask_spritecollide(self.isaac, self.lucky, False) and Scenes.SHOP:
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_bloodytear_and_frames(self):
