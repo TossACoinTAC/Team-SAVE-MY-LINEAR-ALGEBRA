@@ -4,6 +4,21 @@ import random
 from Statics import *
 from math import *
 
+class blood(pygame.sprite.Sprite):
+    def __init__(self, x, y, index):
+        super().__init__()
+        frames = []
+        frames_rects = EnemiesSettings.blood.frames_rects
+        sheet = pygame.image.load(ImportedImages.blood)
+        for frame_rect in frames_rects:
+            frames.append(get_images(sheet, *frame_rect, (0, 0, 0), 2.0))
+        self.image = frames[index]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+    def update(self):
+        pass
+
 
 class bug(pygame.sprite.Sprite):
     def __init__(self):
@@ -121,6 +136,8 @@ class bug(pygame.sprite.Sprite):
 
         self.update_animation()
         self.update_position()
+        if self.HP <= 0:
+            self.state = 'die'
         if self.state == 'die':
             self.kill()
 

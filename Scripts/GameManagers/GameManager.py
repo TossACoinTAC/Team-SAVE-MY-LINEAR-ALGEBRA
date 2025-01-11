@@ -33,6 +33,7 @@ class GameManager:
         self.set_chatbox()
         self.set_boss()
         self.set_UI()
+        self.set_bloods()
         self.lucky = pygame.sprite.Group()
         self._lucky = lucky()
         self.enemy_group = pygame.sprite.Group()
@@ -41,6 +42,8 @@ class GameManager:
         self.room_clear_posted = False
 
     # SET
+    def set_bloods(self):
+        self.bloods = pygame.sprite.Group()
     def set_UI(self):
         self.UI = pygame.sprite.Group()
         self.coinsystem = coin()
@@ -147,6 +150,7 @@ class GameManager:
 
     def common_scene_updates(self):
         self.update_sprites(self.room_group)
+        self.update_sprites(self.bloods)
         self.update_sprites(self.room.get_walls())
         self.update_sprites(self.isaac_group, self.get_keys())
         self.update_sprites(self.isaac.explosion_group)
@@ -178,9 +182,10 @@ class GameManager:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
             case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
+                
                 self.common_scene_updates()
                 self.update_sprites(self.enemy_group)
-                self.update_sprites(self.bugs)
+  
                 if len(self.enemy_group) == 0 and not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -440,6 +445,8 @@ class GameManager:
                     enemy.HP -= self.isaac.attack
                     if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
+                        num = random.choice([0, 1, 2, 3, 4, 5])
+                        self.bloods.add(blood(enemy.rect.x, enemy.rect.y, num))
                         enemy.state = "die"
 
     def detect_collision_tears_and_walls(self):
@@ -453,7 +460,7 @@ class GameManager:
                 tear.state = "die"
                 for wall in walls:
                     if isinstance(wall, Shit):
-                        wall.HP -= 1
+                        wall.HP -= self.isaac.attack
                         wall.destroyed()
 
         collided_tears_and_frames = pygame.sprite.groupcollide(
@@ -523,6 +530,7 @@ class GameManager:
         self.enemy_group.empty()
         self.boss_group.empty()
         self.lucky.empty()
+        self.bloods.empty()
 
     async def gen_new_room(self, roomID: int, door_location_tag: str, door_type: str):
         match door_location_tag:
@@ -595,7 +603,7 @@ class GameManager:
                     self.new_room_rect.top = 0
                     isaac_spawn_pos = (
                         ScreenSettings.screenWidth / 2,
-                        ScreenSettings.screenHeight - 150,
+                        ScreenSettings.screenHeight - 150 - 10,
                     )
                     await self.stop_transition(isaac_spawn_pos)
 
@@ -604,7 +612,7 @@ class GameManager:
                 self.new_room.rect.move_ip(0, -self.transition_speed_vertical)
                 if self.new_room_rect.top <= 0:
                     self.new_room_rect.top = 0
-                    isaac_spawn_pos = (ScreenSettings.screenWidth / 2, 150)
+                    isaac_spawn_pos = (ScreenSettings.screenWidth / 2, 150 + 10)
                     await self.stop_transition(isaac_spawn_pos)
 
             case "left":
@@ -613,7 +621,7 @@ class GameManager:
                 if self.new_room_rect.left >= 0:
                     self.new_room_rect.left = 0
                     isaac_spawn_pos = (
-                        ScreenSettings.screenWidth - 300,
+                        ScreenSettings.screenWidth - 300 - 10,
                         ScreenSettings.screenHeight / 2,
                     )
                     await self.stop_transition(isaac_spawn_pos)
@@ -623,7 +631,7 @@ class GameManager:
                 self.new_room.rect.move_ip(-self.transition_speed_horizontal, 0)
                 if self.new_room_rect.left <= 0:
                     self.new_room_rect.left = 0
-                    isaac_spawn_pos = (300, ScreenSettings.screenHeight / 2)
+                    isaac_spawn_pos = (300 + 10, ScreenSettings.screenHeight / 2)
                     await self.stop_transition(isaac_spawn_pos)
 
     async def stop_transition(self, isaac_spawn_pos):

@@ -117,6 +117,7 @@ class ImportedImages:
     Fly_blood = "Src/Textures/enemies/fly_ne_ok.png"
     Boss = "Src/Textures/enemies/gurdy.png"
     bug = "Src/Textures/Play/monster_113_charger.png"
+    blood = "Src/Textures/Play/effect_032_bloodstains_1.png"
 
     # Friendly_NPCs
     NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
@@ -411,9 +412,18 @@ class MainMenuSettings:
 
 class EnemiesSettings:
 
+    class blood:
+        frames_rects = [
+            (0, 0, 48, 32),
+            (0, 32, 48, 32),
+            (0, 32, 48, 32),
+            (0, 32, 48, 32),
+            (0, 32, 48, 32),
+            (0, 32, 48, 32)]
+
     class bug:
         HP = 3
-        speed = 2
+        speed = 1
         frames_rects_right_or_left = [
             (0, 0, 32, 32),
             (32, 0, 32, 32),
