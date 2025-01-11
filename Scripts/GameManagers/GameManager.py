@@ -44,6 +44,7 @@ class GameManager:
     # SET
     def set_bloods(self):
         self.bloods = pygame.sprite.Group()
+
     def set_UI(self):
         self.UI = pygame.sprite.Group()
         self.coinsystem = coin()
@@ -185,10 +186,10 @@ class GameManager:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
             case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
-                
+
                 self.common_scene_updates()
                 self.update_sprites(self.enemy_group)
-  
+
                 if len(self.enemy_group) == 0 and not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -658,6 +659,8 @@ class GameManager:
             case Scenes.TREASURE:
                 self.set_trainer()
         self.room_clear_posted = False
+        self.bgm_player.get_BGM_current_pos()
+        self.bgm_player.play_BGM()
 
     # Coroutines
     async def async_update(self):
