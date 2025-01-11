@@ -16,7 +16,7 @@ root = "START_ROOM"
     
 
 def add_children(node, depth, shop_added, treasure_added, catacomb_added):
-    max_depth = 3
+    max_depth = 4
     if depth == max_depth:
         RoomTree.append(node)
         return
@@ -39,7 +39,7 @@ def add_children(node, depth, shop_added, treasure_added, catacomb_added):
         if rightson == "CATACOMB":
             choices.remove("CATACOMB")
         if node.id == 2**(max_depth-1)-1:
-            leftson = "CATACOMB"
+            rightson = "CATACOMB"
 
         node.left = MapTree(node.id * 2, leftson)
         node.left.father = node
@@ -72,11 +72,11 @@ RoomTree.append(MapTree(
     id = 0
 ))
 RoomTree.sort(key=lambda room: room.id)
-for room in RoomTree:
-    l = room.left
-    r = room.right
-    f = room.father
-    print(room.value, room.id, 
-          l.value if l else None, 
-          r.value if r else None, 
-          f.value if f else None)
+# for room in RoomTree:
+#     l = room.left
+#     r = room.right
+#     f = room.father
+#     print(room.value, room.id, 
+#           l.value if l else None, 
+#           r.value if r else None, 
+#           f.value if f else None)

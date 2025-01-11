@@ -559,7 +559,7 @@ class GameManager:
         match door_type:
             case "Wood":
                 if roomID == 1:
-                    self.new_room = CommonRoom(RoomID = roomID,rect=self.new_room_rect)
+                    self.new_room = StartRoom(RoomID = roomID,rect=self.new_room_rect)
                     self.active_scene = Scenes.START_ROOM
                 else:
                     self.new_room = CommonRoom(RoomID = roomID,rect=self.new_room_rect)
