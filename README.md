@@ -8,7 +8,7 @@
 ## **Division of Labor among Members**
     1.潘佑邦:
     2.吴俊阳:
-    3.宋梓冬:  
+    3.宋梓冬: README.md
 
 ## **Game Overview**
 Game Name: **The Binding of Issac**  
