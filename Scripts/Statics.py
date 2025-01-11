@@ -32,6 +32,7 @@ class Scenes(Enum):
     CATACOMB = 7
     CHAT_BOX = 11
     GAMEWIN = 100
+    GAMEOVER = 101
 
 
 # Files
@@ -110,6 +111,9 @@ class ImportedImages:
     # GAMEWIN
     ReplayButton = "Src/backselectwidget.png"
     deathPortraits = "Src/death portraits.png"
+
+    #GameOver
+    GameOver = "Src/gameover.png"
 
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
