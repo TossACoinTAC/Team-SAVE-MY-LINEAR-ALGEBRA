@@ -330,6 +330,7 @@ class GameManager:
                                     entity.update()
                     for entity in self.isaac_group:
                         if Vector2(entity.rect.center).distance_to(pos) <= radius:
+                            self._heart.HP -= 2
                             ev.post(ev.Event(Events.SLICE_ISAAC))
                 case Events.SLICE_ISAAC:
                     self.Isaac_Body = Body(spawn_pos=self.isaac.rect.center)
