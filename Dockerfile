@@ -11,6 +11,14 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 
+# Install required libraries for pygame.mixer
+RUN apt-get update && apt-get install -y \
+    libsdl2-mixer-2.0-0 \
+    libasound2 \
+    libasound2-data \  
+    libasound2 libasound2-dev libasound2-plugins \
+    && apt-get clean
+
 WORKDIR /app
 COPY . /app
 
@@ -20,4 +28,4 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["python", "main.py"]
+CMD ["python", "Scripts/Main.py"]

@@ -1,11 +1,10 @@
 from pygame import *
 from Statics import *
-from Characters.Player import Player
 from Characters.LLM import *
-import pygame.event as ev 
+import pygame.event as ev
 
 
-class NPC(pygame.sprite.Sprite):
+class Trainer(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load(
@@ -15,16 +14,11 @@ class NPC(pygame.sprite.Sprite):
             self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
         )
         self.rect = self.image.get_rect()
-        self.rect.center = (0.5*ScreenSettings.screenWidth, 0.5*ScreenSettings.screenHeight)  # 随便设的地方，有商店了可以让他再商店里生成
-        self.HP = 0x3f3f3f3f  # 无敌
-
-    def gen_chatbox(self, keys):
-        if keys[pygame.K_q]:
-            ev.post(ev.Event(Events.TO_CHATBOX))
-
-
-    def update(self, keys = None):
-        pass
+        self.rect.center = (
+            0.5 * ScreenSettings.screenWidth,
+            0.5 * ScreenSettings.screenHeight,
+        )  # 随便设的地方，有商店了可以让他再商店里生成
+        self.HP = 0x3F3F3F3F  # 无敌
 
 
 # 创建 ChatBox
@@ -44,7 +38,7 @@ class ChatBox(pygame.sprite.Sprite):
         self.current_step = 0
         self.input_text = ""
         self.allow_input = True
-        self.messages = NPC_Original_messages.npc_message[0]    #两个npc
+        self.messages = NPC_Original_messages.npc_message[0]  # 两个npc
 
         # 定义字体和颜色
         pygame.font.init()
@@ -81,7 +75,7 @@ class ChatBox(pygame.sprite.Sprite):
             self.INPUT_COLOR,
             (20, ScreenSettings.screenHeight - 60, ScreenSettings.screenWidth - 40, 40),
         )
-        
+
         self.handle_input(keys)
         self.render_wrapped_text(self.input_text, 30, ScreenSettings.screenHeight - 50)
 
@@ -94,15 +88,18 @@ class ChatBox(pygame.sprite.Sprite):
 
                 # 调用 LLM_chat 函数获取回复
                 response = LLM_chat(self.input_text.strip(), self.messages)
-                #print(response)
+                # print(response)
                 self.chat_log.append(f"NPC: {response}")
 
-                if "quit" in self.input_text.strip() or "exit" in self.input_text.strip():
+                if (
+                    "quit" in self.input_text.strip()
+                    or "exit" in self.input_text.strip()
+                ):
                     for sprite in self.groups():
                         if isinstance(sprite, ChatBox):
                             sprite.kill()
                     ev.post(ev.Event(Events.EXIT_CHATBOX))
-                    #self.kill()
+                    # self.kill()
 
                 if "EXTRA BLOOD" in response:
                     self.buff = 1
@@ -110,10 +107,9 @@ class ChatBox(pygame.sprite.Sprite):
                     self.buff = 2
                 if "PUNISHMENT" in response:
                     self.buff = 3
-                
+
                 self.input_text = ""
             inputed = True
-
 
         elif keys[pygame.K_BACKSPACE]:
             if self.input_text and self.allow_input:
@@ -135,7 +131,6 @@ class ChatBox(pygame.sprite.Sprite):
 
         self.allow_input = not inputed
 
-
     def render_wrapped_text(self, text, x, y, color=(255, 255, 255)):
         words = text.split(" ")
         space_width, _ = self.FONT.size(" ")
@@ -156,4 +151,3 @@ class ChatBox(pygame.sprite.Sprite):
 
         if current_line:
             self.render_text(" ".join(current_line), x, y, color)
-
