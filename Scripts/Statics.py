@@ -609,7 +609,7 @@ class StaticMethods:
         bgm_player, sound_effect: str, interval: int
     ):
         if not StaticMethods.sound_played:
-            bgm_player.play(sound_effect, 0)
+            bgm_player.play_sound_effect(sound_effect)
             StaticMethods.sound_played = True
             StaticMethods.timer = pygame.time.get_ticks()
         if pygame.time.get_ticks() - StaticMethods.timer > interval:
