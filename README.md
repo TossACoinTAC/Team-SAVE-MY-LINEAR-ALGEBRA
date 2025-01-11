@@ -30,9 +30,9 @@ Game Dimension: **2D**
     5. E : Plant a bomb
 ## **INTRODUCTION**
 ### Introduction : Map
-    1.MapTree：We use a binary tree to implement the map: random generation + iterative backtracking
-    2.After removing Enemies from each map, the remaining rooms will open
-    3.Room Type：CommonRoom + BossRoom + ShopRoom + TrainerRoom
+    1. MapTree：We use a binary tree to implement the map: random generation + iterative backtracking
+    2. After removing Enemies from each map, the remaining rooms will open
+    3. Room Type：CommonRoom + BossRoom + ShopRoom + TrainerRoom
 ```mermaid
 graph TD;
   StartRoom-->|right|Layer1_1;
