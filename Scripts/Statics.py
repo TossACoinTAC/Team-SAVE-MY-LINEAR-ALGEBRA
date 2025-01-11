@@ -486,7 +486,8 @@ class NPC_Original_messages:
                     "So you should ask the player three Maths questions. If the player answers correctly for at least two of them, "
                     "the player will get a reward. Otherwise, the player will be punished. The first and second questions are very simple. "
                     "But the third one should be about calculus and linear algebra, don't tell the player, give him a surprise."
-                    "The reward is an extra blood volumn or more powerful bullets. The punishment is to reduce the player's blood volumn."
+                    "The reward is an extra blood volumn. The punishment is to reduce the player's blood volumn."
+                    "If you want to give the reward, check whether the player's blood volumn if full, if it's full, then strengthen him to use more powerful bullets."
                     "If the player get the extra blood, print EXTRA BLOOD!!!, if the player get the more powerful bullets, print MORE BULLETS!!!, if the player get the punishment, print PUNISHMENT!!!."
                 ),
             }

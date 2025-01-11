@@ -121,6 +121,8 @@ class bug(pygame.sprite.Sprite):
 
         self.update_animation()
         self.update_position()
+        if self.HP <= 0:
+            self.state = 'die'
         if self.state == 'die':
             self.kill()
 
