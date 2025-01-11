@@ -57,3 +57,21 @@ class Bomb(StaticState):
         fonts = pygame.font.Font('Src/fonts/IsaacGame.ttf', 48) #"Src/fonts/prices.psd"
         bomb_text = fonts.render(f"{self.bomb_num}", True, (225, 225, 225))
         screen.blit(bomb_text, (UISettings.bomb.x + 70, UISettings.bomb.y + 15))
+
+class Room_hint(StaticState):
+    def __init__(self, bossroom_location, current_location):
+        super().__init__(
+            pygame.image.load(ImportedImages.UI.attack),
+            UISettings.room_hint.x,
+            UISettings.room_hint.y,
+            UISettings.room_hint.MULTI,
+            UISettings.room_hint.ALPHA)
+        self.bossroom_num = bossroom_location
+        self.current_room = current_location
+
+    def update(self, screen):
+        fonts = pygame.font.Font('Src/fonts/IsaacGame.ttf', 48)
+        hint_text = fonts.render(f"Boss Room: {self.bossroom_num}", True, (225, 225, 225))
+        screen.blit(hint_text, (UISettings.room_hint.x + 10, UISettings.room_hint.y + 10))
+        current_room_text = fonts.render(f"Current Room: {self.current_room}", True, (225, 225, 225))
+        screen.blit(current_room_text, (UISettings.room_hint.x + 10, UISettings.room_hint.y + 60))

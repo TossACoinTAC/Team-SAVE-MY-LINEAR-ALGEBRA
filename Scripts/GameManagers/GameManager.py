@@ -46,7 +46,8 @@ class GameManager:
         self.coinsystem = coin()
         self.attacksystem = attack()
         self.bombsystem = Bomb()
-        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem)
+        self.Room_hint_system = Room_hint(BossRoom_location, 1)
+        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem, self.Room_hint_system)
 
     def set_shop(self):
         self._lucky = lucky()
@@ -556,6 +557,9 @@ class GameManager:
                     ScreenSettings.screenHeight,
                 )
                 roomID = roomID * 2 + 1
+
+        self.Room_hint_system.current_room = roomID
+
         match door_type:
             case "Wood":
                 if roomID == 1:

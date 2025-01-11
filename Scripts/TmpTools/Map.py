@@ -38,7 +38,7 @@ def add_children(node, depth, shop_added, treasure_added, catacomb_added):
             choices.remove("TREASURE")
         if rightson == "CATACOMB":
             choices.remove("CATACOMB")
-        if node.id == 2**(max_depth-1)-1:
+        if node.id == random.randint(2**(max_depth-2),2**(max_depth-1)-1):
             rightson = "CATACOMB"
 
         node.left = MapTree(node.id * 2, leftson)
@@ -72,11 +72,7 @@ RoomTree.append(MapTree(
     id = 0
 ))
 RoomTree.sort(key=lambda room: room.id)
-# for room in RoomTree:
-#     l = room.left
-#     r = room.right
-#     f = room.father
-#     print(room.value, room.id, 
-#           l.value if l else None, 
-#           r.value if r else None, 
-#           f.value if f else None)
+BossRoom_location = 1
+for room in RoomTree:
+    if room.value == "CATACOMB":
+        BossRoom_location = room.id
