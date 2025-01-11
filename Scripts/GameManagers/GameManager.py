@@ -270,6 +270,7 @@ class GameManager:
                     exit()
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
+                    self.bgm_player.stop()
 
                 case Events.RESTART:
                     self.__init__()
@@ -277,6 +278,7 @@ class GameManager:
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
                     self.bgm_player.stop()
+                    self.bgm_player.play("COMMON", -1)
 
                 case Events.ROOM_CLEAR:
                     self.room.open_doors()
