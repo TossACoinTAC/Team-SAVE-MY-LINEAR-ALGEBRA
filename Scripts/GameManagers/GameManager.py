@@ -91,11 +91,8 @@ class GameManager:
 
     def set_npc(self):
         self.trainer_group = pygame.sprite.Group()
-        self.trader_group = pygame.sprite.Group()
         self.npc1 = NPC()
         self.trainer_group.add(self.npc1)
-        self.npc2 = NPC()
-        self.trader_group.add(self.npc2)
 
     def set_room(self):
         self.room_group = pygame.sprite.Group()
@@ -200,7 +197,6 @@ class GameManager:
             case Scenes.SHOP:
                 self.common_scene_updates()
                 self.update_sprites(self.lucky)
-                self.update_sprites(self.trader_group, self.get_keys())
                 if not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -340,6 +336,7 @@ class GameManager:
         self.detect_collision_lucky_and_isaac()
         self.detect_collision_boss_and_isaac()
         self.detect_collision_tears_and_walls()
+        self.detect_buff_acquirance()
 
     def detect_collision_boss_and_isaac(self):
         collided_boss_and_isaac = StaticMethods.mask_spritecollide(
@@ -473,6 +470,7 @@ class GameManager:
                 self.isaac.shoot_mode = 1
             if chatbox.buff == 3:
                 self._heart.HP -= 1
+            chatbox.buff = 0
 
     async def detect_collision_isaac_and_doors(self):
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(
@@ -497,7 +495,7 @@ class GameManager:
     async def clear_old_room(self):
         self.room.get_walls().empty()
         self.isaac_group.empty()
-        #self.npc_group.empty()
+        self.trainer_group.empty()
         self.enemy_group.empty()
         self.boss_group.empty()
         self.lucky.empty()

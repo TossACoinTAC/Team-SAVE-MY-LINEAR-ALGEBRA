@@ -351,12 +351,13 @@ class ShopSettings:
     class price:
         MULTI = 1.5
         ALPHA = 256
-        x = 800
-        y = 450
+        x = 0.5 * ScreenSettings.screenWidth
+        y = 0.5 * ScreenSettings.screenHeight - 30
+
 
     class lucky:
-        x = 800
-        y = 480
+        x = 0.5 * ScreenSettings.screenWidth
+        y = 0.5 * ScreenSettings.screenHeight 
 
 
 class GameWinSettings:
@@ -487,7 +488,7 @@ class NPC_Original_messages:
                     "the player will get a reward. Otherwise, the player will be punished. The first and second questions are very simple. "
                     "But the third one should be about calculus and linear algebra, don't tell the player, give him a surprise."
                     "The reward is an extra blood volumn or more powerful bullets. The punishment is to reduce the player's blood volumn."
-                    "If the player get the extra blood, print $$%#@#$$, if the player get the more powerful bullets, print $$@*@#$$, if the player get the punishment, print $$#*&&$$."
+                    "If the player get the extra blood, print EXTRA BLOOD!!!, if the player get the more powerful bullets, print MORE BULLETS!!!, if the player get the punishment, print PUNISHMENT!!!."
                 ),
             }
         ],
