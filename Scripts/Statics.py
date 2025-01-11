@@ -32,6 +32,7 @@ class Scenes(Enum):
     CATACOMB = 7
     CHAT_BOX = 11
     GAMEWIN = 100
+    GAMEOVER = 101
 
 
 # Files
@@ -97,13 +98,13 @@ class ImportedImages:
     class UI:
         coin = "Src/Textures/Play/coin.png"
         attack = "Src/Textures/Play/collectibles_705_darkarts.png"
+        Bomb = "Src/Textures/Play/pickup_016_bomb.png"
 
     # MainMenu
     BackGround = "Src/Textures/Title/Title1.png"
     StartButton = "Src/Textures/Title/Draw2.png"
     Options = "Src/Textures/Title/Options.png"
     Continues = "Src/Textures/Title/Continue.png"
-    Bomb = "Src/Textures/Play/pickup_016_bomb.png"
     Draw = "Src/Textures/Title/Draw1.png"
     bossHealthBarIcon = "Src/Textures/Play/ui_bosshealthbar_full.png"
 
@@ -111,12 +112,16 @@ class ImportedImages:
     ReplayButton = "Src/backselectwidget.png"
     deathPortraits = "Src/death portraits.png"
 
+    #GameOver
+    GameOver = "Src/gameover.png"
+
     # Enemies
     Fly = "data/textures/enemies/fly_ok.png"
     Fly_die = "data/textures/enemies/fly_rip.png"
     Fly_blood = "Src/Textures/enemies/fly_ne_ok.png"
     Boss = "Src/Textures/enemies/gurdy.png"
     bug = "Src/Textures/Play/monster_113_charger.png"
+    blood = "Src/Textures/Play/effect_032_bloodstains_1.png"
 
     # Friendly_NPCs
     NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
@@ -187,7 +192,7 @@ class UISettings:
 
 class BossSettings:
     class health_bar:
-        max = 10
+        max = 100
         width = 600
         height = 30
         x = 1280 / 2 - 600 / 2 + 50
@@ -418,9 +423,18 @@ class MainMenuSettings:
 
 class EnemiesSettings:
 
+    class blood:
+        frames_rects = [
+            (0, 0, 48, 32),
+            (0, 32, 48, 32),
+            (0, 64, 48, 32),
+            (0, 96, 48, 32),
+            (0, 128, 48, 32),
+            (0, 160, 48, 32)]
+
     class bug:
         HP = 3
-        speed = 2
+        speed = 1
         frames_rects_right_or_left = [
             (0, 0, 32, 32),
             (32, 0, 32, 32),
@@ -610,7 +624,7 @@ class StaticMethods:
         bgm_player, sound_effect: str, interval: int
     ):
         if not StaticMethods.sound_played:
-            bgm_player.play(sound_effect, 0)
+            bgm_player.play_sound_effect(sound_effect)
             StaticMethods.sound_played = True
             StaticMethods.timer = pygame.time.get_ticks()
         if pygame.time.get_ticks() - StaticMethods.timer > interval:

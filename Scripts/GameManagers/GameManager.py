@@ -9,6 +9,7 @@ from Scenes.shop import *
 from Scenes.MainMenu import MainMenu
 from Scenes.MainMenu import bossHealthBarIcon
 from Scenes.GameWin import GameWin
+from Scenes.GameOver import GameOver
 from UI.UI import *
 from UI.Heart import *
 from UI.bosshp import bossheart
@@ -33,6 +34,7 @@ class GameManager:
         self.set_chatbox()
         self.set_boss()
         self.set_UI()
+        self.set_bloods()
         self.lucky = pygame.sprite.Group()
         self._lucky = lucky()
         self.enemy_group = pygame.sprite.Group()
@@ -41,13 +43,18 @@ class GameManager:
         self.room_clear_posted = False
 
     # SET
+    def set_bloods(self):
+        self.bloods = pygame.sprite.Group()
+
     def set_UI(self):
         self.UI = pygame.sprite.Group()
         self.coinsystem = coin()
         self.attacksystem = attack()
         self.bombsystem = Bomb()
         self.Room_hint_system = Room_hint(BossRoom_location, 1)
-        self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem, self.Room_hint_system)
+        self.UI.add(
+            self.coinsystem, self.attacksystem, self.bombsystem, self.Room_hint_system
+        )
 
     def set_shop(self):
         self._lucky = lucky()
@@ -70,13 +77,14 @@ class GameManager:
         self.active_scene = Scenes.MAIN_MENU
         self.main_menu: pygame.sprite.Group = MainMenu()
         self.game_win: pygame.sprite.Group = GameWin()
+        self.game_over: pygame.sprite.Group = GameOver()
 
     def set_clock(self):
         self.clock = pygame.time.Clock()
 
     def set_bgm(self):
         self.bgm_player = BGMPlayer()
-        self.bgm_player.play("MAIN_THEME", -1)
+        self.bgm_player.switch_BGM("MAIN_THEME")
 
     def set_issac(
         self,
@@ -148,6 +156,7 @@ class GameManager:
 
     def common_scene_updates(self):
         self.update_sprites(self.room_group)
+        self.update_sprites(self.bloods)
         self.update_sprites(self.room.get_walls())
         self.update_sprites(self.isaac_group, self.get_keys())
         self.update_sprites(self.isaac.explosion_group)
@@ -167,6 +176,11 @@ class GameManager:
                 self.main_menu.update()
                 self.main_menu.draw(self.screen)
 
+            case Scenes.GAMEOVER:
+                self.screen.fill((0, 0, 0))
+                self.game_over.update()
+                self.game_over.draw(self.screen)
+
             case Scenes.GAMEWIN:
                 self.screen.fill((0, 0, 0))
                 self.game_win.update()
@@ -179,9 +193,10 @@ class GameManager:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
             case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
+
                 self.common_scene_updates()
                 self.update_sprites(self.enemy_group)
-                self.update_sprites(self.bugs)
+
                 if len(self.enemy_group) == 0 and not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -267,23 +282,20 @@ class GameManager:
                     pygame.quit()
                     exit()
                 case Events.GAME_OVER:
-                    pygame.quit()
-                    exit()
+                    self.active_scene = Scenes.GAMEOVER
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
-
                 case Events.RESTART:
-                    self.bgm_player.stop()
+                    self.bgm_player.stop_BGM()
                     self.__init__()
 
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
-                    self.bgm_player.stop()
-                    self.bgm_player.play("COMMON", 0)
+                    self.bgm_player.switch_BGM("COMMON")
 
                 case Events.ROOM_CLEAR:
                     self.room.open_doors()
-                    self.bgm_player.play("DOOR_OPEN", 0)
+                    self.bgm_player.play_sound_effect("DOOR_OPEN")
                     self.room_clear_posted = True
 
                 case Events.TO_CHATBOX:
@@ -389,6 +401,7 @@ class GameManager:
             and self._lucky.state == "normal"
             and keys[pygame.K_q]
             and pygame.sprite.spritecollide(self.isaac, self.lucky, False)
+            # and StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
@@ -439,10 +452,13 @@ class GameManager:
                 enemy: Monster
                 if tear.state == "live" and enemy.HP > 0:
                     tear.state = "die"
-                    self.bgm_player.play("TEAR_HIT", 0)
+                    self.bgm_player.play_sound_effect("TEAR_HIT")
                     enemy.HP -= self.isaac.attack
                     if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
+                        num = random.choice([0, 1, 2, 3, 4, 5])
+                        print(num)
+                        self.bloods.add(blood(enemy.rect.x, enemy.rect.y, num))
                         enemy.state = "die"
 
     def detect_collision_tears_and_walls(self):
@@ -452,11 +468,11 @@ class GameManager:
         for tear, walls in collided_tears_and_walls.items():
             tear: Tear  # once for all below, sweet
             if tear.state == "live":
-                self.bgm_player.play("TEAR_HIT", 0)
+                self.bgm_player.play_sound_effect("TEAR_HIT")
                 tear.state = "die"
                 for wall in walls:
                     if isinstance(wall, Shit):
-                        wall.HP -= 1
+                        wall.HP -= self.isaac.attack
                         wall.destroyed()
 
         collided_tears_and_frames = pygame.sprite.groupcollide(
@@ -464,7 +480,7 @@ class GameManager:
         )
         for tear, frame in collided_tears_and_frames.items():
             if tear.state == "live":
-                self.bgm_player.play("TEAR_HIT", 0)
+                self.bgm_player.play_sound_effect("TEAR_HIT")
                 tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
@@ -483,6 +499,7 @@ class GameManager:
     def detect_collision_isaac_and_trainer(self):
         if StaticMethods.mask_spritecollide(self.isaac, self.trainer_group, False):
             self.isaac.rect.move_ip(-self.isaac.movement)
+        if pygame.sprite.spritecollide(self.isaac, self.trainer_group, False):
             if self.get_keys()[pygame.K_q]:
                 ev.post(ev.Event(Events.TO_CHATBOX))
 
@@ -525,6 +542,7 @@ class GameManager:
         self.enemy_group.empty()
         self.boss_group.empty()
         self.lucky.empty()
+        self.bloods.empty()
 
     async def gen_new_room(self, roomID: int, door_location_tag: str, door_type: str):
         match door_location_tag:
@@ -600,7 +618,7 @@ class GameManager:
                     self.new_room_rect.top = 0
                     isaac_spawn_pos = (
                         ScreenSettings.screenWidth / 2,
-                        ScreenSettings.screenHeight - 150,
+                        ScreenSettings.screenHeight - 150 - 10,
                     )
                     await self.stop_transition(isaac_spawn_pos)
 
@@ -609,7 +627,7 @@ class GameManager:
                 self.new_room.rect.move_ip(0, -self.transition_speed_vertical)
                 if self.new_room_rect.top <= 0:
                     self.new_room_rect.top = 0
-                    isaac_spawn_pos = (ScreenSettings.screenWidth / 2, 150)
+                    isaac_spawn_pos = (ScreenSettings.screenWidth / 2, 150 + 10)
                     await self.stop_transition(isaac_spawn_pos)
 
             case "left":
@@ -618,7 +636,7 @@ class GameManager:
                 if self.new_room_rect.left >= 0:
                     self.new_room_rect.left = 0
                     isaac_spawn_pos = (
-                        ScreenSettings.screenWidth - 300,
+                        ScreenSettings.screenWidth - 300 - 10,
                         ScreenSettings.screenHeight / 2,
                     )
                     await self.stop_transition(isaac_spawn_pos)
@@ -628,7 +646,7 @@ class GameManager:
                 self.new_room.rect.move_ip(-self.transition_speed_horizontal, 0)
                 if self.new_room_rect.left <= 0:
                     self.new_room_rect.left = 0
-                    isaac_spawn_pos = (300, ScreenSettings.screenHeight / 2)
+                    isaac_spawn_pos = (300 + 10, ScreenSettings.screenHeight / 2)
                     await self.stop_transition(isaac_spawn_pos)
 
     async def stop_transition(self, isaac_spawn_pos):
@@ -648,6 +666,8 @@ class GameManager:
             case Scenes.TREASURE:
                 self.set_trainer()
         self.room_clear_posted = False
+        self.bgm_player.get_BGM_current_pos()
+        self.bgm_player.play_BGM()
 
     # Coroutines
     async def async_update(self):

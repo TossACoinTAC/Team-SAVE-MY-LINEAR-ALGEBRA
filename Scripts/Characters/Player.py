@@ -210,7 +210,7 @@ class Player(pygame.sprite.Sprite):
                     keys[pygame.K_RIGHT] - keys[pygame.K_LEFT],
                     keys[pygame.K_DOWN] - keys[pygame.K_UP],
                 ).normalize()
-                self.bgm_player.play("ISAAC_SHOOT", 0)
+                self.bgm_player.play_sound_effect("ISAAC_SHOOT")
             except ValueError:
                 shooted_tear.direction = Vector2(0, 0)
 

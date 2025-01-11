@@ -151,7 +151,7 @@ class Draw(DynamicState):
 class Bomb(DynamicState):
     def __init__(self):
         super().__init__(
-            ImportedImages.Bomb,
+            ImportedImages.UI.Bomb,
             MainMenuSettings.Bomb.frame_rects,
             MainMenuSettings.Bomb.x,
             MainMenuSettings.Bomb.y,
