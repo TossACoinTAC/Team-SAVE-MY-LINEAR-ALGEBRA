@@ -218,7 +218,9 @@ class GameManager:
                 self.common_scene_updates()
                 self.update_sprites(self.boss_group)
                 self.update_boss_shoot()
+                self.update_boss_spawn_fly()
                 self.update_sprites(self.bloodyTears)
+                self.update_sprites(self.enemy_group)
                 bossheart.update(
                     self.screen,
                     BossSettings.health_bar.x,
@@ -275,6 +277,15 @@ class GameManager:
                         direction_y,
                     )
                 )
+    
+    def update_boss_spawn_fly(self):
+        if self.bossAttack.if_spwan_fly == "True":
+            self.bossAttack.if_spwan_fly = "False"
+            for _ in range(random.randint(1, 3)):
+                self.enemy_group.add(
+                    Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
+                )
+
 
     def deal_events(self):
         self.detect_collision()
@@ -332,6 +343,7 @@ class GameManager:
                                     entity.update()
                     for entity in self.isaac_group:
                         if Vector2(entity.rect.center).distance_to(pos) <= radius:
+                            self._heart.HP -= 2
                             ev.post(ev.Event(Events.SLICE_ISAAC))
                 case Events.SLICE_ISAAC:
                     self.Isaac_Body = Body(spawn_pos=self.isaac.rect.center)

@@ -246,7 +246,7 @@ class Door(pygame.sprite.Sprite):
             case "SHOP":
                 self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SHOP_DOOR.value
             case "TREASURE":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SECRET_DOOR.value
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_TREASURE_DOOR.value
             case "BLUEWOMB":
                 self._image_path = ImportedImages.ClosedDoorImages.CLOSED_BLUEWOMB_DOOR.value
             case "CATACOMB":
@@ -415,7 +415,7 @@ class TreasureRoom(SingleRoom):
 
 class SecretRoom(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
-        wall_type = 3
+        wall_type = random.randint(1, 3)
         super().__init__(RoomID, ImportedImages.RoomImages.SECRET.value, rect, wall_type)
 
 

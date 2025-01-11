@@ -456,7 +456,7 @@ class Bomb(pygame.sprite.Sprite):
             self.flicker_timer += 1
 
         if self.flicker_timer >= 9:
-            self.bgm_player.play("BOMB_EXPLODE", 0)
+            self.bgm_player.play_sound_effect("BOMB_EXPLODE")
             ev.post(
                 ev.Event(
                     Events.BOMB_EXPLOSION,
