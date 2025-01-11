@@ -4,29 +4,39 @@ from Characters.LLM import *
 import pygame.event as ev
 
 
-class Trainer(pygame.sprite.Sprite):
-    def __init__(self):
+class NPC(pygame.sprite.Sprite):
+    def __init__(self, image_path: str):
         super().__init__()
-        self.image = pygame.image.load(
-            ImportedImages.NPCImage
-        )  # 随便选的图片，可以换成其它的
+        self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(
             self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
         )
         self.rect = self.image.get_rect()
-        self.rect.center = (
-            0.5 * ScreenSettings.screenWidth,
-            0.5 * ScreenSettings.screenHeight,
-        )  # 随便设的地方，有商店了可以让他再商店里生成
         self.HP = 0x3F3F3F3F  # 无敌
 
 
-# 创建 ChatBox
-class ChatBox(pygame.sprite.Sprite):
+class Trainer(NPC):
     def __init__(self):
+        super().__init__(ImportedImages.NPCImage)
+        self.rect.center = (
+            0.6 * ScreenSettings.screenWidth,
+            0.5 * ScreenSettings.screenHeight,
+        )
+
+
+class Merchant(NPC):
+    def __init__(self):
+        super().__init__(ImportedImages.NPCImage)
+        self.rect.center = (
+            0.4 * ScreenSettings.screenWidth,
+            0.5 * ScreenSettings.screenHeight,
+        )
+
+
+class ChatBox(pygame.sprite.Sprite):
+    def __init__(self, npc_type: str):
         super().__init__()
 
-        # 加载并调整图像大小
         self.image = pygame.image.load(ImportedImages.chatboxImage)
         self.image = pygame.transform.scale(
             self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
@@ -38,7 +48,11 @@ class ChatBox(pygame.sprite.Sprite):
         self.current_step = 0
         self.input_text = ""
         self.allow_input = True
-        self.messages = NPC_Original_messages.npc_message[0]  # 两个npc
+        self.npc_type = npc_type
+        if self.npc_type == "Trainer":
+            self.messages = NPC_Original_messages.npc_message[0]
+        elif self.npc_type == "Merchant":
+            self.messages = NPC_Original_messages.npc_message[1]
 
         # 定义字体和颜色
         pygame.font.init()
@@ -46,11 +60,16 @@ class ChatBox(pygame.sprite.Sprite):
         self.BG_COLOR = (30, 30, 30)  # 背景色
         self.INPUT_COLOR = (50, 50, 50)  # 输入框颜色
 
-        # 游戏文本内容
-        self.GAME_TEXTS = [
-            "Welcome, brave adventurer! I sense that you are seeking a challenge worthy of your mettle. As the guardian of this fortress, it is my duty to test your wits and abilities. Type 'exit' or 'quit' to end the chat.",
-        ]
-        self.chat_log.append(self.GAME_TEXTS[0])
+        # 初始文本内容
+        if self.npc_type == "Trainer":
+            self.INIT_TEXTS = (
+                "Welcome, brave adventurer! I sense that you are seeking a challenge worthy of your mettle."
+                "As the guardian of this fortress, it is my duty to test your wits and abilities."
+                "Type 'exit' or 'quit' to end the chat."
+            )
+        elif self.npc_type == "Merchant":
+            self.INIT_TEXTS = "Type 'exit' or 'quit' to end the chat."
+        self.chat_log.append(self.INIT_TEXTS)
 
         self.linenumber = 2
         self.y_offset = 20
@@ -61,7 +80,7 @@ class ChatBox(pygame.sprite.Sprite):
         text_surface = self.FONT.render(text, True, color)
         self.image.blit(text_surface, (x, y))
 
-    def update(self, keys):
+    def update(self, keys, player_state: dict):
         # 显示聊天日志
         self.image.fill(self.BG_COLOR)
         self.y_offset = 20
@@ -76,10 +95,10 @@ class ChatBox(pygame.sprite.Sprite):
             (20, ScreenSettings.screenHeight - 60, ScreenSettings.screenWidth - 40, 40),
         )
 
-        self.handle_input(keys)
+        self.handle_input(keys, player_state)
         self.render_wrapped_text(self.input_text, 30, ScreenSettings.screenHeight - 50)
 
-    def handle_input(self, keys):
+    def handle_input(self, keys, player_state: dict):
         inputed = False
         if keys[pygame.K_RETURN]:
             if self.input_text.strip() and self.allow_input:

@@ -2,7 +2,7 @@ import asyncio
 from pygame import *
 from GameManagers.BGMPlayer import BGMPlayer
 from Characters.Player import *
-from Characters.Trainer import *
+from Characters.NPCs import *
 from Characters.Enemies import *
 from Scenes.Rooms import *
 from Scenes.shop import *
@@ -26,7 +26,7 @@ class GameManager:
         self.set_icon()
         self.set_room()
         self.set_issac()
-        self.set_trainer()
+        self.set_NPC()
         self.set_bgm()
         self.set_scenes()
         self.set_clock()
@@ -94,10 +94,12 @@ class GameManager:
         self.isaac = Player(spawn_pos)
         self.isaac_group.add(self.isaac)
 
-    def set_trainer(self):
-        self.trainer_group = pygame.sprite.Group()
+    def set_NPC(self):
+        self.NPC_group = pygame.sprite.Group()
         self.trainer = Trainer()
-        self.trainer_group.add(self.trainer)
+        self.merchant = Merchant()
+        self.NPC_group.add(self.trainer, self.merchant)
+        self.active_npc = None
 
     def set_room(self):
         self.room_group = pygame.sprite.Group()
@@ -110,9 +112,9 @@ class GameManager:
         self.transition_speed_vertical = 10
 
     def set_chatbox(self):
-        self.Chatboxes = pygame.sprite.GroupSingle()
-        chatbox = ChatBox()
-        self.Chatboxes.add(chatbox)
+        self.chatbox_group = pygame.sprite.GroupSingle()
+        self.chatbox_trainer = ChatBox("Trainer")
+        self.chatbox_merchant = ChatBox("Merchant")
 
     def set_screen(self):
         self.screen = pygame.display.set_mode(
@@ -203,7 +205,7 @@ class GameManager:
 
             case Scenes.TREASURE:
                 self.common_scene_updates()
-                self.update_sprites(self.trainer_group, self.get_keys())
+                self.update_sprites(self.NPC_group, self.get_keys())
                 if not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -234,11 +236,24 @@ class GameManager:
                 self.bosshpicon.draw(self.screen)
 
             case Scenes.CHAT_BOX:
-                self.update_sprites(self.Chatboxes, self.get_keys())
+                player_state = {
+                    "hp": self._heart.HP,
+                    "atk": self.attacksystem.attack_num,
+                    "bomb_num": self.bombsystem.bomb_num,
+                    "coin_num": self.coinsystem.coin_num,
+                }
+                if self.active_npc == self.trainer:
+                    self.chatbox_group.add(self.chatbox_trainer)
+                elif self.active_npc == self.merchant:
+                    self.chatbox_group.add(self.chatbox_merchant)
+                self.chatbox_group.update(self.get_keys(), player_state)
+                self.chatbox_group.draw(self.screen)
 
     def update_boss_shoot(self):
         if self.bossAttack.if_shoot == "True":
-            self.enemy_group.add(Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y))
+            self.enemy_group.add(
+                Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
+            )
             self.bossAttack.if_shoot = "False"
             vector_list1 = [
                 (-1.732 / 2, -1 / 2),
@@ -277,7 +292,7 @@ class GameManager:
                         direction_y,
                     )
                 )
-    
+
     def update_boss_spawn_fly(self):
         if self.bossAttack.if_spwan_fly == "True":
             self.bossAttack.if_spwan_fly = "False"
@@ -285,7 +300,6 @@ class GameManager:
                 self.enemy_group.add(
                     Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
                 )
-
 
     def deal_events(self):
         self.detect_collision()
@@ -312,10 +326,14 @@ class GameManager:
                     self.room_clear_posted = True
 
                 case Events.TO_CHATBOX:
+                    self.active_npc = event.NPC
                     self.active_scene = Scenes.CHAT_BOX
 
                 case Events.EXIT_CHATBOX:
                     self.active_scene = Scenes.TREASURE
+                    self.detect_buff_acquirance()
+                    self.active_npc = None
+                    self.chatbox_group.empty()
 
                 case Events.BOMB_EXPLOSION:
                     self.bombsystem.bomb_num -= 1
@@ -324,7 +342,7 @@ class GameManager:
                     for group in [
                         self.enemy_group,
                         self.boss_group,
-                        self.trainer_group,
+                        self.NPC_group,
                         self.room.get_walls(),
                     ]:
                         for entity in group:
@@ -364,8 +382,7 @@ class GameManager:
             case Scenes.SHOP:
                 self.detect_collision_lucky_and_isaac()
             case Scenes.TREASURE:
-                self.detect_collision_isaac_and_trainer()
-                self.detect_buff_acquirance()
+                self.detect_collision_isaac_and_NPC()
             case Scenes.CATACOMB:
                 self.detect_collision_bloodytear_and_frames()
                 self.detect_collision_bloodytear_and_isaac()
@@ -438,11 +455,11 @@ class GameManager:
         )
         for enemy in collided_isaac_and_enemies:
 
-            if enemy.state == 'live':
+            if enemy.state == "live":
                 for heart in self.heart:
                     heart.state = "reduce"
 
-        if self.bossBody.state == 'live' and collided_isaac_and_boss:
+        if self.bossBody.state == "live" and collided_isaac_and_boss:
             for heart in self.heart:
                 heart.state = "reduce"
 
@@ -516,25 +533,28 @@ class GameManager:
         ):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
-    def detect_collision_isaac_and_trainer(self):
-        if StaticMethods.mask_spritecollide(self.isaac, self.trainer_group, False):
+    def detect_collision_isaac_and_NPC(self):
+        if StaticMethods.mask_spritecollide(self.isaac, self.NPC_group, False):
             self.isaac.rect.move_ip(-self.isaac.movement)
-        if pygame.sprite.spritecollide(self.isaac, self.trainer_group, False):
+        for npc in pygame.sprite.spritecollide(self.isaac, self.NPC_group, False):
             if self.get_keys()[pygame.K_q]:
-                ev.post(ev.Event(Events.TO_CHATBOX))
+                ev.post(ev.Event(Events.TO_CHATBOX, **{"NPC": npc}))
 
     def detect_buff_acquirance(self):
-        for chatbox in self.Chatboxes:
-            if chatbox.buff == 1:
+        match self.chatbox_trainer.buff:
+            case 1:
                 if self._heart.HP < 4:
                     self._heart.HP += 2
                 else:
                     self._heart.HP = PlayerSettings.PlayerHP
-            if chatbox.buff == 2:
+            case 2:
                 self.isaac.shoot_mode = 1
-            if chatbox.buff == 3:
+            case 3:
                 self._heart.HP -= 1
-            chatbox.buff = 0
+        self.chatbox_trainer.buff = 0
+        match self.chatbox_merchant.buff:
+            case 1:
+                pass
 
     async def detect_collision_isaac_and_doors(self):
         collided_isaac_and_doors = StaticMethods.mask_spritecollide(
@@ -558,7 +578,7 @@ class GameManager:
     async def clear_old_room(self):
         self.room.get_walls().empty()
         self.isaac_group.empty()
-        self.trainer_group.empty()
+        self.NPC_group.empty()
         self.enemy_group.empty()
         self.boss_group.empty()
         self.lucky.empty()
@@ -684,7 +704,7 @@ class GameManager:
             case Scenes.SHOP:
                 self.set_shop()
             case Scenes.TREASURE:
-                self.set_trainer()
+                self.set_NPC()
         self.room_clear_posted = False
         self.bgm_player.get_BGM_current_pos()
         self.bgm_player.play_BGM()
