@@ -19,7 +19,7 @@ class bug(pygame.sprite.Sprite):
         # setup_live_animation
         self.frames = []
         self.frames_index = 0
-        self.frame_rects = 
+        self.frame_rects = 0
         self.load_frames(self.frame_rects, importImage, MULTI, self.frames)
         self.image = self.frames[self.frames_index]
         self.frame_durations = frame_duration
