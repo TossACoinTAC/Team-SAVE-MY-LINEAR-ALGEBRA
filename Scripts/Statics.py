@@ -125,6 +125,7 @@ class ImportedImages:
 
 class ImportedBGM:
     main_theme = "Src/sounds/main_theme.mp3"
+    common_bgm = "Src/sounds/Sacrificial.mp3"
     walk = "data/sounds/squish1.mp3"
     shoot = "Src/sounds/pop1.wav"
     hurt = "data/sounds/isaac_hurt1.mp3"
