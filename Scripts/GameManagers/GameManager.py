@@ -505,7 +505,6 @@ class GameManager:
 
             door_location_tag = door.location_tag
             door_type = door.type_tag
-            # door.is_open = True  # in event later
             if door.is_open:
                 await self.gen_new_room(self.room.RoomID, door.location_tag, door_type)
                 await self.clear_old_room()
