@@ -91,7 +91,7 @@ class GameManager:
 
     def set_room(self):
         self.room_group = pygame.sprite.Group()
-        self.room = StartRoom()
+        self.room = StartRoom(RoomID = 1)
         self.room_group.add(self.room)
         self.new_room = None
         self.new_room_rect: pygame.Rect = None
@@ -288,7 +288,7 @@ class GameManager:
                     for group in [
                         self.enemy_group,
                         self.boss_group,
-                        self.trader_group,
+                        self.trainer_group,
                         self.trainer_group,
                         self.room.get_walls(),
                     ]:
@@ -475,7 +475,7 @@ class GameManager:
             door_type = door.type_tag
             #door.is_open = True  # in event later
             if door.is_open:
-                await self.gen_new_room(door.location_tag, door_type)
+                await self.gen_new_room(self.room.RoomID, door.location_tag, door_type)
                 await self.clear_old_room()
                 self.room_transitioning = True
                 door.is_open = False
@@ -491,7 +491,7 @@ class GameManager:
         self.boss_group.empty()
         self.lucky.empty()
 
-    async def gen_new_room(self, door_location_tag: str, door_type: str):
+    async def gen_new_room(self, roomID: int,door_location_tag: str, door_type: str):
         match door_location_tag:
             case "top":
                 self.new_room_rect = pygame.Rect(
@@ -506,7 +506,8 @@ class GameManager:
                     ScreenSettings.screenHeight,
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
-                )
+                ) 
+                roomID = roomID * 2
             case "left":
                 self.new_room_rect = pygame.Rect(
                     -ScreenSettings.screenWidth,
@@ -521,24 +522,25 @@ class GameManager:
                     ScreenSettings.screenWidth,
                     ScreenSettings.screenHeight,
                 )
+                roomID = roomID *2 +1
         match door_type:
             case "Wood":
-                self.new_room = CommonRoom(rect=self.new_room_rect)
+                self.new_room = CommonRoom(RoomID = roomID,rect=self.new_room_rect)
                 self.active_scene = Scenes.COMMON_ROOM
             case "BlueWomb":
-                self.new_room = BlueWomb(rect=self.new_room_rect)
+                self.new_room = BlueWomb(RoomID = roomID,rect=self.new_room_rect)
                 self.active_scene = Scenes.BLUEWOMB
             case "Shop":
-                self.new_room = Shop(rect=self.new_room_rect)
+                self.new_room = Shop(RoomID = roomID,rect=self.new_room_rect)
                 self.active_scene = Scenes.SHOP
             case "Treasure":
-                self.new_room = TreasureRoom(rect=self.new_room_rect)
+                self.new_room = TreasureRoom(RoomID = roomID,rect=self.new_room_rect)
                 self.active_scene = Scenes.TREASURE
             case "Secret":
-                self.new_room = SecretRoom(rect=self.new_room_rect)
+                self.new_room = SecretRoom(RoomID = roomID,rect=self.new_room_rect)
                 self.active_scene = Scenes.SECRET
             case "Catacomb":
-                self.new_room = BossRoom(rect=self.new_room_rect)
+                self.new_room = BossRoom(RoomID = roomID,rect=self.new_room_rect)
                 self.active_scene = Scenes.CATACOMB
         self.room_group.add(self.new_room)
 

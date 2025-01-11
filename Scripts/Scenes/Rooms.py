@@ -1,10 +1,11 @@
 from pygame import *
 from Statics import *
 import random
+from TmpTools.Map import *
 
 
 class SingleRoom(pygame.sprite.Sprite):
-    def __init__(self, roomImage=None, rect: pygame.Rect = None, Wall_Type=0):
+    def __init__(self, RoomID, roomImage=None, rect: pygame.Rect = None, Wall_Type=0):
         super().__init__()
         # randomly select a room image if not specified
         if not roomImage:
@@ -20,6 +21,8 @@ class SingleRoom(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
         else:
             self.rect = rect
+
+        self.RoomID = RoomID
 
         self._frame = pygame.sprite.Group()
         self._frame.empty()
@@ -81,8 +84,8 @@ class SingleRoom(pygame.sprite.Sprite):
         }
         door_location_tags = ["top", "left", "bottom", "right"]
 
-        for i in range(4):
-            door = Door(door_location_tags[i])
+        for i in range(2,4):
+            door = Door(door_location_tags[i], self.RoomID)
             door.image = pygame.transform.rotate(door.image, 90 * i)
             door.rect.center = door_locations[door_location_tags[i]]
             self._doors.add(door)
@@ -206,13 +209,34 @@ class SingleRoom(pygame.sprite.Sprite):
 
 
 class Door(pygame.sprite.Sprite):
-    def __init__(self, location_tag: str, image_path: str = None):
+    def __init__(self, location_tag: str, roomID: int):
         super().__init__()
         # randomly select a door image if not specified
-        if not image_path:
-            self._image_path = random.choice(
-                list(ImportedImages.ClosedDoorImages)
-            ).value
+        # if not image_path:
+        #     self._image_path = random.choice(
+        #         list(ImportedImages.ClosedDoorImages)
+        #     ).value
+        match location_tag:
+            case "right":
+                DoorType = RoomTree[roomID].left
+            case "bottom":
+                DoorType = RoomTree[roomID].right
+        
+        self._image_path = random.choice(list(ImportedImages.ClosedDoorImages)).value
+        match DoorType:
+            case "COMMON_ROOM":
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR
+            case "SHOP":
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SHOP_DOOR
+            case "TREASURE":
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SECRET_DOOR
+            case "BLUEWOMB":
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_BLUEWOMB_DOOR
+            case "CATACOMB":
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_CATACOMB_DOOR
+            case "SECRET":
+                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SECRET_DOOR
+
         self.image = pygame.image.load(self._image_path)
         self.image = pygame.transform.scale(
             self.image,
@@ -347,42 +371,42 @@ class Web(pygame.sprite.Sprite):
 
 
 class StartRoom(SingleRoom):
-    def __init__(self):
+    def __init__(self, RoomID):
         wall_type = 0
-        super().__init__(ImportedImages.RoomImages.START_ROOM.value, None, wall_type)
+        super().__init__(RoomID,ImportedImages.RoomImages.START_ROOM.value, None, wall_type)
 
 
 class CommonRoom(SingleRoom):
-    def __init__(self, rect: pygame.Rect = None):
+    def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = random.randint(1, 3)
-        super().__init__(ImportedImages.RoomImages.COMMON_ROOM.value, rect, wall_type)
+        super().__init__(RoomID,ImportedImages.RoomImages.COMMON_ROOM.value, rect, wall_type)
 
 
 class Shop(SingleRoom):
-    def __init__(self, rect: pygame.Rect = None):
+    def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = 0
-        super().__init__(ImportedImages.RoomImages.SHOP.value, rect, wall_type)
+        super().__init__(RoomID,ImportedImages.RoomImages.SHOP.value, rect, wall_type)
 
 
 class TreasureRoom(SingleRoom):
-    def __init__(self, rect: pygame.Rect = None):
+    def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = 0
-        super().__init__(ImportedImages.RoomImages.TREASURE.value, rect, wall_type)
+        super().__init__(RoomID, ImportedImages.RoomImages.TREASURE.value, rect, wall_type)
 
 
 class SecretRoom(SingleRoom):
-    def __init__(self, rect: pygame.Rect = None):
+    def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = 3
-        super().__init__(ImportedImages.RoomImages.SECRET.value, rect, wall_type)
+        super().__init__(RoomID, ImportedImages.RoomImages.SECRET.value, rect, wall_type)
 
 
 class BlueWomb(SingleRoom):
-    def __init__(self, rect: pygame.Rect = None):
+    def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = random.randint(1, 3)
-        super().__init__(ImportedImages.RoomImages.BLUEWOMB.value, rect, wall_type)
+        super().__init__(RoomID, ImportedImages.RoomImages.BLUEWOMB.value, rect, wall_type)
 
 
 class BossRoom(SingleRoom):
-    def __init__(self, rect: pygame.Rect = None):
+    def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = random.randint(1, 3)
-        super().__init__(ImportedImages.RoomImages.CATACOMB.value, rect, wall_type)
+        super().__init__(RoomID, ImportedImages.RoomImages.CATACOMB.value, rect, wall_type)
