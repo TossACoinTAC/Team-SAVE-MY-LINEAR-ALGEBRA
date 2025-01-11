@@ -32,9 +32,11 @@ class GameManager:
         self.set_heart()
         self.set_chatbox()
         self.set_boss()
-        self.set_shop()
         self.set_UI()
+        self.lucky = pygame.sprite.Group()
+        self._lucky = lucky()
         self.enemy_group = pygame.sprite.Group()
+        self.bugs = pygame.sprite.Group()
         self.boss_group = pygame.sprite.Group()
         self.room_clear_posted = False
 
@@ -47,7 +49,6 @@ class GameManager:
         self.UI.add(self.coinsystem, self.attacksystem, self.bombsystem)
 
     def set_shop(self):
-        self.lucky = pygame.sprite.Group()
         self._lucky = lucky()
         self._price = price()
         self.lucky.add(self._lucky, self._price)
@@ -78,7 +79,7 @@ class GameManager:
 
     def set_issac(
         self,
-        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight / 2),
+        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight * 0.75),
     ):
         self.isaac_group = pygame.sprite.Group()  # Isaac may be sliced
         self.isaac = Player(spawn_pos)
@@ -115,6 +116,9 @@ class GameManager:
         pygame.display.set_icon(icon)
 
     def spawn_enemies(self):
+        self.bug = bug()
+        self.enemy_group.add(self.bug)
+        self.bugs.add(self.bug)
         for i in range(UpdateEnemiesSettings.flyNumber):
             self.enemy_group.add(Fly())
 
@@ -176,6 +180,7 @@ class GameManager:
             case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
                 self.common_scene_updates()
                 self.update_sprites(self.enemy_group)
+                self.update_sprites(self.bugs)
                 if len(self.enemy_group) == 0 and not self.room_clear_posted:
                     ev.post(ev.Event(Events.ROOM_CLEAR))
 
@@ -194,6 +199,7 @@ class GameManager:
             # BossRoom
             case Scenes.CATACOMB:
                 self.common_scene_updates()
+                self.update_sprites(self.boss_group)
                 self.update_boss_shoot()
                 self.update_sprites(self.bloodyTears)
                 bossheart.update(
@@ -263,7 +269,7 @@ class GameManager:
                     pygame.quit()
                     exit()
                 case Events.GAME_WIN:
-                    self.active_scene = Scenes.GAMEWIN                    
+                    self.active_scene = Scenes.GAMEWIN
                 case Events.TO_MAIN:
                     self.active_scene = Scenes.MAIN_MENU
 
@@ -319,15 +325,36 @@ class GameManager:
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
-        self.detect_collision_isaac_and_npc()
-        self.detect_collision_isaac_and_enemies()
-        self.detect_collision_tears_and_enemies()
-        self.detect_collision_bloodytear_and_frames()
-        self.detect_collision_bloodytear_and_isaac()
-        self.detect_collision_lucky_and_isaac()
-        self.detect_collision_boss_and_isaac()
         self.detect_collision_tears_and_walls()
-        self.detect_buff_acquirance()
+        match self.active_scene:
+            case Scenes.COMMON_ROOM | Scenes.BLUEWOMB | Scenes.SECRET:
+                self.detect_collision_isaac_and_enemies()
+                self.detect_collision_tears_and_enemies()
+                self.detect_collision_bug_and_wall()
+            case Scenes.SHOP:
+                self.detect_collision_lucky_and_isaac()
+            case Scenes.TREASURE:
+                self.detect_collision_isaac_and_npc()
+                self.detect_buff_acquirance()
+            case Scenes.CATACOMB:
+                self.detect_collision_bloodytear_and_frames()
+                self.detect_collision_bloodytear_and_isaac()
+                self.detect_collision_boss_and_isaac()
+                self.detect_collision_tears_and_enemies()
+
+    def detect_collision_bug_and_wall(self):
+        collided_bug_and_wall = StaticMethods.mask_groupcollide(
+            self.bugs, self.room.get_walls(), False, False
+        )
+        for bug, walls in collided_bug_and_wall.items():
+            if bug.move_direction == "left":
+                bug.move_direction = "right"
+            elif bug.move_direction == "right":
+                bug.move_direction = "left"
+            elif bug.move_direction == "up":
+                bug.move_direction = "down"
+            elif bug.move_direction == "down":
+                bug.move_direction = "up"
 
     def detect_collision_boss_and_isaac(self):
         collided_boss_and_isaac = StaticMethods.mask_spritecollide(
@@ -338,7 +365,7 @@ class GameManager:
 
     def detect_collision_lucky_and_isaac(self):
 
-        if self._lucky.state == "destroy":
+        if self.lucky.state == "destroy":
             mode = random.choice(["heart", "attack", "coin"])
             if mode == "heart":
                 if self._heart.HP < 4:
@@ -362,7 +389,10 @@ class GameManager:
         ):
             self._lucky.state = "open"
             self.coinsystem.coin_num -= 5
-        if StaticMethods.mask_spritecollide(self.isaac, self.lucky, False) and Scenes.SHOP:
+        if (
+            StaticMethods.mask_spritecollide(self.isaac, self.lucky, False)
+            and Scenes.SHOP
+        ):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_bloodytear_and_frames(self):
@@ -438,14 +468,16 @@ class GameManager:
                 tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
-        if (
-            StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
-        ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
+        if (StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)):
+            self.isaac.rect.move_ip(-self.isaac.movement)
+        if self.isaac.rect.left <= ScreenSettings.marginWidth + 10 \
+            or self.isaac.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth - 10 \
+            or self.isaac.rect.top <= ScreenSettings.marginHeight + 10 \
+            or self.isaac.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight - 10:
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_isaac_and_npc(self):
-        if (
-            abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
+        if (abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
             and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
             self.npc1.gen_chatbox(self.get_keys())
@@ -473,7 +505,7 @@ class GameManager:
 
             door_location_tag = door.location_tag
             door_type = door.type_tag
-            #door.is_open = True  # in event later
+            # door.is_open = True  # in event later
             if door.is_open:
                 await self.gen_new_room(self.room.RoomID, door.location_tag, door_type)
                 await self.clear_old_room()

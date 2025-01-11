@@ -8,129 +8,121 @@ from math import *
 class bug(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        self.set_attribute()
         self.set_animation()
-
-
-# sheet = pygame.image.load(importImage)
-#     for frame_rect in frame_rects:
-#         frame.append(get_images(sheet, *frame_rect, (0, 0, 0), MULTI))
+        self.set_position()
 
     def set_animation(self):
-        # setup_live_animation
-        self.frames = []
+
         self.frames_index = 0
-        self.frame_rects = 0
-        self.load_frames(self.frame_rects, importImage, MULTI, self.frames)
-        self.image = self.frames[self.frames_index]
-        self.frame_durations = frame_duration
+        self.frames_left = []
+        self.frames_right = []
+        self.frames_up = []
+        self.frames_down = []
+        self.frames_run = []
+        self.frames_rects_left_or_right = EnemiesSettings.bug.frames_rects_right_or_left
+        self.frames_rects_up = EnemiesSettings.bug.frames_rects_up
+        self.frames_rects_down = EnemiesSettings.bug.frames_rects_down
+        self.frames_rects_run = EnemiesSettings.bug.frames_rects_run
+        
+        sheet = pygame.image.load(ImportedImages.bug)
+        for frame_rect in self.frames_rects_left_or_right:
+            self.frames_right.append(get_images(sheet, *frame_rect, (0, 0, 0), 2.0))
+            self.frames_left.append(pygame.transform.flip(get_images(sheet, *frame_rect , (0, 0, 0), 2.0), True, False))
+        for frame_rect in self.frames_rects_up:
+            self.frames_up.append(get_images(sheet, *frame_rect, (0, 0, 0), 2.0))
+        for frame_rect in self.frames_rects_down:
+            self.frames_down.append(get_images(sheet, *frame_rect, (0, 0, 0), 2.0))
+        for frame_rect in self.frames_rects_run:
+            self.frames_run.append(get_images(sheet, *frame_rect, (0, 0, 0), 2.0))
 
-        # die_animation
-        self.frames_die = []
-        self.frames_index_die = 0
-        self.frame_rects_die = frame_rects_die
-        self.load_frames(self.frame_rects_die, importImage_die, MULTI, self.frames_die)
-        self.image_die = self.frames[self.frames_index_die]
-
-        # update_position
+    def set_position(self):
+        self.image = self.frames_down[0]
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = speed
-        self.speed_x = random.choice(self.speed)
-        self.speed_y = random.choice(self.speed)
+        self.rect.centerx = 200
+        self.rect.centery = 200
 
-        self.move_mode = random.choice(["straight"])  # random_turn 没写完
+    def update_animation(self):
 
-        self.turn_interval = random.randint(500, 1000)
-        self.turn_countdown = self.turn_interval
+        if self.move_direction == 'right':
+            self.frames = self.frames_right
+        if self.move_direction == 'left':
+            self.frames = self.frames_left
+        if self.move_direction == 'up':
+            self.frames = self.frames_up
+        if self.move_direction == 'down':
+            self.frames = self.frames_down
+    
 
-        # not important
+        current_time = pygame.time.get_ticks()
+        if self.timer_animation == 0:
+            self.timer_animation = current_time
+        elif current_time - self.timer_animation > 175:
+            self.frames_index += 1
+            self.frames_index %= len(self.frames)
+            self.timer_animation = current_time
+        if self.speed_run == 0:
+            self.image = self.frames[self.frames_index]
+        if self.speed_run == 2 and self.move_direction == 'down':
+            self.image = self.frames_run[0]
+        if self.speed_run == 2 and self.move_direction == 'up':
+            self.image = self.frames_run[2]
+        if self.speed_run == 2 and self.move_direction == 'right':
+            self.image = self.frames_run[1]
+        if self.speed_run == 2 and self.move_direction == 'left':
+            self.image = pygame.transform.flip(self.frames_run[1], True, False)
 
-        self.HP = HP
+
+    def update_position(self):
+
+        if self.move_direction == 'right':
+            self.rect.x += (EnemiesSettings.bug.speed + self.speed_run)
+            if self.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth:
+                self.move_direction = 'left'
+        elif self.move_direction == 'left':
+            self.rect.x -= (EnemiesSettings.bug.speed + self.speed_run)
+            if self.rect.left <= ScreenSettings.marginWidth:
+                self.move_direction = 'right'
+        elif self.move_direction == 'up':
+            self.rect.y -= (EnemiesSettings.bug.speed + self.speed_run)  
+            if self.rect.top <= ScreenSettings.marginHeight:
+                self.move_direction = 'down'    
+        elif self.move_direction == 'down':
+            self.rect.y += (EnemiesSettings.bug.speed + self.speed_run)
+            if self.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight:
+                self.move_direction = 'up'
+
+        current_time = pygame.time.get_ticks()
+        if self.timer_move_direction == 0:
+            self.timer_move_direction = current_time + random.randint(0, 1000)
+        elif current_time - self.timer_move_direction > random.randint(1500, 3000):
+            self.timer_move_direction = current_time
+            self.move_direction = random.choice(['right', 'left', 'up', 'down'])
+        
+        current_time_run = pygame.time.get_ticks()
+        if self.timer_run_interval == 0:
+            self.timer_run_interval = current_time_run + random.randint(0,500)
+        elif current_time_run - self.timer_run_interval > random.randint(1000, 1500):
+            self.timer_run_interval = current_time_run
+            self.speed_run = random.choice([0, 0, 2])
+
+        
+    def set_attribute(self):
+        self.HP = EnemiesSettings.bug.HP
         self.state = "live"
-        self.timer = 0
-        self.MULTI = MULTI
+        self.speed_run = 0
+        self.move_direction = random.choice(['left', 'right', 'up', 'down'])
+        self.timer_animation = 0
+        self.timer_move_direction = 0
+        self.timer_run_interval = 0
 
-    def load_frames(self, frame_rects, importImage, MULTI, frame):
-        sheet = pygame.image.load(importImage)
-        for frame_rect in frame_rects:
-            frame.append(get_images(sheet, *frame_rect, (0, 0, 0), MULTI))
 
     def update(self):
 
         self.update_animation()
         self.update_position()
-        self.check_die()
-
-    def check_die(self):
-        if self.HP <= 0:
-            self.state = "die"
-
-    def detect_collision(self):
-        # if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
-        #     ScreenSettings.screenWidth - ScreenSettings.marginWidth
-        # ):
-        #     self.speed_x = -self.speed_x
-        # if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
-        #     ScreenSettings.screenHeight - ScreenSettings.marginHeight
-        # ):
-        #     self.speed_y = -self.speed_y
-        if self.rect.left <= ScreenSettings.marginWidth:
-            self.speed_x = -self.speed_x
-            self.rect.left = ScreenSettings.marginWidth + 1
-        if self.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth:
-            self.speed_x = -self.speed_x
-            self.rect.right = ScreenSettings.screenWidth - ScreenSettings.marginWidth - 1
-        if self.rect.top <= ScreenSettings.marginHeight:
-            self.speed_y = -self.speed_y
-            self.rect.top = ScreenSettings.marginHeight + 1
-        if self.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight:
-            self.speed_y = -self.speed_y
-            self.rect.bottom = ScreenSettings.screenHeight - ScreenSettings.marginHeight - 1
-
-    def update_position(self):
-
-        if self.move_mode == "straight":
-            self.rect.x += self.speed_x
-            self.rect.y += self.speed_y
-            self.detect_collision()
-
-        if self.move_mode == "radnom_turn":
-            self.turn_countdown -= 1
-            if self.turn_countdown <= 0:
-                self.speed_x = random.choice(self.speed)
-                self.speed_y = random.choice(self.speed)
-                self.turn_countdown = self.turn_interval
-            self.rect.x += self.speed_x
-            self.rect.y += self.speed_y
-            self.detect_collision()
-
-    def update_animation(self):
-
-        if self.state == "live":
-            self.current_time = pygame.time.get_ticks()
-            if self.timer == 0:
-                self.timer = self.current_time
-            elif self.current_time - self.timer > self.frame_durations:
-                self.frames_index += 1
-                self.frames_index %= len(self.frame_rects)
-                self.timer = self.current_time
-            self.image = self.frames[self.frames_index]
-
-        if self.state == "die":
-            self.speed_x = 0
-            self.speed_y = 0
-            self.current_time = pygame.time.get_ticks()
-            if self.timer == 0:
-                self.timer = self.current_time
-            elif self.current_time - self.timer > self.frame_durations:
-                self.frames_index_die += 1
-
-                self.timer = self.current_time
-            if self.frames_index_die == 10:
-                self.kill()
-
-            self.image = self.frames_die[self.frames_index_die]
+        if self.state == 'die':
+            self.kill()
 
 
 class Monster(pygame.sprite.Sprite):
