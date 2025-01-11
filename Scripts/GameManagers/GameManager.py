@@ -365,7 +365,7 @@ class GameManager:
 
     def detect_collision_lucky_and_isaac(self):
 
-        if self._lucky.state == "destroy":
+        if self.lucky.state == "destroy":
             mode = random.choice(["heart", "attack", "coin"])
             if mode == "heart":
                 if self._heart.HP < 4:
@@ -468,14 +468,16 @@ class GameManager:
                 tear.state = "die"
 
     def detect_collision_isaac_and_walls(self):
-        if (
-            StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)
-        ) or pygame.sprite.spritecollide(self.isaac, self.room.get_frame(), False):
+        if (StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False)):
+            self.isaac.rect.move_ip(-self.isaac.movement)
+        if self.isaac.rect.left <= ScreenSettings.marginWidth + 10 \
+            or self.isaac.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth - 10 \
+            or self.isaac.rect.top <= ScreenSettings.marginHeight + 10 \
+            or self.isaac.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight - 10:
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_isaac_and_npc(self):
-        if (
-            abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
+        if (abs(self.npc1.rect.x - self.isaac.rect.x) <= 20
             and abs(self.npc1.rect.x - self.isaac.rect.y) <= 20
         ):
             self.npc1.gen_chatbox(self.get_keys())
