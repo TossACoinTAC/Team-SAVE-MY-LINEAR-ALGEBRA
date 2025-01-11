@@ -272,11 +272,9 @@ class GameManager:
                     pygame.quit()
                     exit()
                 case Events.GAME_OVER:
-                    pygame.quit()
-                    exit()
+                    self.active_scene = Scenes.GAMEWIN
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
-
                 case Events.RESTART:
                     self.bgm_player.stop()
                     self.__init__()
@@ -450,6 +448,7 @@ class GameManager:
                     if enemy.state == "live" and enemy.HP <= 0:
                         self.coinsystem.coin_num += 1
                         num = random.choice([0, 1, 2, 3, 4, 5])
+                        print(num)
                         self.bloods.add(blood(enemy.rect.x, enemy.rect.y, num))
                         enemy.state = "die"
 
