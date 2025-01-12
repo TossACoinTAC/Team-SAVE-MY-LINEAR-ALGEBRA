@@ -11,7 +11,8 @@ class NPC(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(
-            self.image, (PlayerSettings.playerWidth, PlayerSettings.playerHeight)
+            self.image,
+            (PlayerSettings.playerWidth * 0.8, PlayerSettings.playerHeight * 0.8),
         )
         self.rect = self.image.get_rect()
         self.HP = 0x3F3F3F3F  # 无敌
@@ -19,7 +20,7 @@ class NPC(pygame.sprite.Sprite):
 
 class Trainer(NPC):
     def __init__(self):
-        super().__init__(ImportedImages.NPCImage)
+        super().__init__(ImportedImages.TrainerImage)
         self.rect.center = (
             0.6 * ScreenSettings.screenWidth,
             0.5 * ScreenSettings.screenHeight,
@@ -28,7 +29,7 @@ class Trainer(NPC):
 
 class Merchant(NPC):
     def __init__(self):
-        super().__init__(ImportedImages.NPCImage)
+        super().__init__(ImportedImages.MerchantImage)
         self.rect.center = (
             0.4 * ScreenSettings.screenWidth,
             0.5 * ScreenSettings.screenHeight,

@@ -124,7 +124,8 @@ class ImportedImages:
     blood = "Src/Textures/Play/effect_032_bloodstains_1.png"
 
     # Friendly_NPCs
-    NPCImage = "Src/Textures/Play/Issac_Loot.png"  # test
+    TrainerImage = "Src/Textures/Trainer.png"
+    MerchantImage = "Src/Textures/Merchant.png"
     chatboxImage = "Src/Textures/Play/Issac_Loot.png"
 
 
