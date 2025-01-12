@@ -7,7 +7,7 @@
 
 ## **Division of Labor among Members**
     1.潘佑邦: Scripts composition; Scripts hierarchy,dependencies management
-    2.吴俊阳:
+    2.吴俊阳: Player action, NPC&LLMchatbox, Scene construction, part of the BGMs
     3.宋梓冬: Enemies.py + GameManager.py + Animations + UI/Scenes + README.md
     (The division of labor is relatively staggered, with each member contributing equally)
 
@@ -15,6 +15,17 @@
 Game Name: **The Binding of Issac**  
 Game Type: **Roguelike**  
 Game Dimension: **2D**
+
+## **Game Background**
+    Isaac lost within the maze,
+    Endless rooms, endless chase.
+    Monstrous fiends with twisted souls,
+    Await salvation, as darkness tolls.
+
+    Secrets hidden, waiting still,
+    For the brave to seek, for the bold to thrill.
+    Open the door, face what's ahead,
+    Embrace the challenge, where shadows tread.
 
 ## **Game Objectives**
     Go into every room, 
@@ -52,8 +63,8 @@ graph TD;
   Layer2_2-->|bottom|Layer3_4;
   Layer2_3-->|right|Layer3_5;
   Layer2_3-->|bottom|Layer3_6;
-  Layer2_4-->|right|Layer3_7;
-  Layer2_4-->|bottom|BossRoom;
+  Layer2_4-->|right|BossRoom;
+  Layer2_4-->|bottom|Layer3_8;
 ```
 ### Introduction : Resource System (UI)
     1. Health : Displays the value of remaining HP
@@ -78,7 +89,7 @@ graph TD;
     Possible Consequences:
     1.  +2HP
     2.  -1HP
-    3.  Tear Boost
+    3.  Tear Triplication
    
 ### Introduction : NPC : Merchant
     Everything comes at a cost !
