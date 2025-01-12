@@ -1,11 +1,18 @@
 from pygame import *
 from Statics import *
 from TmpTools.tools import *
-from GameManagers.BGMPlayer import BGMPlayer
+from BGMPlayer import BGMPlayer
 import pygame.event as ev
 
 
 class Player(pygame.sprite.Sprite):
+
+    # static variables
+    bomb_storage = 3
+    shoot_delay = 200
+    shoot_mode = 0
+    bgm_player = BGMPlayer()
+
     def __init__(self, spawn_pos: Vector2):  # spawn_pos: for transportation
         super().__init__()
         self.set_animation()
@@ -18,29 +25,13 @@ class Player(pygame.sprite.Sprite):
         self.tear_ready = pygame.sprite.GroupSingle()
         self._tears = pygame.sprite.Group()
 
-        self.shoot_mode = 0
         self.shoot_timer = 0
-        self._shoot_delay = 200
 
-        self.bgm_player = BGMPlayer()
         self.move_sound_interval = 600
-
-        # resource system : HP
-        # self.heart = pygame.sprite.GroupSingle()
-        # self.heart.add(Heart())
 
         # planting bomb
         self.bomb_group = pygame.sprite.GroupSingle()
         self.explosion_group = pygame.sprite.GroupSingle()
-        self.bomb_storage = 3
-
-    @property
-    def shoot_delay(self):
-        return self._shoot_delay
-
-    @shoot_delay.setter
-    def shoot_delay(self, value: int):
-        self._shoot_delay = value
 
     def set_animation(self):
 
@@ -193,7 +184,7 @@ class Player(pygame.sprite.Sprite):
 
             # deal with sound
             StaticMethods.play_sound_effect_once_with_interval(
-                self.bgm_player, "ISAAC_WALK", self.move_sound_interval
+                Player.bgm_player, "ISAAC_WALK", self.move_sound_interval
             )
 
     def shoot(self, keys):
@@ -217,7 +208,7 @@ class Player(pygame.sprite.Sprite):
                     keys[pygame.K_RIGHT] - keys[pygame.K_LEFT],
                     keys[pygame.K_DOWN] - keys[pygame.K_UP],
                 ).normalize()
-                self.bgm_player.play_sound_effect("ISAAC_SHOOT")
+                Player.bgm_player.play_sound_effect("ISAAC_SHOOT")
             except ValueError:
                 shooted_tear.direction = Vector2(0, 0)
 
@@ -225,7 +216,7 @@ class Player(pygame.sprite.Sprite):
             self._tears.add(shooted_tear)
 
             self.shoot_timer = pygame.time.get_ticks()
-        if pygame.time.get_ticks() - self.shoot_timer > self._shoot_delay:
+        if pygame.time.get_ticks() - self.shoot_timer > Player.shoot_delay:
             self.tear_ready.empty()
 
     def triple_shoot(self, keys):
@@ -252,22 +243,22 @@ class Player(pygame.sprite.Sprite):
                     shooted_tear = Tear(self.rect.center)
                 try:
                     shooted_tear.direction = direction.normalize()
+                    Player.bgm_player.play_sound_effect("ISAAC_SHOOT")
                 except ValueError:
                     shooted_tear.direction = Vector2(0, 0)
                 self.tear_ready.add(shooted_tear)
                 self._tears.add(shooted_tear)
 
             self.shoot_timer = pygame.time.get_ticks()
-        if pygame.time.get_ticks() - self.shoot_timer > self._shoot_delay:
+        if pygame.time.get_ticks() - self.shoot_timer > Player.shoot_delay:
             self.tear_ready.empty()
 
-    def planting(self, keys):  # plant the bomb
-        if keys[pygame.K_e] and not self.bomb_group.sprites() and self.bomb_storage > 0:
-            self.bomb_storage -= 1
-            new_bomb = Bomb(self.rect.center)
-            self.bomb_group.add(new_bomb)
-            new_explosion = Explosion(self.rect.center)
-            self.explosion_group.add(new_explosion)
+    def planting(self):  # plant the bomb
+        Player.bomb_storage -= 1
+        new_bomb = Bomb(self.rect.center)
+        self.bomb_group.add(new_bomb)
+        new_explosion = Explosion(self.rect.center)
+        self.explosion_group.add(new_explosion)
 
     def update(self, keys):
         if isinstance(self, Head):
@@ -275,16 +266,23 @@ class Player(pygame.sprite.Sprite):
         else:
             self.move(keys)
 
-        if self.shoot_mode == 0:
+        if Player.shoot_mode == 0:
             self.shoot(keys)
-        elif self.shoot_mode == 1:
+        elif Player.shoot_mode == 1:
             self.triple_shoot(keys)
-
-        self.planting(keys)
-        self._tears.update()
 
         self.bomb_group.update()
         self.explosion_group.update()
+
+        if (
+            keys[pygame.K_e]
+            and Player.bomb_storage > 0
+            and not self.bomb_group.sprites()
+        ):
+            print(Player.bomb_storage)
+            self.planting()
+            self._tears.update()
+
         if isinstance(self, Body):
             self.update_animation_body(keys)
         elif isinstance(self, Head):
@@ -445,7 +443,6 @@ class Bomb(pygame.sprite.Sprite):
             )
         self.image = self.frame[0]
         self.rect = self.image.get_rect(center=spawn_pos)
-        self.bgm_player = BGMPlayer()
 
         self.radius = BombSettings.affect_radius  # 伤害半径
         self.power = BombSettings.power  # 伤害值
@@ -463,7 +460,6 @@ class Bomb(pygame.sprite.Sprite):
             self.flicker_timer += 1
 
         if self.flicker_timer >= 9:
-            self.bgm_player.play_sound_effect("BOMB_EXPLODE")
             ev.post(
                 ev.Event(
                     Events.BOMB_EXPLOSION,

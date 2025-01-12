@@ -510,7 +510,7 @@ class NPC_Original_messages:
                     "\nIf the player get the more powerful bullets, print MORE BULLETS!!!."
                     "\nIf the player get the punishment, print PUNISHMENT!!!."
                     f"\nCurrent Hardship coefficient is {BasicSettings.Hardship_coefficient}."
-                    "\nBelow is the player's current state. Focus only on the HP."
+                    "\nBelow is the player's current state."
                 ),
             }
         ],

@@ -1,5 +1,6 @@
 import pygame
-from GameManagers.GameManager import GameManager
+from GameManager import GameManager
+
 
 def main():
 
@@ -8,6 +9,7 @@ def main():
 
     while True:
         game_manager.update()
+
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 import asyncio
 from pygame import *
-from GameManagers.BGMPlayer import BGMPlayer
+from BGMPlayer import BGMPlayer
 from Characters.Player import *
 from Characters.NPCs import *
 from Characters.Enemies import *
@@ -25,16 +25,16 @@ class GameManager:
         self.set_screen()
         self.set_icon()
         self.set_room()
+        self.set_UI()
         self.set_issac()
         self.set_NPC()
-        self.set_bgm()
         self.set_scenes()
         self.set_clock()
         self.set_heart()
         self.set_chatbox()
         self.set_boss()
-        self.set_UI()
         self.set_bloods()
+        self.set_bgm()
         self.lucky = pygame.sprite.Group()
         self._lucky = lucky()
         self.enemy_group = pygame.sprite.Group()
@@ -85,6 +85,8 @@ class GameManager:
     def set_bgm(self):
         self.bgm_player = BGMPlayer()
         self.bgm_player.switch_BGM("MAIN_THEME")
+        self.bgm_player.get_BGM_current_pos()
+        self.bgm_player.play_BGM()
 
     def set_issac(
         self,
@@ -92,10 +94,6 @@ class GameManager:
     ):
         self.isaac_group = pygame.sprite.Group()  # Isaac may be sliced
         self.isaac = Player(spawn_pos)
-        try:
-            self.isaac.shoot_mode = self.attacksystem.shoot_mode
-        except:
-            pass
         self.isaac_group.add(self.isaac)
 
     def set_NPC(self):
@@ -241,17 +239,18 @@ class GameManager:
                 self.bosshpicon.draw(self.screen)
 
             case Scenes.CHAT_BOX:
-                player_state = {
-                    "HP": str(self._heart.HP),
-                    "ATK": str(self.attacksystem.attack_num),
-                    "Shoot_Delay": str(self.isaac.shoot_delay),
-                    "Bombs": str(self.bombsystem.bomb_num),
-                    "Coins": str(self.coinsystem.coin_num),
-                }
                 if self.active_npc == self.trainer:
+                    player_state = {"HP": str(self._heart.HP)}
                     self.chatbox_group.add(self.chatbox_trainer)
                 elif self.active_npc == self.merchant:
                     self.chatbox_group.add(self.chatbox_merchant)
+                    player_state = {
+                        "HP": str(self._heart.HP),
+                        "ATK": str(self.attacksystem.attack_num),
+                        "Shoot_Delay": str(Player.shoot_delay),
+                        "Bombs": str(self.bombsystem.bomb_num),
+                        "Coins": str(self.coinsystem.coin_num),
+                    }
                 self.chatbox_group.update(self.get_keys(), player_state)
                 self.chatbox_group.draw(self.screen)
 
@@ -320,9 +319,13 @@ class GameManager:
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
                     BasicSettings.Hardship_coefficient += 1
+
                 case Events.RESTART:
                     self.bgm_player.stop_BGM()
                     self.__init__()
+                    Player.shoot_delay = 200
+                    Player.shoot_mode = 0
+                    Player.bomb_storage = 3
 
                 case Events.MAIN_TO_STARTROOM:
                     self.active_scene = Scenes.START_ROOM
@@ -344,6 +347,7 @@ class GameManager:
                     self.chatbox_group.empty()
 
                 case Events.BOMB_EXPLOSION:
+                    self.bgm_player.play_sound_effect("BOMB_EXPLODE")
                     self.bombsystem.bomb_num -= 1
                     pos = event.pos
                     radius = event.radius
@@ -378,6 +382,9 @@ class GameManager:
                     self.isaac = self.Isaac_Body
                     self.isaac_group.add(self.isaac)
                     self.isaac_group.add(self.Isaac_Head)
+                    Player.bomb_storage = 0
+                    self.isaac.bomb_group.empty()
+                    self.bombsystem.bomb_num = 0  # 炸自己bomb炸完了很合理
 
     def detect_collision(self):
         self.detect_collision_isaac_and_walls()
@@ -420,7 +427,6 @@ class GameManager:
             self.isaac.rect.move_ip(-self.isaac.movement)
 
     def detect_collision_lucky_and_isaac(self):
-
         if self._lucky.state == "destroy":
             mode = random.choice(["heart", "attack", "coin"])
             if mode == "heart":
@@ -552,15 +558,15 @@ class GameManager:
                 else:
                     self._heart.HP = PlayerSettings.PlayerHP
             case 2:
-                self.isaac.shoot_mode = 1
-                self.attacksystem.shoot_mode = 1
+                Player.shoot_mode = 1
             case 3:
                 self._heart.HP -= 1
+
         self.chatbox_trainer.buff = 0
 
         # Merchant
         self.attacksystem.attack_num += self.chatbox_merchant.atk_boost
-        self.isaac.shoot_delay -= self.chatbox_merchant.shoot_delay_shorten
+        Player.shoot_delay -= self.chatbox_merchant.shoot_delay_shorten
         self._heart.HP -= self.chatbox_merchant.costed_HP
         self.coinsystem.coin_num -= self.chatbox_merchant.costed_coins
         self.bombsystem.bomb_num += self.chatbox_merchant.bomb_gained
@@ -720,8 +726,6 @@ class GameManager:
             case Scenes.TREASURE:
                 self.set_NPC()
         self.room_clear_posted = False
-        self.bgm_player.get_BGM_current_pos()
-        self.bgm_player.play_BGM()
 
     # Coroutines
     async def async_update(self):
