@@ -66,25 +66,25 @@ graph TD;
     3. Boss(GURDY) : A special unit that fires bloodybullets and summons bloodyflies
    
 ### Introduction : Raffle machine  
-    **Cost**: 5 Coins
-    **Rewards**:
+    Cost: 5 Coins
+    Rewards:
     1.  +3 Coin
     2.  +1 Attack
     3.  +2 HP
    
 ### Introduction : NPC : Trainer  
     Please answer the questions correctly !
-    **Consequences**:
+    Possible Consequences:
     1.  +2HP
     2.  -1HP
     3.  Tear Boost
    
 ### Introduction : NPC : Merchant
     Everything comes at a cost !
-    **You may pay:**
+    You may pay:
     1.  Coins
     2.  HP
-    **You may get:**
+    You may get:
     1.  Heal
     2.  Bombs
     3.  ATK Boost
