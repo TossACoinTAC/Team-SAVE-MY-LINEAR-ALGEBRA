@@ -88,7 +88,7 @@ class GameManager:
 
     def set_issac(
         self,
-        spawn_pos=(ScreenSettings.screenWidth / 2, ScreenSettings.screenHeight / 2),
+        spawn_pos=(BasicSettings.screenWidth / 2, BasicSettings.screenHeight / 2),
     ):
         self.isaac_group = pygame.sprite.Group()  # Isaac may be sliced
         self.isaac = Player(spawn_pos)
@@ -122,33 +122,34 @@ class GameManager:
 
     def set_screen(self):
         self.screen = pygame.display.set_mode(
-            (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+            (BasicSettings.screenWidth, BasicSettings.screenHeight)
         )
-        pygame.display.set_caption(ScreenSettings.caption)
+        pygame.display.set_caption(BasicSettings.caption)
 
     def set_icon(self):
         icon = pygame.image.load(ImportedImages.icon).convert_alpha()
         pygame.display.set_icon(icon)
 
     def spawn_enemies(self):
-        self.bug1 = bug()
-        self.bug2 = bug()
-        self.enemy_group.add(self.bug1, self.bug2)
-        self.bugs.add(self.bug1, self.bug2)
-        for i in range(UpdateEnemiesSettings.flyNumber):
+        for i in range(1 + BasicSettings.Hardship_coefficient):
+            self.enemy_group.add(Bug())
+        self.bugs.add(bug for bug in self.enemy_group if isinstance(bug, Bug))
+        for i in range(
+            UpdateEnemiesSettings.flyNumber + BasicSettings.Hardship_coefficient
+        ):
             self.enemy_group.add(Fly())
 
     def spawn_boss(self):
         for i in range(UpdateEnemiesSettings.bossNumber):
             self.boss_group.add(self.bossBody, self.bossAttack)
-        for i in range(random.randint(1, 3)):
+        for i in range(random.randint(1, 3 + BasicSettings.Hardship_coefficient)):
             self.boss_group.add(
                 Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
             )
 
     # Update()
     def update(self):
-        self.clock.tick(ScreenSettings.fps)
+        self.clock.tick(BasicSettings.fps)
         asyncio.run(self.async_update())
         self.deal_events()
         self.update_scene(self.active_scene)
@@ -301,7 +302,7 @@ class GameManager:
     def update_boss_spawn_fly(self):
         if self.bossAttack.if_spwan_fly == "True":
             self.bossAttack.if_spwan_fly = "False"
-            for _ in range(random.randint(1, 3)):
+            for _ in range(random.randint(1, 3 + BasicSettings.Hardship_coefficient)):
                 self.enemy_group.add(
                     Fly_blood(self.bossAttack.rect.x, self.bossAttack.rect.y)
                 )
@@ -315,8 +316,10 @@ class GameManager:
                     exit()
                 case Events.GAME_OVER:
                     self.active_scene = Scenes.GAMEOVER
+                    BasicSettings.Hardship_coefficient = 0
                 case Events.GAME_WIN:
                     self.active_scene = Scenes.GAMEWIN
+                    BasicSettings.Hardship_coefficient += 1
                 case Events.RESTART:
                     self.bgm_player.stop_BGM()
                     self.__init__()
@@ -528,12 +531,12 @@ class GameManager:
         if StaticMethods.mask_spritecollide(self.isaac, self.room.get_walls(), False):
             self.isaac.rect.move_ip(-self.isaac.movement)
         if (
-            self.isaac.rect.left <= ScreenSettings.marginWidth + 10
+            self.isaac.rect.left <= BasicSettings.marginWidth + 10
             or self.isaac.rect.right
-            >= ScreenSettings.screenWidth - ScreenSettings.marginWidth - 10
-            or self.isaac.rect.top <= ScreenSettings.marginHeight + 10
+            >= BasicSettings.screenWidth - BasicSettings.marginWidth - 10
+            or self.isaac.rect.top <= BasicSettings.marginHeight + 10
             or self.isaac.rect.bottom
-            >= ScreenSettings.screenHeight - ScreenSettings.marginHeight - 10
+            >= BasicSettings.screenHeight - BasicSettings.marginHeight - 10
         ):
             self.isaac.rect.move_ip(-self.isaac.movement)
 
@@ -604,33 +607,33 @@ class GameManager:
             case "top":
                 self.new_room_rect = pygame.Rect(
                     0,
-                    -ScreenSettings.screenHeight,
-                    ScreenSettings.screenWidth,
-                    ScreenSettings.screenHeight,
+                    -BasicSettings.screenHeight,
+                    BasicSettings.screenWidth,
+                    BasicSettings.screenHeight,
                 )
                 roomID = int(roomID / 2)
             case "bottom":
                 self.new_room_rect = pygame.Rect(
                     0,
-                    ScreenSettings.screenHeight,
-                    ScreenSettings.screenWidth,
-                    ScreenSettings.screenHeight,
+                    BasicSettings.screenHeight,
+                    BasicSettings.screenWidth,
+                    BasicSettings.screenHeight,
                 )
                 roomID = roomID * 2
             case "left":
                 self.new_room_rect = pygame.Rect(
-                    -ScreenSettings.screenWidth,
+                    -BasicSettings.screenWidth,
                     0,
-                    ScreenSettings.screenWidth,
-                    ScreenSettings.screenHeight,
+                    BasicSettings.screenWidth,
+                    BasicSettings.screenHeight,
                 )
                 roomID = int((roomID - 1) / 2)
             case "right":
                 self.new_room_rect = pygame.Rect(
-                    ScreenSettings.screenWidth,
+                    BasicSettings.screenWidth,
                     0,
-                    ScreenSettings.screenWidth,
-                    ScreenSettings.screenHeight,
+                    BasicSettings.screenWidth,
+                    BasicSettings.screenHeight,
                 )
                 roomID = roomID * 2 + 1
 
@@ -672,8 +675,8 @@ class GameManager:
                 if self.new_room_rect.top >= 0:
                     self.new_room_rect.top = 0
                     isaac_spawn_pos = (
-                        ScreenSettings.screenWidth / 2,
-                        ScreenSettings.screenHeight - 150 - 10,
+                        BasicSettings.screenWidth / 2,
+                        BasicSettings.screenHeight - 150 - 10,
                     )
                     await self.stop_transition(isaac_spawn_pos)
 
@@ -682,7 +685,7 @@ class GameManager:
                 self.new_room.rect.move_ip(0, -self.transition_speed_vertical)
                 if self.new_room_rect.top <= 0:
                     self.new_room_rect.top = 0
-                    isaac_spawn_pos = (ScreenSettings.screenWidth / 2, 150 + 10)
+                    isaac_spawn_pos = (BasicSettings.screenWidth / 2, 150 + 10)
                     await self.stop_transition(isaac_spawn_pos)
 
             case "left":
@@ -691,8 +694,8 @@ class GameManager:
                 if self.new_room_rect.left >= 0:
                     self.new_room_rect.left = 0
                     isaac_spawn_pos = (
-                        ScreenSettings.screenWidth - 300,
-                        ScreenSettings.screenHeight / 2,
+                        BasicSettings.screenWidth - 300,
+                        BasicSettings.screenHeight / 2,
                     )
                     await self.stop_transition(isaac_spawn_pos)
 
@@ -701,7 +704,7 @@ class GameManager:
                 self.new_room.rect.move_ip(-self.transition_speed_horizontal, 0)
                 if self.new_room_rect.left <= 0:
                     self.new_room_rect.left = 0
-                    isaac_spawn_pos = (300, ScreenSettings.screenHeight / 2)
+                    isaac_spawn_pos = (300, BasicSettings.screenHeight / 2)
                     await self.stop_transition(isaac_spawn_pos)
 
     async def stop_transition(self, isaac_spawn_pos):

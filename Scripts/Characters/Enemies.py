@@ -4,6 +4,7 @@ import random
 from Statics import *
 from math import *
 
+
 class blood(pygame.sprite.Sprite):
     def __init__(self, x, y, index):
         super().__init__()
@@ -16,11 +17,12 @@ class blood(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
     def update(self):
         pass
 
 
-class bug(pygame.sprite.Sprite):
+class Bug(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.set_attribute()
@@ -39,11 +41,15 @@ class bug(pygame.sprite.Sprite):
         self.frames_rects_up = EnemiesSettings.bug.frames_rects_up
         self.frames_rects_down = EnemiesSettings.bug.frames_rects_down
         self.frames_rects_run = EnemiesSettings.bug.frames_rects_run
-        
+
         sheet = pygame.image.load(ImportedImages.bug)
         for frame_rect in self.frames_rects_left_or_right:
             self.frames_right.append(get_images(sheet, *frame_rect, (0, 0, 0), 2.0))
-            self.frames_left.append(pygame.transform.flip(get_images(sheet, *frame_rect , (0, 0, 0), 2.0), True, False))
+            self.frames_left.append(
+                pygame.transform.flip(
+                    get_images(sheet, *frame_rect, (0, 0, 0), 2.0), True, False
+                )
+            )
         for frame_rect in self.frames_rects_up:
             self.frames_up.append(get_images(sheet, *frame_rect, (0, 0, 0), 2.0))
         for frame_rect in self.frames_rects_down:
@@ -54,20 +60,19 @@ class bug(pygame.sprite.Sprite):
     def set_position(self):
         self.image = self.frames_down[0]
         self.rect = self.image.get_rect()
-        self.rect.centerx = random.choice([200,500,800])
-        self.rect.centery = random.choice([200,400,600])
+        self.rect.centerx = random.choice([200, 500, 800])
+        self.rect.centery = random.choice([200, 400, 600])
 
     def update_animation(self):
 
-        if self.move_direction == 'right':
+        if self.move_direction == "right":
             self.frames = self.frames_right
-        if self.move_direction == 'left':
+        if self.move_direction == "left":
             self.frames = self.frames_left
-        if self.move_direction == 'up':
+        if self.move_direction == "up":
             self.frames = self.frames_up
-        if self.move_direction == 'down':
+        if self.move_direction == "down":
             self.frames = self.frames_down
-    
 
         current_time = pygame.time.get_ticks()
         if self.timer_animation == 0:
@@ -78,68 +83,68 @@ class bug(pygame.sprite.Sprite):
             self.timer_animation = current_time
         if self.speed_run == 0:
             self.image = self.frames[self.frames_index]
-        if self.speed_run == 2 and self.move_direction == 'down':
+        if self.speed_run == 2 and self.move_direction == "down":
             self.image = self.frames_run[0]
-        if self.speed_run == 2 and self.move_direction == 'up':
+        if self.speed_run == 2 and self.move_direction == "up":
             self.image = self.frames_run[2]
-        if self.speed_run == 2 and self.move_direction == 'right':
+        if self.speed_run == 2 and self.move_direction == "right":
             self.image = self.frames_run[1]
-        if self.speed_run == 2 and self.move_direction == 'left':
+        if self.speed_run == 2 and self.move_direction == "left":
             self.image = pygame.transform.flip(self.frames_run[1], True, False)
-
 
     def update_position(self):
 
-        if self.move_direction == 'right':
-            self.rect.x += (EnemiesSettings.bug.speed + self.speed_run)
-            if self.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth:
-                self.move_direction = 'left'
-        elif self.move_direction == 'left':
-            self.rect.x -= (EnemiesSettings.bug.speed + self.speed_run)
-            if self.rect.left <= ScreenSettings.marginWidth:
-                self.move_direction = 'right'
-        elif self.move_direction == 'up':
-            self.rect.y -= (EnemiesSettings.bug.speed + self.speed_run)  
-            if self.rect.top <= ScreenSettings.marginHeight:
-                self.move_direction = 'down'    
-        elif self.move_direction == 'down':
-            self.rect.y += (EnemiesSettings.bug.speed + self.speed_run)
-            if self.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight:
-                self.move_direction = 'up'
+        if self.move_direction == "right":
+            self.rect.x += EnemiesSettings.bug.speed + self.speed_run
+            if self.rect.right >= BasicSettings.screenWidth - BasicSettings.marginWidth:
+                self.move_direction = "left"
+        elif self.move_direction == "left":
+            self.rect.x -= EnemiesSettings.bug.speed + self.speed_run
+            if self.rect.left <= BasicSettings.marginWidth:
+                self.move_direction = "right"
+        elif self.move_direction == "up":
+            self.rect.y -= EnemiesSettings.bug.speed + self.speed_run
+            if self.rect.top <= BasicSettings.marginHeight:
+                self.move_direction = "down"
+        elif self.move_direction == "down":
+            self.rect.y += EnemiesSettings.bug.speed + self.speed_run
+            if (
+                self.rect.bottom
+                >= BasicSettings.screenHeight - BasicSettings.marginHeight
+            ):
+                self.move_direction = "up"
 
         current_time = pygame.time.get_ticks()
         if self.timer_move_direction == 0:
             self.timer_move_direction = current_time + random.randint(0, 1000)
         elif current_time - self.timer_move_direction > random.randint(1500, 3000):
             self.timer_move_direction = current_time
-            self.move_direction = random.choice(['right', 'left', 'up', 'down'])
-        
+            self.move_direction = random.choice(["right", "left", "up", "down"])
+
         current_time_run = pygame.time.get_ticks()
         if self.timer_run_interval == 0:
-            self.timer_run_interval = current_time_run + random.randint(0,500)
+            self.timer_run_interval = current_time_run + random.randint(0, 500)
         elif current_time_run - self.timer_run_interval > random.randint(1000, 1500):
             self.timer_run_interval = current_time_run
             self.speed_run = random.choice([0, 0, 2])
 
-        
     def set_attribute(self):
         self.HP = EnemiesSettings.bug.HP
         self.bornHP = self.HP
         self.state = "live"
         self.speed_run = 0
-        self.move_direction = random.choice(['left', 'right', 'up', 'down'])
+        self.move_direction = random.choice(["left", "right", "up", "down"])
         self.timer_animation = 0
         self.timer_move_direction = 0
         self.timer_run_interval = 0
-
 
     def update(self):
 
         self.update_animation()
         self.update_position()
         if self.HP <= 0:
-            self.state = 'die'
-        if self.state == 'die':
+            self.state = "die"
+        if self.state == "die":
             self.kill()
 
 
@@ -210,26 +215,34 @@ class Monster(pygame.sprite.Sprite):
             self.state = "die"
 
     def detect_collision(self):
-        # if self.rect.left <= ScreenSettings.marginWidth or self.rect.right >= (
-        #     ScreenSettings.screenWidth - ScreenSettings.marginWidth
+        # if self.rect.left <= BasicSettings.marginWidth or self.rect.right >= (
+        #     BasicSettings.screenWidth - BasicSettings.marginWidth
         # ):
         #     self.speed_x = -self.speed_x
-        # if self.rect.top <= ScreenSettings.marginHeight or self.rect.bottom >= (
-        #     ScreenSettings.screenHeight - ScreenSettings.marginHeight
+        # if self.rect.top <= BasicSettings.marginHeight or self.rect.bottom >= (
+        #     BasicSettings.screenHeight - BasicSettings.marginHeight
         # ):
         #     self.speed_y = -self.speed_y
-        if self.rect.left <= ScreenSettings.marginWidth + 20:
+        if self.rect.left <= BasicSettings.marginWidth + 20:
             self.speed_x = -self.speed_x
-            self.rect.left = ScreenSettings.marginWidth + 21
-        if self.rect.right >= ScreenSettings.screenWidth - ScreenSettings.marginWidth - 20:
+            self.rect.left = BasicSettings.marginWidth + 21
+        if (
+            self.rect.right
+            >= BasicSettings.screenWidth - BasicSettings.marginWidth - 20
+        ):
             self.speed_x = -self.speed_x
-            self.rect.right = ScreenSettings.screenWidth - ScreenSettings.marginWidth - 21
-        if self.rect.top <= ScreenSettings.marginHeight + 20:
+            self.rect.right = BasicSettings.screenWidth - BasicSettings.marginWidth - 21
+        if self.rect.top <= BasicSettings.marginHeight + 20:
             self.speed_y = -self.speed_y
-            self.rect.top = ScreenSettings.marginHeight + 21
-        if self.rect.bottom >= ScreenSettings.screenHeight - ScreenSettings.marginHeight - 20:
+            self.rect.top = BasicSettings.marginHeight + 21
+        if (
+            self.rect.bottom
+            >= BasicSettings.screenHeight - BasicSettings.marginHeight - 20
+        ):
             self.speed_y = -self.speed_y
-            self.rect.bottom = ScreenSettings.screenHeight - ScreenSettings.marginHeight - 21
+            self.rect.bottom = (
+                BasicSettings.screenHeight - BasicSettings.marginHeight - 21
+            )
 
     def update_position(self):
 
@@ -323,8 +336,8 @@ class BossBody(pygame.sprite.Sprite):
         self.HP = BossSettings.health_bar.max
 
     def set_position(self):
-        self.rect.centerx = 0.5 * ScreenSettings.screenWidth
-        self.rect.centery = 0.3 * ScreenSettings.screenHeight
+        self.rect.centerx = 0.5 * BasicSettings.screenWidth
+        self.rect.centery = 0.3 * BasicSettings.screenHeight
 
     def set_clock(self):
         self.animation_timer = 0
@@ -375,8 +388,8 @@ class BossAttack(pygame.sprite.Sprite):
         self.if_spwan_fly = "False"
 
     def set_position(self):
-        self.rect.centerx = 0.5 * ScreenSettings.screenWidth
-        self.rect.centery = 0.22 * ScreenSettings.screenHeight
+        self.rect.centerx = 0.5 * BasicSettings.screenWidth
+        self.rect.centery = 0.22 * BasicSettings.screenHeight
 
     def set_clock(self):
         self.timer = 0

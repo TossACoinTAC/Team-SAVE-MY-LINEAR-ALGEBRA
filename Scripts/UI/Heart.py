@@ -1,6 +1,8 @@
 from pygame import *
 from Statics import *
 from TmpTools.tools import *
+
+
 class Heart(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -20,20 +22,19 @@ class Heart(pygame.sprite.Sprite):
         self.rect.x = UISettings.heart.x
         self.rect.y = UISettings.heart.y
         self.HP = PlayerSettings.PlayerHP
-        self.state = 'normal'
+        self.state = "normal"
         self.timer = 0
 
     def update(self):
 
         current_time = pygame.time.get_ticks()
-        if self.state == 'reduce' and current_time - self.timer > 1000:
-            self.HP -= 1
+        if self.state == "reduce" and current_time - self.timer > 1000:
+            self.HP -= 1 + BasicSettings.Hardship_coefficient // 2
             self.timer = current_time
         else:
-            self.state = 'normal'
+            self.state = "normal"
 
         if self.HP == 0:
             event.post(event.Event(Events.GAME_OVER))
             # 触发事件游戏结束
         self.image = self.frame[6 - self.HP]
-

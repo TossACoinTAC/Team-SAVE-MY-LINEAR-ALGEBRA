@@ -141,7 +141,7 @@ class ImportedBGM:
 
 
 # Settings
-class ScreenSettings:
+class BasicSettings:
     screenWidth = 1280
     screenHeight = 720
 
@@ -154,6 +154,7 @@ class ScreenSettings:
 
     caption = "The Binding of Issac"
     fps = 60
+    Hardship_coefficient = 0
 
 
 class UpdateEnemiesSettings:
@@ -357,12 +358,12 @@ class ShopSettings:
     class price:
         MULTI = 1.5
         ALPHA = 256
-        x = 0.5 * ScreenSettings.screenWidth
-        y = 0.5 * ScreenSettings.screenHeight - 30
+        x = 0.5 * BasicSettings.screenWidth
+        y = 0.5 * BasicSettings.screenHeight - 30
 
     class lucky:
-        x = 0.5 * ScreenSettings.screenWidth
-        y = 0.5 * ScreenSettings.screenHeight
+        x = 0.5 * BasicSettings.screenWidth
+        y = 0.5 * BasicSettings.screenHeight
 
 
 class GameWinSettings:
@@ -508,6 +509,7 @@ class NPC_Original_messages:
                     "\nIf the player get the HP+2, print HEAL!!!."
                     "\nIf the player get the more powerful bullets, print MORE BULLETS!!!."
                     "\nIf the player get the punishment, print PUNISHMENT!!!."
+                    f"\nCurrent Hardship coefficient is {BasicSettings.Hardship_coefficient}."
                     "\nBelow is the player's current state. Focus only on the HP."
                 ),
             }
@@ -528,6 +530,7 @@ class NPC_Original_messages:
                     "\nEach time the player buys 1 ATK booster, print BATTLE!!!."
                     "\nEach time the player buys 1 tear booster, print FIERCE TEAR!!!."
                     "\nEach time the player buys 1 bomb, print BOMB!!!."
+                    f"\nCurrent Hardship coefficient is {BasicSettings.Hardship_coefficient}."
                     "\nBelow is the player's current state."
                 ),
             }

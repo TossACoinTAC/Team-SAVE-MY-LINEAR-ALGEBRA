@@ -6,7 +6,7 @@
     3. 宋梓冬 2024533002
 
 ## **Division of Labor among Members**
-    1.潘佑邦:
+    1.潘佑邦: Scripts composition; Scripts hierarchy,dependencies management.
     2.吴俊阳:
     3.宋梓冬: README.md
 
@@ -18,6 +18,8 @@ Game Dimension: **2D**
 ## **Game Objectives**
     Go into every room, 
     kill all monsters, 
+    collect coins,
+    meet friendly(?) NPCs,
     become as strong as possible, 
     kill the final boss...
     AND THEN ?
