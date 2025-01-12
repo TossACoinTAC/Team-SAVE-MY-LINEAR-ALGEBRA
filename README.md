@@ -53,8 +53,8 @@ graph TD;
 ### Introduction : Resource System (UI)
     1. Health : Displays the value of the health bar
     2. Coin : Displays the number of the gold coin
-    3. Attack :  Displays the value of the gold coin
-    4. Bomb : Displays the number of the gold coin
+    3. Attack :  Displays the value of the attack
+    4. Bomb : Displays the number of the bomb
    
 ### Introduction : Enemies
     1. Fly/BloodyFly : A Flying unit that move randomly
