@@ -1,5 +1,14 @@
+# Originally the requirements file for Dockerfile
+# But docker image failed because pygame.mixer need the host's speaker to play sound
+
 pygame==2.6.1
 openai==1.58.1
+
+# to parse AI's markdown text to plain text
+Markdown==3.7
+bs4==0.0.2
+
+python=3.13.0
 
 Reading readme.md requires installation: 
 1. Markdown Preview Mermaid Support

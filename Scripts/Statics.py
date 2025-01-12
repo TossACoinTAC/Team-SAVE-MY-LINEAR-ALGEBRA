@@ -112,7 +112,7 @@ class ImportedImages:
     ReplayButton = "Src/backselectwidget.png"
     deathPortraits = "Src/death portraits.png"
 
-    #GameOver
+    # GameOver
     GameOver = "Src/gameover.png"
 
     # Enemies
@@ -430,7 +430,8 @@ class EnemiesSettings:
             (0, 64, 48, 32),
             (0, 96, 48, 32),
             (0, 128, 48, 32),
-            (0, 160, 48, 32)]
+            (0, 160, 48, 32),
+        ]
 
     class bug:
         HP = 3
@@ -496,13 +497,17 @@ class NPC_Original_messages:
             {
                 "role": "system",
                 "content": (
-                    "You are a guardian for the castle. Your mission is to test whether the player is clever enough. "
-                    "So you should ask the player three Maths questions. If the player answers correctly for at least two of them, "
-                    "the player will get a reward. Otherwise, the player will be punished. The first and second questions are very simple. "
-                    "But the third one should be about calculus and linear algebra, don't tell the player, give him a surprise."
-                    "The reward is an extra blood volumn. The punishment is to reduce the player's blood volumn."
-                    "If you want to give the reward, check whether the player's blood volumn if full, if it's full, then strengthen him to use more powerful bullets."
-                    "If the player get the extra blood, print EXTRA BLOOD!!!, if the player get the more powerful bullets, print MORE BULLETS!!!, if the player get the punishment, print PUNISHMENT!!!."
+                    "\nYou are a guardian for the castle. Your mission is to test whether the player is clever enough. "
+                    "\nYou should ask the player three math questions."
+                    "\nIf the player answers correctly for at least two of them, the player will get a reward. "
+                    "\nOtherwise, the player will be punished. The first and second questions are very simple. "
+                    "\nThe third one should be about calculus or linear algebra."
+                    "\nBefore giving the reward, check whether the player's HP is 6, which is full."
+                    "\nIf it's full, strengthen him to be able to use more powerful bullets."
+                    "\nIf the player get the HP+2, print HEAL!!!."
+                    "\nIf the player get the more powerful bullets, print MORE BULLETS!!!."
+                    "\nIf the player get the punishment, print PUNISHMENT!!!."
+                    "\nBelow is the player's current state. Focus only on the HP."
                 ),
             }
         ],
@@ -510,13 +515,19 @@ class NPC_Original_messages:
             {
                 "role": "system",
                 "content": (
-                    "You are a merchant."
-                    "If the player want to be stronger, you can buy him a mother's heart"
-                    "If the player want to be faster, you can buy him a mother's foot"
-                    "If the player want to be luckier, you can buy him a mother's hand"
-                    "If the player want to be more powerful, you can buy him a mother's brain"
-                    "If the player want gifts, you can buy him a mother's kiss"
-                    "Else, you can buy him a mother's tear"
+                    "You are an evil demon merchant thirsty for gold and blood. You can sell at most 4 items to the player."
+                    "\nDon't sell if the player can't afford."
+                    "\nYou should judge what the player is eager to buy depending on his current state."
+                    "\nYou have 3 healers, 3 ATK boosters, 3 tear boosters and 3 bombs"
+                    "\nHealer heals 1 HP, ATK booster boosts 1 ATK, and tear booster shortens shoot delay by 25."
+                    "\nEach healer costs 3 coins, each bomb costs 2 coins."
+                    "\nEach ATK booster or tear booster costs 1 HP."
+                    "\nTo the player, 6 HP is full, lowest ATK is 1, 5 ATK is very high, longest delay is 200, 150 delay is very short."
+                    "\nEach time the player buys 1 healer, print HEAL!!!."
+                    "\nEach time the player buys 1 ATK booster, print BATTLE!!!."
+                    "\nEach time the player buys 1 tear booster, print FIERCE TEAR!!!."
+                    "\nEach time the player buys 1 bomb, print BOMB!!!."
+                    "\nBelow is the player's current state."
                 ),
             }
         ],
