@@ -225,6 +225,21 @@ class ChatBox(pygame.sprite.Sprite):
                 self.input_text += " "
             inputed = True
 
+        elif keys[pygame.K_LSHIFT] and keys[pygame.K_EQUALS]:
+            if self.input_text and self.allow_input:
+                self.input_text += "+"
+            inputed = True
+
+        elif keys[pygame.K_LSHIFT] and keys[pygame.K_9]:
+            if self.input_text and self.allow_input:
+                self.input_text += "("
+            inputed = True
+
+        elif keys[pygame.K_LSHIFT] and keys[pygame.K_0]:
+            if self.input_text and self.allow_input:
+                self.input_text += ")"
+            inputed = True
+
         else:
             for key in range(len(keys)):
                 if keys[key]:

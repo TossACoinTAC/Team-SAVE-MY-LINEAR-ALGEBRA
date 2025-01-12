@@ -14,9 +14,20 @@ RoomTree = []  #记录房间关系
 scene_choices = ["COMMON_ROOM","SHOP","TREASURE","SECRET","BLUEWOMB"]
 root = "START_ROOM"
     
+max_depth = 4 
+RoomType = []
+RoomType.append(" ")
+catacombPlace = random.choice([9,11,13,15])
+for i in range(1,2**max_depth):
+    x = random.choice(scene_choices)
+    if i == catacombPlace:
+        x = "CATACOMB"
+    if i == 1:  
+        x = root
+    RoomType.append(x)
+
 
 def add_children(node, depth, shop_added, treasure_added, catacomb_added):
-    max_depth = 4
     if depth == max_depth:
         RoomTree.append(node)
         return
@@ -24,24 +35,8 @@ def add_children(node, depth, shop_added, treasure_added, catacomb_added):
     choices = scene_choices.copy()
 
     if choices:
-        leftson = random.choice(choices)
-        if leftson == "SHOP":
-            choices.remove("SHOP")
-        if leftson == "TREASURE":
-            choices.remove("TREASURE")
-        if leftson == "CATACOMB":
-            choices.remove("CATACOMB")
-        rightson = random.choice(choices)
-        if rightson == "SHOP":
-            choices.remove("SHOP")
-        if rightson == "TREASURE":
-            choices.remove("TREASURE")
-        if rightson == "CATACOMB":
-            choices.remove("CATACOMB")
-        if node.id == 2**(max_depth-2) and "CATACOMB" not in choices:
-            rightson = "CATACOMB"
-        if node.id == random.randint(2**(max_depth-2),2**(max_depth-1)-1):
-            rightson = "CATACOMB"
+        leftson = RoomType[node.id * 2]
+        rightson = RoomType[node.id * 2 + 1]
 
         node.left = MapTree(node.id * 2, leftson)
         node.left.father = node
@@ -76,7 +71,5 @@ RoomTree.append(MapTree(
 RoomTree.sort(key=lambda room: room.id)
 BossRoom_location = 1
 for room in RoomTree:
-
     if room.value == "CATACOMB":
         BossRoom_location = room.id
-print(BossRoom_location)

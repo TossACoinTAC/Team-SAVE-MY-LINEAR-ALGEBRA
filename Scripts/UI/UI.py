@@ -38,6 +38,7 @@ class attack(StaticState):
             UISettings.attack.MULTI,
             UISettings.attack.ALPHA)
         self.attack_num = 1
+        self.shoot_mode = 0
     def update(self, screen):
         fonts = pygame.font.Font('Src/fonts/IsaacGame.ttf', 48) #"Src/fonts/prices.psd"
         attack_text = fonts.render(f"{self.attack_num}", True, (225, 225, 225))

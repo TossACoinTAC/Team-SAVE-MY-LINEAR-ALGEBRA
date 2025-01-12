@@ -92,6 +92,10 @@ class GameManager:
     ):
         self.isaac_group = pygame.sprite.Group()  # Isaac may be sliced
         self.isaac = Player(spawn_pos)
+        try:
+            self.isaac.shoot_mode = self.attacksystem.shoot_mode
+        except:
+            pass
         self.isaac_group.add(self.isaac)
 
     def set_NPC(self):
@@ -389,6 +393,7 @@ class GameManager:
                 self.detect_collision_bloodytear_and_isaac()
                 self.detect_collision_boss_and_isaac()
                 self.detect_collision_tears_and_enemies()
+                self.detect_collision_isaac_and_enemies()
 
     def detect_collision_bug_and_wall(self):
         collided_bug_and_wall = StaticMethods.mask_groupcollide(
@@ -551,6 +556,7 @@ class GameManager:
                     self._heart.HP = PlayerSettings.PlayerHP
             case 2:
                 self.isaac.shoot_mode = 1
+                self.attacksystem.shoot_mode = 1
             case 3:
                 self._heart.HP -= 1
         self.chatbox_trainer.buff = 0
