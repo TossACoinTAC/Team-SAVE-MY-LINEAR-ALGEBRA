@@ -8,7 +8,8 @@
 ## **Division of Labor among Members**
     1.潘佑邦: Scripts composition; Scripts hierarchy,dependencies management
     2.吴俊阳:
-    3.宋梓冬: README.md
+    3.宋梓冬: Enemies.py + GameManager.py + Animations + UI/Scenes + README.md
+    (The division of labor is relatively staggered, with each member contributing equally)
 
 ## **Game Overview**
 Game Name: **The Binding of Issac**  
@@ -95,7 +96,5 @@ graph TD;
     Every time you beat the boss and restart your adventure, 
     your enemies will become stronger, 
     ever until taking your life away.
-
-   
 
 ## ANIMATION is the SOUL of GAME !
