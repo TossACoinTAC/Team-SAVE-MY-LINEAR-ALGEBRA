@@ -80,6 +80,7 @@ class ChatBox(pygame.sprite.Sprite):
 
         self.linenumber = 2
         self.y_offset = 20
+        self.important_text = " "
 
         self._buff = 0
 
@@ -146,7 +147,12 @@ class ChatBox(pygame.sprite.Sprite):
         self.image.fill(self.BG_COLOR)
         self.y_offset = 20
         for line in self.chat_log[-2:]:  # 显示最后 2 条记录
-            self.render_wrapped_text(line, 20, self.y_offset)
+            #print("LINE"+line)             #debug
+            #print("IMPORTANT"+self.important_text)
+            if self.important_text in line and self.important_text != " ":
+                self.render_wrapped_text(line, 20, self.y_offset, (255,0,0))
+            else:
+                self.render_wrapped_text(line, 20, self.y_offset)
             self.y_offset += 25
 
         # 显示输入框
@@ -163,6 +169,9 @@ class ChatBox(pygame.sprite.Sprite):
         inputed = False
         if keys[pygame.K_RETURN]:
             if self.input_text.strip() and self.allow_input:
+
+                self.important_text = " "
+
                 # 添加玩家输入到聊天日志
                 self.chat_log.append(f"You: {self.input_text.strip()}")
 
@@ -195,24 +204,31 @@ class ChatBox(pygame.sprite.Sprite):
                     self.chat_log.append(f"Trainer: {response}")
                     if "HEAL" in response:
                         self._buff = 1
+                        self.important_text += response
                     if "MORE BULLETS" in response:
                         self._buff = 2
+                        self.important_text += response
                     if "PUNISHMENT" in response:
                         self._buff = 3
+                        self.important_text += response
                 elif self.npc_type == "Merchant":
                     self.chat_log.append(f"Merchant: {response}")
                     if "HEAL" in response:
                         self._costed_coins += 3
                         self._costed_HP -= 1
+                        self.important_text += response
                     if "BATTLE" in response:
                         self._atk_boost += 1
                         self._costed_HP += 1
+                        self.important_text += response
                     if "FIERCE TEAR" in response:
                         self._shoot_delay_shorten += 25
                         self._costed_HP += 1
+                        self.important_text += response
                     if "BOMB" in response:
                         self._costed_coins += 2
                         self._bomb_gained += 1
+                        self.important_text += response
                 self.input_text = ""
             inputed = True
 
@@ -227,17 +243,17 @@ class ChatBox(pygame.sprite.Sprite):
             inputed = True
 
         elif keys[pygame.K_LSHIFT] and keys[pygame.K_EQUALS]:
-            if self.input_text and self.allow_input:
+            if self.allow_input:
                 self.input_text += "+"
             inputed = True
 
         elif keys[pygame.K_LSHIFT] and keys[pygame.K_9]:
-            if self.input_text and self.allow_input:
+            if self.allow_input:
                 self.input_text += "("
             inputed = True
 
         elif keys[pygame.K_LSHIFT] and keys[pygame.K_0]:
-            if self.input_text and self.allow_input:
+            if self.allow_input:
                 self.input_text += ")"
             inputed = True
 
@@ -245,7 +261,10 @@ class ChatBox(pygame.sprite.Sprite):
             for key in range(len(keys)):
                 if keys[key]:
                     if self.allow_input:
-                        self.input_text += pygame.key.name(key)
+                        if keys[pygame.K_LSHIFT] and pygame.K_a <= key <= pygame.K_z:
+                            self.input_text += pygame.key.name(key).upper()
+                        else:
+                            self.input_text += pygame.key.name(key)
                     inputed = True
                     break
 
