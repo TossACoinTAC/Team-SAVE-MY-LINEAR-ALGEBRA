@@ -396,14 +396,32 @@ class GameManager:
                 self.detect_collision_bug_and_wall()
             case Scenes.SHOP:
                 self.detect_collision_lucky_and_isaac()
+                self.detect_collision_lucky_and_tears()
             case Scenes.TREASURE:
                 self.detect_collision_isaac_and_NPC()
+                self.detect_collision_NPC_and_tears()
             case Scenes.CATACOMB:
                 self.detect_collision_bloodytear_and_frames()
                 self.detect_collision_bloodytear_and_isaac()
                 self.detect_collision_boss_and_isaac()
                 self.detect_collision_tears_and_enemies()
                 self.detect_collision_isaac_and_enemies()
+
+    def detect_collision_NPC_and_tears(self):
+        collided_NPC_and_tears = StaticMethods.mask_groupcollide(self.NPC_group, self.isaac.tears, False, False)
+        for npc, tears in collided_NPC_and_tears.items():
+            for tear in tears:
+                if tear.state == 'live':
+                    tear.state = 'die'
+                    self.bgm_player.play_sound_effect("TEAR_HIT")
+
+    def detect_collision_lucky_and_tears(self):
+        collided_lucky_and_tears = StaticMethods.mask_groupcollide(self.lucky, self.isaac.tears, False, False)
+        for lucky, tears in collided_lucky_and_tears.items():
+            for tear in tears:
+                if tear.state == 'live':
+                    tear.state = 'die'
+                    self.bgm_player.play_sound_effect("TEAR_HIT")
 
     def detect_collision_bug_and_wall(self):
         collided_bug_and_wall = StaticMethods.mask_groupcollide(
