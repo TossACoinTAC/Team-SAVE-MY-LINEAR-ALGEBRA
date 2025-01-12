@@ -91,8 +91,10 @@ graph TD;
     4.  ATK Speed Boost
     The Merchant may decide what to sell or whether to sell based on your current state.
 
-### Introduction : Hardship_Coefficient
-    Every time you beat the boss and restart your adventure, your enemies will become stronger, ever until taking your life away.
+### Introduction : Hardship Coefficient
+    Every time you beat the boss and restart your adventure, 
+    your enemies will become stronger, 
+    ever until taking your life away.
 
    
 
