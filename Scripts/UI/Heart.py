@@ -1,6 +1,7 @@
 from pygame import *
 from Statics import *
 from TmpTools.tools import *
+from GameManagers.BGMPlayer import BGMPlayer
 
 
 class Heart(pygame.sprite.Sprite):
@@ -24,13 +25,15 @@ class Heart(pygame.sprite.Sprite):
         self.HP = PlayerSettings.PlayerHP
         self.state = "normal"
         self.timer = 0
+        self.bgm_player = BGMPlayer()
 
     def update(self):
-
         current_time = pygame.time.get_ticks()
         if self.state == "reduce" and current_time - self.timer > 1000:
             self.HP -= 1 + BasicSettings.Hardship_coefficient // 2
             self.timer = current_time
+            self.bgm_player.play_sound_effect("ISAAC_HURT")
+
         else:
             self.state = "normal"
 

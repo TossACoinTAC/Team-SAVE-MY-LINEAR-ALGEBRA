@@ -462,11 +462,9 @@ class GameManager:
             self.isaac, self.boss_group, False
         )
         for enemy in collided_isaac_and_enemies:
-
             if enemy.state == "live":
                 for heart in self.heart:
                     heart.state = "reduce"
-
         if self.bossBody.state == "live" and collided_isaac_and_boss:
             for heart in self.heart:
                 heart.state = "reduce"
@@ -475,9 +473,7 @@ class GameManager:
         collided_isaac_and_bloodytear = StaticMethods.mask_spritecollide(
             self.isaac, self.bloodyTears, False
         )
-
         for bloodytear in collided_isaac_and_bloodytear:
-
             if bloodytear.state == "live":
                 for heart in self.heart:
                     heart.state = "reduce"
