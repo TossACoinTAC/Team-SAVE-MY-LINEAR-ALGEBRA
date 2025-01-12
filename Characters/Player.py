@@ -279,7 +279,6 @@ class Player(pygame.sprite.Sprite):
             and Player.bomb_storage > 0
             and not self.bomb_group.sprites()
         ):
-            print(Player.bomb_storage)
             self.planting()
             self._tears.update()
 

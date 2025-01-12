@@ -48,7 +48,7 @@ Game Dimension: **2D**
 ### Introduction : Map
     1. MapTree：We use a binary tree to implement the map: random generation + iterative backtracking
     2. After removing all Enemies in a room, the doors to adjacent rooms will open
-    3. Room Types：CommonRoom + BossRoom + ShopRoom + NPCRoom.
+    3. Room Types：CommonRoom(Enemies) + BossRoom + LuckyRoom(Raffle Machine) + NPCRoom.
 ```mermaid
 graph TD;
   StartRoom-->|right|Layer1_1;
@@ -77,7 +77,7 @@ graph TD;
     2. Bug : A land unit that sprints randomly in four directions, hurts player when hitting
     3. Boss(GURDY) : A special unit that fires bloodybullets and summons bloodyflies
    
-### Introduction : Raffle machine  
+### Introduction : Raffle Machine  
     Cost: 5 Coins
     Rewards:
     1.  +3 Coin
