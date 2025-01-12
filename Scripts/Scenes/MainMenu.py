@@ -64,7 +64,7 @@ class BackGround(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(ImportedImages.BackGround)
         self.image = pygame.transform.scale(
-            self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+            self.image, (BasicSettings.screenWidth, BasicSettings.screenHeight)
         )
         self.rect = self.image.get_rect()
 
@@ -79,18 +79,25 @@ class StartButton(pygame.sprite.Sprite):
         self.image = pygame.image.load(ImportedImages.StartButton)
         self.rect = self.image.get_rect()
 
-
         self.rect.centerx = MainMenuSettings.StartButton.x
         self.rect.centery = MainMenuSettings.StartButton.y
 
         self.scaled_images = {
-            1: pygame.transform.smoothscale(self.image, (self.rect.width * 3, self.rect.height * 3)),
-            1.2: pygame.transform.smoothscale(self.image, (self.rect.width * 3.6, self.rect.height * 3.6))}
+            1: pygame.transform.smoothscale(
+                self.image, (self.rect.width * 3, self.rect.height * 3)
+            ),
+            1.2: pygame.transform.smoothscale(
+                self.image, (self.rect.width * 3.6, self.rect.height * 3.6)
+            ),
+        }
 
     def update(self):
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        if (self.rect.left <= mouse_x <= self.rect.right and self.rect.top <= mouse_y <= self.rect.bottom):
+        if (
+            self.rect.left <= mouse_x <= self.rect.right
+            and self.rect.top <= mouse_y <= self.rect.bottom
+        ):
             self.image = self.scaled_images[1.2]
             self.rect = self.image.get_rect()
             self.rect.centerx = MainMenuSettings.StartButton.x
@@ -104,6 +111,7 @@ class StartButton(pygame.sprite.Sprite):
             self.rect.centerx = MainMenuSettings.StartButton.x
             self.rect.centery = MainMenuSettings.StartButton.y
 
+
 class bossHealthBarIcon(StaticState):
     def __init__(self):
         super().__init__(
@@ -111,8 +119,9 @@ class bossHealthBarIcon(StaticState):
             MainMenuSettings.bossHealthBarIcon.x,
             MainMenuSettings.bossHealthBarIcon.y,
             MainMenuSettings.bossHealthBarIcon.MULTI,
-            MainMenuSettings.bossHealthBarIcon.ALPHA
+            MainMenuSettings.bossHealthBarIcon.ALPHA,
         )
+
 
 class Options(StaticState):
     def __init__(self):

@@ -15,7 +15,7 @@ class SingleRoom(pygame.sprite.Sprite):
         # else:
         self.image = pygame.image.load(roomImage)
         self.image = pygame.transform.scale(
-            self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+            self.image, (BasicSettings.screenWidth, BasicSettings.screenHeight)
         )
         if not rect:
             self.rect = self.image.get_rect()
@@ -47,26 +47,26 @@ class SingleRoom(pygame.sprite.Sprite):
     def set_frame(self):
         edge_thickness = 1
         self.top_edge = pygame.Rect(
-            ScreenSettings.marginWidth,
-            ScreenSettings.marginHeight - edge_thickness - 20,
+            BasicSettings.marginWidth,
+            BasicSettings.marginHeight - edge_thickness - 20,
             self.rect.width,
             edge_thickness,
         )
         self.bottom_edge = pygame.Rect(
-            ScreenSettings.marginWidth,
-            ScreenSettings.roomHeight - edge_thickness + 20,
+            BasicSettings.marginWidth,
+            BasicSettings.roomHeight - edge_thickness + 20,
             self.rect.width,
             edge_thickness,
         )
         self.left_edge = pygame.Rect(
-            ScreenSettings.marginWidth - edge_thickness - 20,
-            ScreenSettings.marginHeight,
+            BasicSettings.marginWidth - edge_thickness - 20,
+            BasicSettings.marginHeight,
             edge_thickness,
             self.rect.height,
         )
         self.right_edge = pygame.Rect(
-            ScreenSettings.roomWidth - edge_thickness + 20,
-            ScreenSettings.marginHeight,
+            BasicSettings.roomWidth - edge_thickness + 20,
+            BasicSettings.marginHeight,
             edge_thickness,
             self.rect.height,
         )
@@ -77,23 +77,23 @@ class SingleRoom(pygame.sprite.Sprite):
     def gen_doors(self):
         # generate four random doors
         door_locations = {
-            "top": (self.rect.width / 2, ScreenSettings.marginHeight + 10),
-            "left": (ScreenSettings.marginWidth - 25, self.rect.height / 2),
-            "bottom": (self.rect.width / 2, ScreenSettings.roomHeight - 10),
-            "right": (ScreenSettings.roomWidth + 10, self.rect.height / 2),
+            "top": (self.rect.width / 2, BasicSettings.marginHeight + 10),
+            "left": (BasicSettings.marginWidth - 25, self.rect.height / 2),
+            "bottom": (self.rect.width / 2, BasicSettings.roomHeight - 10),
+            "right": (BasicSettings.roomWidth + 10, self.rect.height / 2),
         }
         door_location_tags = ["top", "left", "bottom", "right"]
-        if self.RoomID % 2 == 1 and self.RoomID > 1:    #从左边进来
+        if self.RoomID % 2 == 1 and self.RoomID > 1:  # 从左边进来
             door = Door(door_location_tags[1], self.RoomID)
             door.image = pygame.transform.rotate(door.image, 90 * 1)
             door.rect.center = door_locations[door_location_tags[1]]
             self._doors.add(door)
-        if self.RoomID % 2 == 0:    #从上边进来
+        if self.RoomID % 2 == 0:  # 从上边进来
             door = Door(door_location_tags[0], self.RoomID)
             door.image = pygame.transform.rotate(door.image, 90 * 0)
             door.rect.center = door_locations[door_location_tags[0]]
             self._doors.add(door)
-        for i in range(2,4):
+        for i in range(2, 4):
             if RoomTree[self.RoomID].left:
                 door = Door(door_location_tags[i], self.RoomID)
                 door.image = pygame.transform.rotate(door.image, 90 * i)
@@ -106,19 +106,19 @@ class SingleRoom(pygame.sprite.Sprite):
             # 模式一：在整个房间生成一整列一整列的墙体
             columns = random.randint(3, 4)  # 随机生成列数
             spacing = (
-                ScreenSettings.roomWidth - ScreenSettings.marginWidth * 2
+                BasicSettings.roomWidth - BasicSettings.marginWidth * 2
             ) // columns
             for i in range(columns):
-                x = ScreenSettings.marginWidth + i * spacing + spacing // 2
+                x = BasicSettings.marginWidth + i * spacing + spacing // 2
                 for y in range(
-                    ScreenSettings.marginHeight,
-                    ScreenSettings.roomHeight,
+                    BasicSettings.marginHeight,
+                    BasicSettings.roomHeight,
                     Shit().image.get_height(),
                 ):
                     wall = Shit()
                     if (
-                        y > ScreenSettings.marginHeight + Shit().image.get_height()
-                        and y < ScreenSettings.roomHeight - Shit().image.get_height()
+                        y > BasicSettings.marginHeight + Shit().image.get_height()
+                        and y < BasicSettings.roomHeight - Shit().image.get_height()
                     ):
                         wall.rect.center = (x, y)
                         self._walls.add(wall)
@@ -126,10 +126,10 @@ class SingleRoom(pygame.sprite.Sprite):
         elif mode == 2:
             # 模式二：在房间的四角生成单独的墙体，不紧挨着边框
             corner_offsets = [
-                (ScreenSettings.marginWidth + 100, ScreenSettings.marginHeight + 100),
-                (ScreenSettings.roomWidth - 100, ScreenSettings.marginHeight + 100),
-                (ScreenSettings.marginWidth + 100, ScreenSettings.roomHeight - 100),
-                (ScreenSettings.roomWidth - 100, ScreenSettings.roomHeight - 100),
+                (BasicSettings.marginWidth + 100, BasicSettings.marginHeight + 100),
+                (BasicSettings.roomWidth - 100, BasicSettings.marginHeight + 100),
+                (BasicSettings.marginWidth + 100, BasicSettings.roomHeight - 100),
+                (BasicSettings.roomWidth - 100, BasicSettings.roomHeight - 100),
             ]
             for offset in corner_offsets:
                 wall = Shit()
@@ -138,8 +138,10 @@ class SingleRoom(pygame.sprite.Sprite):
 
         elif mode == 3:
             # 模式三：在房间的中心生成 4x4 的墙体
-            center_x = (ScreenSettings.marginWidth + ScreenSettings.roomWidth) // 2
-            center_y = (ScreenSettings.marginHeight + ScreenSettings.roomHeight) // 2 + 100
+            center_x = (BasicSettings.marginWidth + BasicSettings.roomWidth) // 2
+            center_y = (
+                BasicSettings.marginHeight + BasicSettings.roomHeight
+            ) // 2 + 100
             wall_width = Shit().image.get_width()
             wall_height = Shit().image.get_height()
 
@@ -161,12 +163,12 @@ class SingleRoom(pygame.sprite.Sprite):
         for _ in range(num_rocks):
             while True:
                 x = random.randint(
-                    ScreenSettings.marginWidth + 150,
-                    ScreenSettings.roomWidth - ScreenSettings.marginWidth - 150,
+                    BasicSettings.marginWidth + 150,
+                    BasicSettings.roomWidth - BasicSettings.marginWidth - 150,
                 )
                 y = random.randint(
-                    ScreenSettings.marginHeight + 150,
-                    ScreenSettings.roomHeight - ScreenSettings.marginHeight - 150,
+                    BasicSettings.marginHeight + 150,
+                    BasicSettings.roomHeight - BasicSettings.marginHeight - 150,
                 )
                 rock = Rock()
                 rock.rect.center = (x, y)
@@ -238,23 +240,37 @@ class Door(pygame.sprite.Sprite):
                 DoorType = r.value
             case "bottom":
                 DoorType = l.value
-        #print(roomID, location_tag, DoorType)
+        # print(roomID, location_tag, DoorType)
         self._image_path = random.choice(list(ImportedImages.ClosedDoorImages)).value
         match DoorType:
             case "COMMON_ROOM":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR.value
+                self._image_path = (
+                    ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR.value
+                )
             case "SHOP":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SHOP_DOOR.value
+                self._image_path = (
+                    ImportedImages.ClosedDoorImages.CLOSED_SHOP_DOOR.value
+                )
             case "TREASURE":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_TREASURE_DOOR.value
+                self._image_path = (
+                    ImportedImages.ClosedDoorImages.CLOSED_TREASURE_DOOR.value
+                )
             case "BLUEWOMB":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_BLUEWOMB_DOOR.value
+                self._image_path = (
+                    ImportedImages.ClosedDoorImages.CLOSED_BLUEWOMB_DOOR.value
+                )
             case "CATACOMB":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_CATACOMB_DOOR.value
+                self._image_path = (
+                    ImportedImages.ClosedDoorImages.CLOSED_CATACOMB_DOOR.value
+                )
             case "SECRET":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_SECRET_DOOR.value
+                self._image_path = (
+                    ImportedImages.ClosedDoorImages.CLOSED_SECRET_DOOR.value
+                )
             case "START_ROOM":
-                self._image_path = ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR.value
+                self._image_path = (
+                    ImportedImages.ClosedDoorImages.CLOSED_WOOD_DOOR.value
+                )
 
         self.image = pygame.image.load(self._image_path)
         self.image = pygame.transform.scale(
@@ -392,40 +408,52 @@ class Web(pygame.sprite.Sprite):
 class StartRoom(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = 0
-        super().__init__(RoomID,ImportedImages.RoomImages.START_ROOM.value, rect, wall_type)
+        super().__init__(
+            RoomID, ImportedImages.RoomImages.START_ROOM.value, rect, wall_type
+        )
 
 
 class CommonRoom(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = random.randint(1, 3)
-        super().__init__(RoomID,ImportedImages.RoomImages.COMMON_ROOM.value, rect, wall_type)
+        super().__init__(
+            RoomID, ImportedImages.RoomImages.COMMON_ROOM.value, rect, wall_type
+        )
 
 
 class Shop(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = 0
-        super().__init__(RoomID,ImportedImages.RoomImages.SHOP.value, rect, wall_type)
+        super().__init__(RoomID, ImportedImages.RoomImages.SHOP.value, rect, wall_type)
 
 
 class TreasureRoom(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = 0
-        super().__init__(RoomID, ImportedImages.RoomImages.TREASURE.value, rect, wall_type)
+        super().__init__(
+            RoomID, ImportedImages.RoomImages.TREASURE.value, rect, wall_type
+        )
 
 
 class SecretRoom(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = random.randint(1, 3)
-        super().__init__(RoomID, ImportedImages.RoomImages.SECRET.value, rect, wall_type)
+        super().__init__(
+            RoomID, ImportedImages.RoomImages.SECRET.value, rect, wall_type
+        )
 
 
 class BlueWomb(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = random.randint(1, 3)
-        super().__init__(RoomID, ImportedImages.RoomImages.BLUEWOMB.value, rect, wall_type)
+        super().__init__(
+            RoomID, ImportedImages.RoomImages.BLUEWOMB.value, rect, wall_type
+        )
 
 
 class BossRoom(SingleRoom):
     def __init__(self, RoomID, rect: pygame.Rect = None):
         wall_type = random.randint(1, 3)
-        super().__init__(RoomID, ImportedImages.RoomImages.CATACOMB.value, rect, wall_type)
+        super().__init__(
+            RoomID, ImportedImages.RoomImages.CATACOMB.value, rect, wall_type
+        )

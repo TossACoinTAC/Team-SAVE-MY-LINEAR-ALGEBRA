@@ -22,8 +22,8 @@ class Trainer(NPC):
     def __init__(self):
         super().__init__(ImportedImages.TrainerImage)
         self.rect.center = (
-            0.6 * ScreenSettings.screenWidth,
-            0.5 * ScreenSettings.screenHeight,
+            0.6 * BasicSettings.screenWidth,
+            0.5 * BasicSettings.screenHeight,
         )
 
 
@@ -31,8 +31,8 @@ class Merchant(NPC):
     def __init__(self):
         super().__init__(ImportedImages.MerchantImage)
         self.rect.center = (
-            0.4 * ScreenSettings.screenWidth,
-            0.5 * ScreenSettings.screenHeight,
+            0.4 * BasicSettings.screenWidth,
+            0.5 * BasicSettings.screenHeight,
         )
 
 
@@ -42,7 +42,7 @@ class ChatBox(pygame.sprite.Sprite):
 
         self.image = pygame.image.load(ImportedImages.chatboxImage)
         self.image = pygame.transform.scale(
-            self.image, (ScreenSettings.screenWidth, ScreenSettings.screenHeight)
+            self.image, (BasicSettings.screenWidth, BasicSettings.screenHeight)
         )
         self.rect = self.image.get_rect()
 
@@ -159,11 +159,11 @@ class ChatBox(pygame.sprite.Sprite):
         pygame.draw.rect(
             self.image,
             self.INPUT_COLOR,
-            (20, ScreenSettings.screenHeight - 60, ScreenSettings.screenWidth - 40, 40),
+            (20, BasicSettings.screenHeight - 60, BasicSettings.screenWidth - 40, 40),
         )
 
         self.handle_input(keys, player_state)
-        self.render_wrapped_text(self.input_text, 30, ScreenSettings.screenHeight - 50)
+        self.render_wrapped_text(self.input_text, 30, BasicSettings.screenHeight - 50)
 
     def handle_input(self, keys, player_state: dict):
         inputed = False
@@ -273,7 +273,7 @@ class ChatBox(pygame.sprite.Sprite):
     def render_wrapped_text(self, text, x, y, color=(255, 255, 255)):
         words = text.split(" ")
         space_width, _ = self.FONT.size(" ")
-        max_width = ScreenSettings.screenWidth - 40
+        max_width = BasicSettings.screenWidth - 40
         current_line = []
         current_width = 0
         for word in words:
