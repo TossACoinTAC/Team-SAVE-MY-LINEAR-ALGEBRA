@@ -9,7 +9,6 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, spawn_pos: Vector2):  # spawn_pos: for transportation
         super().__init__()
         self.set_animation()
-        self.attack = 1
 
         self.rect = self.image.get_rect(center=spawn_pos)
 
@@ -129,7 +128,7 @@ class Player(pygame.sprite.Sprite):
             self.frame_index += 1
             self.frame_index %= 10
 
-        if keys[K_s]:
+        if keys[K_s] or keys[K_DOWN]:
             complete_image = Surface((complete_width, complete_height), SRCALPHA)
             complete_image.blit(
                 self.body_down_frames[self.frame_index], (dx, head_height - 10)
@@ -137,7 +136,7 @@ class Player(pygame.sprite.Sprite):
             complete_image.blit(self.head_frames[0], (0, 0))
             self.image = complete_image
 
-        if keys[K_d]:
+        if keys[K_d] or keys[K_RIGHT]:
             complete_image = Surface((complete_width, complete_height), SRCALPHA)
             complete_image.blit(
                 self.body_right_frames[self.frame_index], (dx, head_height - 10)
@@ -145,7 +144,7 @@ class Player(pygame.sprite.Sprite):
             complete_image.blit(self.head_frames[1], (0, 0))
             self.image = complete_image
 
-        if keys[K_a]:
+        if keys[K_a] or keys[K_LEFT]:
             complete_image = Surface((complete_width, complete_height), SRCALPHA)
             complete_image.blit(
                 self.body_left_frames[self.frame_index], (dx, head_height - 10)
@@ -153,7 +152,7 @@ class Player(pygame.sprite.Sprite):
             complete_image.blit(self.head_frames[2], (0, 0))
             self.image = complete_image
 
-        if keys[K_w]:
+        if keys[K_w] or keys[K_UP]:
             complete_image = Surface((complete_width, complete_height), SRCALPHA)
             complete_image.blit(
                 self.body_up_frames[self.frame_index], (dx, head_height - 10)

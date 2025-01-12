@@ -94,7 +94,6 @@ class GameManager:
         self.isaac = Player(spawn_pos)
         try:
             self.isaac.shoot_mode = self.attacksystem.shoot_mode
-            self.isaac.attack = self.attacksystem.attack_num
         except:
             pass
         self.isaac_group.add(self.isaac)
@@ -427,7 +426,6 @@ class GameManager:
                 else:
                     self._heart.HP = PlayerSettings.PlayerHP
             if mode == "attack":
-                self.isaac.attack += 1
                 self.attacksystem.attack_num += 1
             if mode == "coin":
                 self.coinsystem.coin_num += 3
@@ -497,9 +495,9 @@ class GameManager:
                 if tear.state == "live" and enemy.HP > 0:
                     tear.state = "die"
                     self.bgm_player.play_sound_effect("TEAR_HIT")
-                    enemy.HP -= self.isaac.attack
+                    enemy.HP -= self.attacksystem.attack_num
                     if enemy.state == "live" and enemy.HP <= 0:
-                        self.coinsystem.coin_num += random.randint(0,enemy.bornHP)
+                        self.coinsystem.coin_num += random.randint(0, enemy.bornHP)
                         num = random.choice([0, 1, 2, 3, 4, 5])
                         self.bloods.add(blood(enemy.rect.x, enemy.rect.y, num))
                         enemy.state = "die"
@@ -515,7 +513,7 @@ class GameManager:
                 tear.state = "die"
                 for wall in walls:
                     if isinstance(wall, Shit):
-                        wall.HP -= self.isaac.attack
+                        wall.HP -= self.attacksystem.attack_num
                         wall.destroyed()
 
         collided_tears_and_frames = pygame.sprite.groupcollide(
