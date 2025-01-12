@@ -334,6 +334,7 @@ class BossBody(pygame.sprite.Sprite):
 
     def set_HP(self):
         self.HP = BossSettings.health_bar.max
+        self.bornHP = self.HP
 
     def set_position(self):
         self.rect.centerx = 0.5 * BasicSettings.screenWidth
