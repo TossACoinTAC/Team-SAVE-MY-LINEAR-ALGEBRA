@@ -1,4 +1,4 @@
-# **线性代数要学不完了队**
+# **Team SAVE MY LINEAR ALGEBRA**
 
 ## **Membership Information**
     1. 潘佑邦 2024533070
@@ -6,7 +6,7 @@
     3. 宋梓冬 2024533002
 
 ## **Division of Labor among Members**
-    1.潘佑邦: Scripts composition; Scripts hierarchy,dependencies management.
+    1.潘佑邦: Scripts composition; Scripts hierarchy,dependencies management
     2.吴俊阳:
     3.宋梓冬: README.md
 
@@ -27,14 +27,16 @@ Game Dimension: **2D**
 ## **INSTRUCTION : Operations**
     1. WASD : Eight directions of uniform speed
     2. ↑↓←→ : Eight directions firing
-    3. LSHIFT : Run
-    4. Q : Interact with the raffle machine / Trainer
+    3. LSHIFT : Dash
+    4. Q : Interact with the raffle machine / NPCs
     5. E : Plant a bomb
+
 ## **INTRODUCTION**
+
 ### Introduction : Map
     1. MapTree：We use a binary tree to implement the map: random generation + iterative backtracking
-    2. After removing Enemies from each map, the remaining rooms will open
-    3. Room Type：CommonRoom + BossRoom + ShopRoom + TrainerRoom
+    2. After removing all Enemies in a room, the doors to adjacent rooms will open
+    3. Room Types：CommonRoom + BossRoom + ShopRoom + NPCRoom.
 ```mermaid
 graph TD;
   StartRoom-->|right|Layer1_1;
@@ -53,24 +55,45 @@ graph TD;
   Layer2_4-->|bottom|BossRoom;
 ```
 ### Introduction : Resource System (UI)
-    1. Health : Displays the value of the health bar
+    1. Health : Displays the value of remaining HP
     2. Coin : Displays the number of the gold coin
-    3. Attack :  Displays the value of the attack
+    3. Attack :  Displays the value of ATK
     4. Bomb : Displays the number of the bomb
    
 ### Introduction : Enemies
-    1. Fly/BloodyFly : A Flying unit that move randomly
-    2. Bug :  A land unit that sprints randomly in four directions
+    1. Fly/BloodyFly : A Flying unit that moves randomly, hurts player when hitting
+    2. Bug : A land unit that sprints randomly in four directions, hurts player when hitting
     3. Boss(GURDY) : A special unit that fires bloodybullets and summons bloodyflies
    
 ### Introduction : Raffle machine  
-    1.  Cost 5 Coin
-    2.  +3 Coin
-    3.  +1 Attack
-    4.  +2 HP
+    **Cost**: 5 Coins
+    **Rewards**:
+    1.  +3 Coin
+    2.  +1 Attack
+    3.  +2 HP
    
-### Introduction : Trainer  
+### Introduction : NPC : Trainer  
     Please answer the questions correctly !
+    **Consequences**:
+    1.  +2HP
+    2.  -1HP
+    3.  Tear Boost
+   
+### Introduction : NPC : Merchant
+    Everything comes at a cost !
+    **You may pay:**
+    1.  Coins
+    2.  HP
+    **You may get:**
+    1.  Heal
+    2.  Bombs
+    3.  ATK Boost
+    4.  ATK Speed Boost
+    The Merchant may decide what to sell or whether to sell based on your current state.
+
+### Introduction : Hardship_Coefficient
+    Every time you beat the boss and restart your adventure, your enemies will become stronger, ever until taking your life away.
+
    
 
 ## ANIMATION is the SOUL of GAME !

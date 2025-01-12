@@ -8,6 +8,7 @@ openai==1.58.1
 Markdown==3.7
 bs4==0.0.2
 
+# massively used match-case, requires >= python3.9
 python=3.13.0
 
 Reading readme.md requires installation: 

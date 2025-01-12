@@ -194,7 +194,7 @@ class UISettings:
 
 class BossSettings:
     class health_bar:
-        max = 100
+        max = 100 + BasicSettings.Hardship_coefficient * 15
         width = 600
         height = 30
         x = 1280 / 2 - 600 / 2 + 50
@@ -436,8 +436,8 @@ class EnemiesSettings:
         ]
 
     class bug:
-        HP = 3
-        speed = 1
+        HP = 3 + BasicSettings.Hardship_coefficient
+        speed = 1 + BasicSettings.Hardship_coefficient // 2
         frames_rects_right_or_left = [
             (0, 0, 32, 32),
             (32, 0, 32, 32),
@@ -476,7 +476,7 @@ class EnemiesSettings:
             (72, 0, 40, 35),
             (112, 0, 30, 35),
         ]
-        HP = 1
+        HP = 1 + BasicSettings.Hardship_coefficient // 2
         speed = [0.5, 0.8, 1, 1.2, 3, -0.5, -0.8, -1, -1.2, -3]
         frame_rects_die = [
             (0, 0, 64, 63),
