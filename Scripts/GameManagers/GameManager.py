@@ -94,6 +94,7 @@ class GameManager:
         self.isaac = Player(spawn_pos)
         try:
             self.isaac.shoot_mode = self.attacksystem.shoot_mode
+            self.isaac.attack = self.attacksystem.attack_num
         except:
             pass
         self.isaac_group.add(self.isaac)
@@ -498,11 +499,10 @@ class GameManager:
                     self.bgm_player.play_sound_effect("TEAR_HIT")
                     enemy.HP -= self.isaac.attack
                     if enemy.state == "live" and enemy.HP <= 0:
-                        self.coinsystem.coin_num += 1
+                        self.coinsystem.coin_num += random.randint(0,enemy.bornHP)
                         num = random.choice([0, 1, 2, 3, 4, 5])
                         self.bloods.add(blood(enemy.rect.x, enemy.rect.y, num))
                         enemy.state = "die"
-                        print(enemy.HP)
 
     def detect_collision_tears_and_walls(self):
         collided_tears_and_walls = StaticMethods.mask_groupcollide(

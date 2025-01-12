@@ -54,8 +54,8 @@ class bug(pygame.sprite.Sprite):
     def set_position(self):
         self.image = self.frames_down[0]
         self.rect = self.image.get_rect()
-        self.rect.centerx = 200
-        self.rect.centery = 200
+        self.rect.centerx = random.choice([200,500,800])
+        self.rect.centery = random.choice([200,400,600])
 
     def update_animation(self):
 
@@ -124,6 +124,7 @@ class bug(pygame.sprite.Sprite):
         
     def set_attribute(self):
         self.HP = EnemiesSettings.bug.HP
+        self.bornHP = self.HP
         self.state = "live"
         self.speed_run = 0
         self.move_direction = random.choice(['left', 'right', 'up', 'down'])
@@ -188,6 +189,7 @@ class Monster(pygame.sprite.Sprite):
         # not important
 
         self.HP = HP
+        self.bornHP = HP
         self.state = "live"
         self.timer = 0
         self.MULTI = MULTI
